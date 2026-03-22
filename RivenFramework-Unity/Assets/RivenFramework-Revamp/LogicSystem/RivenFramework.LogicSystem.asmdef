@@ -1,0 +1,21 @@
+{
+    "name": "RivenFramework.LogicSystem",
+    "rootNamespace": "RivenFramework",
+    "references": [
+        "GUID:f47009f683dcea55fb9faad1db3dd237",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:6ecdcf73f26e356e983e0d30f4aeb3e2",
+        "GUID:7e5a99fa265c1cdc195475dbb3cf7f4e",
+        "GUID:476db2c09d204f04ea092b4f30a42b65"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

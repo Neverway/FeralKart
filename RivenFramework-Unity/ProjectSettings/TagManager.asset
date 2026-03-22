@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - UserInterface
+  - LoadingBar
+  - Pawn
+  - PhysProp
+  - '[ActorContainer]'
+  - '[LogicContainer]'
+  - '[PropContainer]'
+  - '[FXContainer]'
+  - '[StructureContainer]'
+  - TilemapContainer
+  - AssetContainer
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - No Post-Process
+  - Water
+  - UI
+  - <( x )> Hidden Logic
+  - <( x )> Hidden Barriers
+  - '[2D] Depth Layer 1'
+  - '[2D] Depth Layer 2'
+  - '[2D] Depth Layer 3'
+  - Pawns
+  - No Pawn Collision
+  - Phys Props
+  - Voxel Occluder
+  - Voxel Grid
+  - <( x )> Hidden No Pawn Collision
+  - No Projectile Collision
+  - SpecialFX
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Depth Layer 1
+    uniqueID: 3209954093
+    locked: 0
+  - name: Depth Layer 2
+    uniqueID: 2507068833
+    locked: 0
+  - name: Depth Layer 3
+    uniqueID: 445256555
+    locked: 0
+  - name: Hidden Logic
+    uniqueID: 871958853
+    locked: 0
