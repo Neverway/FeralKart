@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 8070034792371159625}
   - component: {fileID: 7823347618117552932}
   - component: {fileID: 7772094091800588648}
-  - component: {fileID: 406167200815950334}
   - component: {fileID: 4235648314469192602}
   m_Layer: 6
   m_Name: Volume
@@ -118,25 +117,6 @@ MonoBehaviour:
   asynchronously: 0
   waitIfBusy: 0
   objectGrouping: 0
---- !u!114 &406167200815950334
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5578371265734815444}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f1dfa5a705ca6764bc7ad62c81ea0f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <EnableRuntimeLogging>k__BackingField: 0
-  isReflective: 0
-  isSliceInProgress: 0
-  isSlicedByPlane: 0
-  isClone: 0
-  riftSpace: 0
-  meshRenderer: {fileID: 0}
 --- !u!64 &4235648314469192602
 MeshCollider:
   m_ObjectHideFlags: 0

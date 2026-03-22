@@ -1,0 +1,116 @@
+//===================== (Neverway 2024) Written by Andre Blunt ================
+//
+// Purpose:
+// Notes:
+//
+//=============================================================================
+
+using DG.Tweening;
+using RivenFramework;
+using UnityEngine;
+
+public class Projectile : MonoBehaviour
+{
+    //=-----------------=
+    // Public Variables
+    //=-----------------=
+
+
+    //=-----------------=
+    // Private Variables
+    //=-----------------=
+    [SerializeField] protected float lifetime;
+    [SerializeField] protected float radius;
+    [Tooltip("Optional field that is used for a motion tween to fake the projectile being shot from the gun barrel.")]
+    [SerializeField] private Transform projectileGraphics;
+
+    protected float moveSpeed;
+    protected bool disabled;
+    private Vector3 lastPosition;
+    public LayerMask layerMask;
+
+    public Vector3 moveVector { get; protected set; } //used in update loop collision & move
+
+    //=-----------------=
+    // Reference Variables
+    //=-----------------=
+
+
+    //=-----------------=
+    // Mono Functions
+    //=-----------------=
+    public virtual void Awake ()
+    {
+        //ignoreMask = CorGeo_ReferenceManager.Instance.playerProjectileIgnoreMask;
+        lastPosition = transform.position;
+    }
+    private void Update ()
+    {
+        if (disabled)
+            return;
+
+        moveVector = transform.forward * moveSpeed * Time.deltaTime;
+        if (!CollisionLogic ())
+            MoveLogic ();
+    }
+
+    //=-----------------=
+    // Internal Functions
+    //=-----------------=
+    public virtual void MoveLogic ()
+    {
+        transform.position += moveVector;
+    }
+    public virtual bool CollisionLogic ()
+    {
+        Debug.DrawRay(transform.position, transform.forward, Color.green, 1);
+        if (Physics.Raycast (transform.position, transform.forward, out RaycastHit hit, moveVector.magnitude + radius, layerMask))
+        {
+            OnProjectileCollision (hit);
+            return true;
+        }
+        return false;
+    }
+    public virtual void OnProjectileCollision (RaycastHit hit)
+    {
+        if (projectileGraphics != null)
+        {
+            projectileGraphics.DOKill ();
+            projectileGraphics.transform.localPosition = Vector3.zero;
+        }
+    }
+
+    //=-----------------=
+    // External Functions
+    //=-----------------=
+    public void InitializeProjectile (float moveSpeed, Vector3 position, Vector3 forward)
+    {
+        this.moveSpeed = moveSpeed;
+        transform.position = position;
+        transform.forward = forward;
+    }
+    
+    public void InitializeProjectile (float moveSpeed)
+    {
+        this.moveSpeed = moveSpeed;
+    }
+
+    /// <summary>
+    /// Spawn projectile and tween it's graphics to toward it's origin,
+    /// </summary>
+    /// <param name="moveSpeed"></param>
+    /// <param name="graphicsPosition"></param>
+    /// <param name="distance"></param>
+    public void InitializeProjectile (float moveSpeed, Vector3 graphicsPosition = default, float distance = 0)
+    {
+        this.moveSpeed = moveSpeed;
+        if (projectileGraphics == null)
+        {
+            return;
+        }
+        float time = (distance * moveSpeed) - 0.1f;
+        if (time < 0) time = 0;
+        projectileGraphics.position = graphicsPosition;
+        projectileGraphics.DOLocalMove (Vector3.zero, time);
+    }
+}
