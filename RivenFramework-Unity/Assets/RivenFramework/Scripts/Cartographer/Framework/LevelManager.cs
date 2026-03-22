@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using SimpleFileBrowser;
+//using SimpleFileBrowser;
 using UnityEngine.SceneManagement;
 using Neverway.Framework.PawnManagement;
 
@@ -49,7 +49,7 @@ namespace Neverway.Framework.Cartographer
         // Reference Variables
         //=-----------------=
         private ProjectDatabase projectData;
-        [SerializeField] private UISkin fileBrowserSkin;
+        //[SerializeField] private UISkin fileBrowserSkin;
 
 
         //=-----------------=
@@ -91,7 +91,7 @@ namespace Neverway.Framework.Cartographer
 
         private IEnumerator ShowFileDialogCoroutine(string _mode)
         {
-            FileBrowser.SetFilters(false, new FileBrowser.Filter("CT Maps", ".ctmap"));
+            /*FileBrowser.SetFilters(false, new FileBrowser.Filter("CT Maps", ".ctmap"));
             FileBrowser.AddQuickLink("Data Path", Application.persistentDataPath);
             FileBrowser.AddQuickLink("Application Path", Application.dataPath + "/Maps/");
             FileBrowser.AddQuickLink("Editor Level Path", Application.dataPath + "/Resources/Maps/");
@@ -129,7 +129,8 @@ namespace Neverway.Framework.Cartographer
                 case "Save":
                     SaveLevel(filePath);
                     break;
-            }
+            }*/
+            yield break;
         }
 
         private void SaveTiles(LevelData _data)

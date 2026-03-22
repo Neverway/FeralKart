@@ -19,16 +19,12 @@ GameObject:
   - component: {fileID: 4298148357587920968}
   - component: {fileID: 1249841930750964347}
   - component: {fileID: 4662360372656819566}
-  - component: {fileID: 4942970576282025009}
   - component: {fileID: 6546828152794290419}
-  - component: {fileID: 257830348467857689}
   - component: {fileID: 5002095358254411103}
   - component: {fileID: 1467010668408762878}
   - component: {fileID: 6626165610359650688}
   - component: {fileID: 5663611723246624689}
-  - component: {fileID: 6889150239010922709}
   - component: {fileID: 801976210690049862}
-  - component: {fileID: 7362436762694209870}
   - component: {fileID: 6086604189803334263}
   m_Layer: 0
   m_Name: GameInstance
@@ -800,21 +796,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &4942970576282025009
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4298151654670827244}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1db0e900330dcb04cad200a7f0547c58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  riftMaterial: {fileID: 2100000, guid: d6a1b3cc8fbc4575c828efcce3416ebb, type: 2}
-  defaultEmissionStrength: 6
-  collapseExpandEmissionStrength: 9
 --- !u!114 &6546828152794290419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -832,20 +813,6 @@ MonoBehaviour:
   jumps: 0
   bulbs: 0
   doTracking: 1
---- !u!114 &257830348467857689
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4298151654670827244}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59720b0a8a920c44abe693082d0f65c1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _lightningLinePrefab: {fileID: 5917406844916810592, guid: a788d6afe90e88642bab71cba86638ad,
-    type: 3}
 --- !u!114 &5002095358254411103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1008,54 +975,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &6889150239010922709
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4298151654670827244}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f55ed6570ef81fe83b76de51f04442f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <EnableRuntimeLogging>k__BackingField: 0
-  createRiftOnMarkersPinned: 1
-  maxRiftWidth: 30
-  minRiftWidth: -30
-  minRiftSpeed: 3
-  maxRiftSpeed: 12
-  riftAcceleration: 7
-  visualPlanePrefab: {fileID: 3569801623043244855, guid: 83ab4b7787c4221b2b87b065899cbea3,
-    type: 3}
-  nullSpaceMaterial: {fileID: 2100000, guid: eb2aa8e528376ea4bad7b7dd63732b8f, type: 2}
-  riftPreviewEffects: {fileID: 4942970576282025009}
-  currentRiftMoveSpeed: 8
-  stateHandler:
-    previousState:
-      rid: -2
-    currentState:
-      rid: -2
-    riftManager: {fileID: 0}
-  spaceController:
-    geometryHandler:
-      visualPlaneA: {fileID: 0}
-      visualPlaneB: {fileID: 0}
-    spaceContainerA: {fileID: 0}
-    spaceContainerB: {fileID: 0}
-    spaceContainerNull: {fileID: 0}
-  geometryHandler:
-    visualPlaneA: {fileID: 0}
-    visualPlaneB: {fileID: 0}
-  markerA: {fileID: 0}
-  markerB: {fileID: 0}
-  linkedRiftController: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &801976210690049862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1071,22 +990,6 @@ MonoBehaviour:
   debugItems:
   - {fileID: 4920999846726539026, guid: 49c8ce2a1b2740a428c35ff3aeb35d25, type: 3}
   - {fileID: 4920999846726539026, guid: 57da26f1dca1fe798bc706d37a374288, type: 3}
---- !u!114 &7362436762694209870
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4298151654670827244}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 186cd465ba0860cc59e75af80f3c9488, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isRecording: 0
-  isPlaying: 0
-  recordStartTime: 0
-  replayEvents: []
 --- !u!114 &6086604189803334263
 MonoBehaviour:
   m_ObjectHideFlags: 0

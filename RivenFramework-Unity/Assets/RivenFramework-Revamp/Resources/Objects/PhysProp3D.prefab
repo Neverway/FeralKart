@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 3954347698123193828}
   - component: {fileID: 7267226283918966251}
   - component: {fileID: 67491230044474581}
-  - component: {fileID: 1248232264559991007}
   - component: {fileID: 8039075810331489572}
   - component: {fileID: 3059039815712871700}
   - component: {fileID: 726477608101505362}
@@ -105,29 +104,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 0.5}
   m_Center: {x: 0, y: 0.5, z: 0}
---- !u!114 &1248232264559991007
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2276721478425129573}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ca3b513376942e2884b9afb4babceef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dynamic: 1
-  isParentedIgnoreOffsets: 0
-  activeInNullSpace: 0
-  destroyedInKillTrigger: 1
-  debugLogSpaceData: 0
-  homePosition: {x: 0, y: 0, z: 0}
-  homeScale: {x: 0, y: 0, z: 0}
-  homeParent: {fileID: 0}
-  isHeld: 0
-  wasActive: 0
-  space: 0
 --- !u!114 &8039075810331489572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,6 +288,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 129
   breakableAnchorPin: {fileID: 0}
+  allowGrabbingWhileStuck: 0
   isHeld: 0
   propRigidbody:
     editorHandles_showHandle: 0

@@ -1,0 +1,60 @@
+
+// This is the function that slices the world
+private void SetupForConvergingMarkers ()
+{
+    // Exit if we don't have markers
+    if (AreMarkersPinned ())
+    {
+        // Continue if 'deployedRift' is true <- (What is deployedRift? Where is it set?)
+        if (deployedRift)
+        {
+            // Temporarily disable physics on all actors
+            StartCoroutine (FreezeActors ());
+
+            // Get a bunch of start references
+            meshSlicers = FindObjectsOfType<Mesh_Slicable> ();
+            nullSlices = new List<GameObject> ();
+            planeBMeshes = Instantiate (new GameObject ());
+            planeBMeshes.name = "planeBMeshes";
+            planeBStartPos = planeBMeshes.transform.position;
+
+
+            // Find all slice-able meshes
+            foreach (var sliceableMesh in meshSlicers)
+            {
+                // Cut them (HOW?! HOW DOES IT KNOW TO CUT THEM ON THE PLANES??!?!?!?!?!??!)
+                sliceableMesh.ApplyCuts ();
+            }
+
+
+            // This never runs since nullslices was just set to null, why is this here???!
+            foreach (GameObject obj in nullSlices)
+            {
+                obj.transform.SetParent (deployedRift.transform, true);
+                //remove extra meshes (there were un-sliced meshes sticking around)
+                var meshColliders = GetComponents<MeshCollider> ();
+                if (meshColliders.Length > 1)
+                {
+                    Destroy (meshColliders[0]);
+                }
+            }
+
+            // Move objects to correct space container
+            AssignInitialActorRiftSpace ();
+
+            // Setup rift time stuff
+            isCollapseStarted = true;
+            riftTimer = 0f;
+            maxRiftTimer = riftWidth * riftSecondsPerUnit;
+            if (riftWidth > maxRiftWidth)
+            {
+                minRiftTimer = 0;
+            }
+            else
+            {
+                minRiftTimer = -(maxRiftTimer * ((maxRiftWidth - riftWidth) / riftWidth));
+            }
+            previousPlanePosition = cutPreviews[1].transform.position;
+        }
+    }
+}
