@@ -2690,6 +2690,441 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 }
             ]
+        },
+        {
+            ""name"": ""FEKA"",
+            ""id"": ""65322528-edb6-43dd-81f1-ff7bb429d8a9"",
+            ""actions"": [
+                {
+                    ""name"": ""Steer"",
+                    ""type"": ""Value"",
+                    ""id"": ""ff942580-f46e-44ba-92df-f3175796684c"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": ""InvertVector2(invertX=false,invertY=false),ScaleVector2"",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Acelerate"",
+                    ""type"": ""Button"",
+                    ""id"": ""cbf3e874-1d96-4d05-a574-ac2e8b066a79"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Decelerate"",
+                    ""type"": ""Button"",
+                    ""id"": ""59ef5fc2-0a6f-474a-8298-eb77e72a04a9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Tilt Left"",
+                    ""type"": ""Button"",
+                    ""id"": ""98b91542-dfb0-418b-8a0a-13336d3bffad"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Tilt Right"",
+                    ""type"": ""Button"",
+                    ""id"": ""bcccf280-a7d8-47ef-81ba-bce84bbbaaaf"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Attack"",
+                    ""type"": ""Button"",
+                    ""id"": ""4e47f69e-dd8c-4b4d-ad0e-f79b1bb3b4da"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Utility"",
+                    ""type"": ""Button"",
+                    ""id"": ""fc07b35e-a2e2-4366-bbfc-9e872ac91602"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Throw"",
+                    ""type"": ""Button"",
+                    ""id"": ""ffb811ee-69b0-44ee-a77c-046afe1557ce"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Handbreak"",
+                    ""type"": ""Button"",
+                    ""id"": ""c31ab9d5-bf7e-4c31-80eb-ca2399d0ef56"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hop (Dedicated)"",
+                    ""type"": ""Button"",
+                    ""id"": ""df4de538-878e-43ba-a2e4-f57750f5727b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Final Strike (Dedicated)"",
+                    ""type"": ""Button"",
+                    ""id"": ""752d0716-3996-48b4-8238-1e2fee34477a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""3f212aad-791b-4c6c-81f9-709bf2749dae"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""a0a46ae9-8e4c-4775-8d35-c954b0c21200"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Hop (Dedicated)"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Keyboard&Mouse"",
+                    ""id"": ""be36bdf8-75e7-4af3-8ebc-b6828a2b59f2"",
+                    ""path"": ""2DVector(mode=1)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Steer"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Up"",
+                    ""id"": ""1ddb5dd8-e5eb-40a2-ad56-56ebbebedf9b"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Steer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Down"",
+                    ""id"": ""b3dbe838-21e0-44c1-a24e-c992b22e8ab1"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Steer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Left"",
+                    ""id"": ""76e3c1b7-ea3b-4784-8561-84131db7e2bb"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Steer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Right"",
+                    ""id"": ""f12438e3-d9ea-43ce-904e-0d5c209226de"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Steer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Gamepad"",
+                    ""id"": ""2e11963f-ae51-494a-b72e-aa33ea220e5a"",
+                    ""path"": ""2DVector(mode=1)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Steer"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""38626ace-85ed-4988-a54a-c6ff7fc04b4f"",
+                    ""path"": ""<Gamepad>/leftStick/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Steer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""58fa17f6-72a6-47a4-a5f2-cd9b7f2a96b5"",
+                    ""path"": ""<Gamepad>/leftStick/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Steer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""4330a480-30e5-47a1-aa79-b5a756c5897f"",
+                    ""path"": ""<Gamepad>/leftStick/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Steer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""3933e547-9936-40cc-95ee-bc250d39661c"",
+                    ""path"": ""<Gamepad>/leftStick/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Steer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""62470fd4-4239-4521-85cc-948a39d01667"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Acelerate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f8231877-35cc-47ef-9809-acc2e70ffe91"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Acelerate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f4d99fde-a45f-4ef2-9594-38afa1a536a1"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Decelerate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""63fd820a-c467-421f-a38e-3a986b864ca3"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Decelerate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""47fb82f3-440a-4601-ab5e-52b1c27c2480"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b75d0362-42d0-4b2e-b73d-2d4403e5b8c2"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f8296f56-a06c-453d-93d5-9b86c61e96a9"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Utility"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f0f8e8e5-d54d-471d-aa1d-bcd88b35ddd9"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Utility"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""79eb0e50-b148-438e-ae20-634ce77dfe36"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Tilt Left"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1d1408f6-6616-46de-a80b-7f47686c651e"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Tilt Left"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b38d7840-c807-4f4a-b17b-5373f8b3322c"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Tilt Right"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a3d4929c-8319-4412-b887-197f01e86074"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Tilt Right"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bacb04b3-dd62-405c-92cf-4e0c5ec0bff3"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Throw"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fd71a053-4f4f-4f82-8e9d-25f2487d21a6"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Throw"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cc487cbf-410a-4977-b51e-527af6b005d7"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Handbreak"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f350a0f5-cc78-456e-9598-78a52cac079e"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Handbreak"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""158bf99a-61e1-42a0-aa27-2f7803ad9701"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1c894131-4e92-447a-9097-573d058c30d0"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -2788,6 +3223,20 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
         m_UI_DevMenu = m_UI.FindAction("DevMenu", throwIfNotFound: true);
+        // FEKA
+        m_FEKA = asset.FindActionMap("FEKA", throwIfNotFound: true);
+        m_FEKA_Steer = m_FEKA.FindAction("Steer", throwIfNotFound: true);
+        m_FEKA_Acelerate = m_FEKA.FindAction("Acelerate", throwIfNotFound: true);
+        m_FEKA_Decelerate = m_FEKA.FindAction("Decelerate", throwIfNotFound: true);
+        m_FEKA_TiltLeft = m_FEKA.FindAction("Tilt Left", throwIfNotFound: true);
+        m_FEKA_TiltRight = m_FEKA.FindAction("Tilt Right", throwIfNotFound: true);
+        m_FEKA_Attack = m_FEKA.FindAction("Attack", throwIfNotFound: true);
+        m_FEKA_Utility = m_FEKA.FindAction("Utility", throwIfNotFound: true);
+        m_FEKA_Throw = m_FEKA.FindAction("Throw", throwIfNotFound: true);
+        m_FEKA_Handbreak = m_FEKA.FindAction("Handbreak", throwIfNotFound: true);
+        m_FEKA_HopDedicated = m_FEKA.FindAction("Hop (Dedicated)", throwIfNotFound: true);
+        m_FEKA_FinalStrikeDedicated = m_FEKA.FindAction("Final Strike (Dedicated)", throwIfNotFound: true);
+        m_FEKA_Pause = m_FEKA.FindAction("Pause", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -3505,6 +3954,140 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         }
     }
     public UIActions @UI => new UIActions(this);
+
+    // FEKA
+    private readonly InputActionMap m_FEKA;
+    private List<IFEKAActions> m_FEKAActionsCallbackInterfaces = new List<IFEKAActions>();
+    private readonly InputAction m_FEKA_Steer;
+    private readonly InputAction m_FEKA_Acelerate;
+    private readonly InputAction m_FEKA_Decelerate;
+    private readonly InputAction m_FEKA_TiltLeft;
+    private readonly InputAction m_FEKA_TiltRight;
+    private readonly InputAction m_FEKA_Attack;
+    private readonly InputAction m_FEKA_Utility;
+    private readonly InputAction m_FEKA_Throw;
+    private readonly InputAction m_FEKA_Handbreak;
+    private readonly InputAction m_FEKA_HopDedicated;
+    private readonly InputAction m_FEKA_FinalStrikeDedicated;
+    private readonly InputAction m_FEKA_Pause;
+    public struct FEKAActions
+    {
+        private @InputActions m_Wrapper;
+        public FEKAActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Steer => m_Wrapper.m_FEKA_Steer;
+        public InputAction @Acelerate => m_Wrapper.m_FEKA_Acelerate;
+        public InputAction @Decelerate => m_Wrapper.m_FEKA_Decelerate;
+        public InputAction @TiltLeft => m_Wrapper.m_FEKA_TiltLeft;
+        public InputAction @TiltRight => m_Wrapper.m_FEKA_TiltRight;
+        public InputAction @Attack => m_Wrapper.m_FEKA_Attack;
+        public InputAction @Utility => m_Wrapper.m_FEKA_Utility;
+        public InputAction @Throw => m_Wrapper.m_FEKA_Throw;
+        public InputAction @Handbreak => m_Wrapper.m_FEKA_Handbreak;
+        public InputAction @HopDedicated => m_Wrapper.m_FEKA_HopDedicated;
+        public InputAction @FinalStrikeDedicated => m_Wrapper.m_FEKA_FinalStrikeDedicated;
+        public InputAction @Pause => m_Wrapper.m_FEKA_Pause;
+        public InputActionMap Get() { return m_Wrapper.m_FEKA; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(FEKAActions set) { return set.Get(); }
+        public void AddCallbacks(IFEKAActions instance)
+        {
+            if (instance == null || m_Wrapper.m_FEKAActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_FEKAActionsCallbackInterfaces.Add(instance);
+            @Steer.started += instance.OnSteer;
+            @Steer.performed += instance.OnSteer;
+            @Steer.canceled += instance.OnSteer;
+            @Acelerate.started += instance.OnAcelerate;
+            @Acelerate.performed += instance.OnAcelerate;
+            @Acelerate.canceled += instance.OnAcelerate;
+            @Decelerate.started += instance.OnDecelerate;
+            @Decelerate.performed += instance.OnDecelerate;
+            @Decelerate.canceled += instance.OnDecelerate;
+            @TiltLeft.started += instance.OnTiltLeft;
+            @TiltLeft.performed += instance.OnTiltLeft;
+            @TiltLeft.canceled += instance.OnTiltLeft;
+            @TiltRight.started += instance.OnTiltRight;
+            @TiltRight.performed += instance.OnTiltRight;
+            @TiltRight.canceled += instance.OnTiltRight;
+            @Attack.started += instance.OnAttack;
+            @Attack.performed += instance.OnAttack;
+            @Attack.canceled += instance.OnAttack;
+            @Utility.started += instance.OnUtility;
+            @Utility.performed += instance.OnUtility;
+            @Utility.canceled += instance.OnUtility;
+            @Throw.started += instance.OnThrow;
+            @Throw.performed += instance.OnThrow;
+            @Throw.canceled += instance.OnThrow;
+            @Handbreak.started += instance.OnHandbreak;
+            @Handbreak.performed += instance.OnHandbreak;
+            @Handbreak.canceled += instance.OnHandbreak;
+            @HopDedicated.started += instance.OnHopDedicated;
+            @HopDedicated.performed += instance.OnHopDedicated;
+            @HopDedicated.canceled += instance.OnHopDedicated;
+            @FinalStrikeDedicated.started += instance.OnFinalStrikeDedicated;
+            @FinalStrikeDedicated.performed += instance.OnFinalStrikeDedicated;
+            @FinalStrikeDedicated.canceled += instance.OnFinalStrikeDedicated;
+            @Pause.started += instance.OnPause;
+            @Pause.performed += instance.OnPause;
+            @Pause.canceled += instance.OnPause;
+        }
+
+        private void UnregisterCallbacks(IFEKAActions instance)
+        {
+            @Steer.started -= instance.OnSteer;
+            @Steer.performed -= instance.OnSteer;
+            @Steer.canceled -= instance.OnSteer;
+            @Acelerate.started -= instance.OnAcelerate;
+            @Acelerate.performed -= instance.OnAcelerate;
+            @Acelerate.canceled -= instance.OnAcelerate;
+            @Decelerate.started -= instance.OnDecelerate;
+            @Decelerate.performed -= instance.OnDecelerate;
+            @Decelerate.canceled -= instance.OnDecelerate;
+            @TiltLeft.started -= instance.OnTiltLeft;
+            @TiltLeft.performed -= instance.OnTiltLeft;
+            @TiltLeft.canceled -= instance.OnTiltLeft;
+            @TiltRight.started -= instance.OnTiltRight;
+            @TiltRight.performed -= instance.OnTiltRight;
+            @TiltRight.canceled -= instance.OnTiltRight;
+            @Attack.started -= instance.OnAttack;
+            @Attack.performed -= instance.OnAttack;
+            @Attack.canceled -= instance.OnAttack;
+            @Utility.started -= instance.OnUtility;
+            @Utility.performed -= instance.OnUtility;
+            @Utility.canceled -= instance.OnUtility;
+            @Throw.started -= instance.OnThrow;
+            @Throw.performed -= instance.OnThrow;
+            @Throw.canceled -= instance.OnThrow;
+            @Handbreak.started -= instance.OnHandbreak;
+            @Handbreak.performed -= instance.OnHandbreak;
+            @Handbreak.canceled -= instance.OnHandbreak;
+            @HopDedicated.started -= instance.OnHopDedicated;
+            @HopDedicated.performed -= instance.OnHopDedicated;
+            @HopDedicated.canceled -= instance.OnHopDedicated;
+            @FinalStrikeDedicated.started -= instance.OnFinalStrikeDedicated;
+            @FinalStrikeDedicated.performed -= instance.OnFinalStrikeDedicated;
+            @FinalStrikeDedicated.canceled -= instance.OnFinalStrikeDedicated;
+            @Pause.started -= instance.OnPause;
+            @Pause.performed -= instance.OnPause;
+            @Pause.canceled -= instance.OnPause;
+        }
+
+        public void RemoveCallbacks(IFEKAActions instance)
+        {
+            if (m_Wrapper.m_FEKAActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IFEKAActions instance)
+        {
+            foreach (var item in m_Wrapper.m_FEKAActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_FEKAActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public FEKAActions @FEKA => new FEKAActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -3594,5 +4177,20 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         void OnTrackedDevicePosition(InputAction.CallbackContext context);
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
         void OnDevMenu(InputAction.CallbackContext context);
+    }
+    public interface IFEKAActions
+    {
+        void OnSteer(InputAction.CallbackContext context);
+        void OnAcelerate(InputAction.CallbackContext context);
+        void OnDecelerate(InputAction.CallbackContext context);
+        void OnTiltLeft(InputAction.CallbackContext context);
+        void OnTiltRight(InputAction.CallbackContext context);
+        void OnAttack(InputAction.CallbackContext context);
+        void OnUtility(InputAction.CallbackContext context);
+        void OnThrow(InputAction.CallbackContext context);
+        void OnHandbreak(InputAction.CallbackContext context);
+        void OnHopDedicated(InputAction.CallbackContext context);
+        void OnFinalStrikeDedicated(InputAction.CallbackContext context);
+        void OnPause(InputAction.CallbackContext context);
     }
 }
