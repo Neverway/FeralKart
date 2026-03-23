@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7030d4eb31355b45b48dd7a7b37c54e, type: 3}
   m_Name: DitheringFilter
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   enabled:
     overrideState: 1
     value: 1
@@ -1553,7 +1553,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76f922733efcef548a9b59c8ce9988ec, type: 3}
   m_Name: ColorQuantizationFilter
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   enabled:
     overrideState: 1
     value: 1
@@ -1689,7 +1689,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a87eeffe594b1254cb3c89f5ab30d614, type: 3}
   m_Name: ComicFilter
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   enabled:
     overrideState: 1
     value: 1
