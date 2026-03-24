@@ -70,7 +70,7 @@ public class FeKaPawnActions : PawnActions
  
     public void Brake(FeKaPawn _pawn, float _moveInput, bool _isBraking)
     {
-        if (_isBraking || _moveInput == 0)
+        if (_isBraking)
         {
             foreach (var wheel in _pawn.FeKaCurrentStats.wheels)
             {
