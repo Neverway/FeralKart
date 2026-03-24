@@ -8,11 +8,15 @@ public class FeKaPawn_Base : FeKaPawn
     private new FeKaPawnActions action = new FeKaPawnActions();
     private InputActions.FEKAActions inputActions;
     private GI_WidgetManager widgetManager;
-    [SerializeField] private GameObject DeathScreenWidget;
+    [SerializeField] private GameObject DeathScreenWidget, RespawnScreenWidget, deathFX;
 
     private new void Awake()
     {
         base.Awake();
+        
+        // Subscribe to events
+        OnPawnDeath += () => { OnDeath(); };
+        
         if (FeKaCurrentStats.controlMode != ControlMode.LocalPlayer) return;
         // Setup inputs
         inputActions = new InputActions().FEKA;
@@ -38,6 +42,11 @@ public class FeKaPawn_Base : FeKaPawn
         // Pausing
         UpdatePauseMenu();
 
+        if (isPaused || isDead)
+        {
+            return;
+        }
+        
         // Movement
         var steerInput = new Vector3(inputActions.Steer.ReadValue<Vector2>().x, 0,
             inputActions.Steer.ReadValue<Vector2>().y);
@@ -116,5 +125,46 @@ public class FeKaPawn_Base : FeKaPawn
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    private void ShowRespawnScreen()
+    {
+        if (!widgetManager)
+        {
+            widgetManager = GameInstance.Get<GI_WidgetManager>();
+            if (!widgetManager) return;
+        }
+        widgetManager.AddWidget("WB_Respawning");
+    }
+
+    private void OnDeath()
+    {
+        Instantiate(deathFX, transform.position, transform.rotation, null);
+        if (FeKaCurrentStats.stocks <= 0)
+        {
+            if (!widgetManager)
+            {
+                widgetManager = GameInstance.Get<GI_WidgetManager>();
+                if (!widgetManager) return;
+            }
+            widgetManager.AddWidget("WB_DeathScreen");
+        }
+        else
+        {
+            FeKaCurrentStats.stocks -= 1;
+            StartCoroutine(AwaitRespawn());
+        }
+    }
+
+    private IEnumerator AwaitRespawn()
+    {
+        ShowRespawnScreen();
+        yield return new WaitForSeconds(FeKaCurrentStats.respawnTime);
+        var respawnTransform = WorldSettings.GetPlayerStartPoint().transform;
+        transform.position = respawnTransform.position;
+        transform.rotation = respawnTransform.rotation;
+        FeKaCurrentStats.health = FeKaDefaultStats.health;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        isDead = false;
     }
 }

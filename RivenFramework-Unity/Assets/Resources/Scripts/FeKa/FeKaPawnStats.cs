@@ -20,7 +20,8 @@ public class FeKaPawnStats : PawnStats
     
     public ControlMode controlMode;
 
-    [Header("FeKa Vehicle Stats")] public float accelSpeed = 600;
+    [Header("FeKa Vehicle Stats")] 
+    public float accelSpeed = 600;
     [Tooltip("How fast the vehicle accelerates")]
     public float maxAcceleration = 25.0f;
     [Tooltip("How quickly the vehicle slows down when the accelerator is pressed")]
@@ -37,6 +38,12 @@ public class FeKaPawnStats : PawnStats
     public Vector3 _centerOfMass = new Vector3(0.0f, -1.0f, 0.0f);
     [Tooltip("The wheels that drive this vehicle")]
     public List<Wheel> wheels;
+
+    [Header("FeKa Character Stats")] 
+    public float respawnTime = 3;
+
+    public int stocks = 3;
+    public float shield = 0;
 
     [Header("Traits")] 
     public float throwForce=350;
