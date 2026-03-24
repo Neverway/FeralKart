@@ -12,8 +12,6 @@ public class FeKaPawn : Pawn
     [HideInInspector] public Rigidbody physicsbody;
     [SerializeField] public GameObject interactionPrefab;
     
-    private InputActions.FEKAActions inputActions;
-    
     public void Awake()
     {
         // Get references
@@ -22,6 +20,7 @@ public class FeKaPawn : Pawn
 
         defaultStats = FeKaDefaultStats;
         currentStats = (FeKaPawnStats)FeKaDefaultStats.Clone(); // Don't forget to clone so that you don't overwrite the pawns default values! ~Liz
+        Debug.Log(currentStats);
         action = FeKaaction;
     }
     

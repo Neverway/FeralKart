@@ -20,18 +20,20 @@ public class WB_DeathScreen : WidgetBlueprint
     //=-----------------=
     public float endAlpha=0.45f;
     public float fadeSpeed=1;
+    public float timeTillRemoval = 0;
 
 
     //=-----------------=
     // Private Variables
     //=-----------------=
-    private bool acceptingInputs;
+    [SerializeField] private bool acceptingInputs;
 
 
     //=-----------------=
     // Reference Variables
     //=-----------------=
     private GI_WorldLoader worldLoader;
+    
     [SerializeField] private Image image;
 
 
@@ -40,6 +42,11 @@ public class WB_DeathScreen : WidgetBlueprint
     //=-----------------=
     private void Start()
     {
+        if (timeTillRemoval > 0)
+        {
+            Destroy(gameObject, timeTillRemoval);
+        }
+        
         StartCoroutine(InputDelay());
             DOVirtual.Color(
                 new Color(image.color.r, image.color.g, image.color.b, 0), 

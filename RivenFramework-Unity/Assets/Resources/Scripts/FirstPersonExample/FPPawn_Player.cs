@@ -216,8 +216,8 @@ public class FPPawn_Player : FPPawn
     private void OnDeath()
     {
         // Remove any rifts
-        riftManager = GameInstance.Get<RiftManager>();
-        riftManager.DestroyRiftExternal();
+        //riftManager = GameInstance.Get<RiftManager>();
+        //riftManager.DestroyRiftExternal();
         
         // Drop held props
         if (physObjectAttachmentPoint)

@@ -20621,10 +20621,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2276721478425129573, guid: 0691e5206c095094690805245502b274,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2005500069669948774}
-    - targetCorrespondingSourceObject: {fileID: 2276721478425129573, guid: 0691e5206c095094690805245502b274,
-        type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1875575848915633597}
   m_SourcePrefab: {fileID: 100100000, guid: 0691e5206c095094690805245502b274, type: 3}
 --- !u!4 &766078644099949049 stripped
@@ -20698,27 +20694,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &2005500069669948774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5336008974593170968}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20a638d71e9e52eb6b7c6c3e6512e17d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  id: 
-  displayName: 
-  uniqueId: 
-  isPaused: 0
-  isDead: 0
-  despawnOnDeath: 0
-  despawnOnDeathDelay: 3
-  viewPoint: {fileID: 8332517393403533926}
-  physObjectAttachmentPoint: {fileID: 0}
 --- !u!114 &1875575848915633597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20776,6 +20751,9 @@ MonoBehaviour:
       wheelEffectObj: {fileID: 6943613992901753309}
       smokeParticle: {fileID: 381526042423635229}
       axel: 1
+    respawnTime: 3
+    stocks: 3
+    shield: 0
     throwForce: 350
     movementSpeed: 10
     airMovementMultiplier: 0.25
@@ -20802,6 +20780,9 @@ MonoBehaviour:
   interactionPrefab: {fileID: 0}
   DeathScreenWidget: {fileID: 5675289539813747590, guid: f951f1626e8a081628c8e41d018c0094,
     type: 3}
+  RespawnScreenWidget: {fileID: 5675289539813747590, guid: 9d3f675cf308c0ab6be40585eac73090,
+    type: 3}
+  deathFX: {fileID: 6271697737164727327, guid: 25f39eade9d42c71488e518259f612d7, type: 3}
 --- !u!1001 &9153240963747986672
 PrefabInstance:
   m_ObjectHideFlags: 0
