@@ -10181,7 +10181,7 @@ WheelCollider:
     m_AsymptoteValue: 0.5
     m_Stiffness: 2
   m_SidewaysFriction:
-    m_ExtremumSlip: 2000
+    m_ExtremumSlip: 2200
     m_ExtremumValue: 255
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
@@ -10253,7 +10253,7 @@ WheelCollider:
     m_AsymptoteValue: 0.5
     m_Stiffness: 2
   m_SidewaysFriction:
-    m_ExtremumSlip: 2000
+    m_ExtremumSlip: 2200
     m_ExtremumValue: 255
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
@@ -10409,7 +10409,7 @@ WheelCollider:
     m_AsymptoteValue: 0.5
     m_Stiffness: 2
   m_SidewaysFriction:
-    m_ExtremumSlip: 2000
+    m_ExtremumSlip: 2200
     m_ExtremumValue: 255
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
@@ -10753,7 +10753,7 @@ WheelCollider:
     m_AsymptoteValue: 0.5
     m_Stiffness: 2
   m_SidewaysFriction:
-    m_ExtremumSlip: 2000
+    m_ExtremumSlip: 2200
     m_ExtremumValue: 255
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
@@ -20679,7 +20679,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5336008974593170968}
   serializedVersion: 4
-  m_Mass: 800
+  m_Mass: 820
   m_Drag: 0.05
   m_AngularDrag: 0.5
   m_CenterOfMass: {x: 0, y: -1, z: 0}
@@ -20750,7 +20750,7 @@ MonoBehaviour:
     accelSpeed: 5
     maxAcceleration: 30000
     brakeAcceleration: 1000
-    turnSensitivity: 1.5
+    turnSensitivity: 1
     maxSteerAngle: 30
     tiltTorque: 40
     targetTiltAngle: 45
