@@ -47,7 +47,12 @@ public class FeKaPawnActions : PawnActions
     {
         foreach(var wheel in _pawn.FeKaCurrentStats.wheels)
         {
-            wheel.wheelCollider.motorTorque = _moveInput * 600 * _pawn.FeKaCurrentStats.maxAcceleration * Time.deltaTime;
+            if (wheel.axel == Axel.Rear)
+            {
+                //var ct = _moveInput * _pawn.FeKaCurrentStats.accelSpeed * _pawn.FeKaCurrentStats.maxAcceleration * Time.deltaTime;
+                var ct = _moveInput * _pawn.FeKaCurrentStats.maxAcceleration;
+                wheel.wheelCollider.motorTorque = ct;
+            }
         }
     }
  
@@ -69,7 +74,8 @@ public class FeKaPawnActions : PawnActions
         {
             foreach (var wheel in _pawn.FeKaCurrentStats.wheels)
             {
-                wheel.wheelCollider.brakeTorque = 300 * _pawn.FeKaCurrentStats.brakeAcceleration * Time.deltaTime;
+                wheel.wheelCollider.motorTorque = 0;
+                wheel.wheelCollider.brakeTorque = _pawn.FeKaCurrentStats.brakeAcceleration;
             }
         }
         else
@@ -159,7 +165,7 @@ public class FeKaPawnActions : PawnActions
     }
 
     public void Tilt(FeKaPawn _pawn, float _targetZRotation)
-    {
+    {/*
         var rigidbody = _pawn.GetComponent<Rigidbody>();
         var currentZRotation = rigidbody.rotation.eulerAngles.z;
 
@@ -173,7 +179,7 @@ public class FeKaPawnActions : PawnActions
         {
            Debug.Log($"Rotating right: {currentZRotation} < {_targetZRotation}");
            rigidbody.AddRelativeTorque(new Vector3(0,0,_pawn.FeKaCurrentStats.tiltTorque), ForceMode.Impulse);
-        }
+        }*/
     }
     
     /*

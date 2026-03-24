@@ -97,7 +97,7 @@ public class FeKaController : MonoBehaviour
      {
          foreach(var wheel in wheels)
          {
-             wheel.wheelCollider.motorTorque = moveInput * 600 * maxAcceleration * Time.deltaTime;
+             wheel.wheelCollider.motorTorque = moveInput * maxAcceleration;
          }
      }
  

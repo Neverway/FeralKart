@@ -19,8 +19,8 @@ public class FeKaPawnStats : PawnStats
     }
     
     public ControlMode controlMode;
-    
-    [Header("FeKa Vehicle Stats")]
+
+    [Header("FeKa Vehicle Stats")] public float accelSpeed = 600;
     [Tooltip("How fast the vehicle accelerates")]
     public float maxAcceleration = 25.0f;
     [Tooltip("How quickly the vehicle slows down when the accelerator is pressed")]
