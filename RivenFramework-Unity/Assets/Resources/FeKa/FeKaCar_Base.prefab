@@ -10181,7 +10181,7 @@ WheelCollider:
     m_AsymptoteValue: 0.5
     m_Stiffness: 4
   m_SidewaysFriction:
-    m_ExtremumSlip: 1200
+    m_ExtremumSlip: 1500
     m_ExtremumValue: 200
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
@@ -10253,7 +10253,7 @@ WheelCollider:
     m_AsymptoteValue: 0.5
     m_Stiffness: 4
   m_SidewaysFriction:
-    m_ExtremumSlip: 1200
+    m_ExtremumSlip: 1500
     m_ExtremumValue: 200
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
@@ -10409,7 +10409,7 @@ WheelCollider:
     m_AsymptoteValue: 0.5
     m_Stiffness: 4
   m_SidewaysFriction:
-    m_ExtremumSlip: 1200
+    m_ExtremumSlip: 1500
     m_ExtremumValue: 200
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
@@ -10753,7 +10753,7 @@ WheelCollider:
     m_AsymptoteValue: 0.5
     m_Stiffness: 4
   m_SidewaysFriction:
-    m_ExtremumSlip: 1200
+    m_ExtremumSlip: 1500
     m_ExtremumValue: 200
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
@@ -15682,14 +15682,14 @@ MonoBehaviour:
   m_LookaheadTime: 0
   m_LookaheadSmoothing: 0
   m_LookaheadIgnoreY: 0
-  m_HorizontalDamping: 0.2
-  m_VerticalDamping: 0.2
+  m_HorizontalDamping: 0
+  m_VerticalDamping: 0
   m_ScreenX: 0.5
   m_ScreenY: 0.5
   m_DeadZoneWidth: 0
   m_DeadZoneHeight: 0
-  m_SoftZoneWidth: 0.8
-  m_SoftZoneHeight: 0.8
+  m_SoftZoneWidth: 0
+  m_SoftZoneHeight: 0
   m_BiasX: 0
   m_BiasY: 0
   m_CenterOnActivate: 1
@@ -20619,7 +20619,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9018392291717064548}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -2.6063596e-12, z: 5.213052e-13, w: 1}
+  m_LocalRotation: {x: -0, y: 0.0000000011353505, z: -2.2707014e-10, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
@@ -20936,6 +20936,8 @@ MonoBehaviour:
     stocks: 3
     shield: 0
     MaxShield: 50
+    currentLap: 0
+    currentCheckpoint: 0
     throwForce: 350
     movementSpeed: 10
     airMovementMultiplier: 0.25
@@ -21016,12 +21018,12 @@ PrefabInstance:
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.0000000042741175
+      value: -0.0000000038018912
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -4.2322104e-10
+      value: 3.7646142e-10
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}

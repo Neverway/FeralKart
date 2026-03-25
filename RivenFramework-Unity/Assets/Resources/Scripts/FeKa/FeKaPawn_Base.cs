@@ -46,6 +46,11 @@ public class FeKaPawn_Base : FeKaPawn
         {
             return;
         }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            RespawnAtLastCheckpoint();
+        }
         
         // Movement
         var steerInput = new Vector3(inputActions.Steer.ReadValue<Vector2>().x, 0,
@@ -170,6 +175,7 @@ public class FeKaPawn_Base : FeKaPawn
 
     public void Init()
     {
+
         var respawnTransform = WorldSettings.GetPlayerStartPoint().transform;
         transform.position = respawnTransform.position;
         transform.rotation = respawnTransform.rotation;
@@ -179,5 +185,16 @@ public class FeKaPawn_Base : FeKaPawn
 
         // Restore the default stats to the character
         currentStats = (FeKaPawnStats)FeKaDefaultStats.Clone();
+    }
+
+    public void RespawnAtLastCheckpoint()
+    {
+        var lastCheckpoint = FeKaCurrentStats.currentCheckpoint - 1;
+        if (lastCheckpoint < 0) lastCheckpoint = FindObjectOfType<CheckpointTracker>().raceCheckpoints.Count;
+        
+        var respawnTransform = FindObjectOfType<CheckpointTracker>().raceCheckpoints[lastCheckpoint].transform;
+        transform.position = respawnTransform.position;
+        transform.rotation = respawnTransform.rotation;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 }
