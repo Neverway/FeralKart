@@ -47,16 +47,16 @@ public class WB_DeathScreen : WidgetBlueprint
             Destroy(gameObject, timeTillRemoval);
         }
         
-        StartCoroutine(InputDelay());
-            DOVirtual.Color(
-                new Color(image.color.r, image.color.g, image.color.b, 0), 
-                new Color(image.color.r, image.color.g, image.color.b, endAlpha),
-                fadeSpeed,
-                (value) =>
-                {
-                    
-                   image.color = value;
-                });
+        //StartCoroutine(InputDelay());
+        DOVirtual.Color(
+            new Color(image.color.r, image.color.g, image.color.b, 0), 
+            new Color(image.color.r, image.color.g, image.color.b, endAlpha),
+            fadeSpeed,
+            (value) =>
+            {
+                
+               image.color = value;
+            });
     }
 
     private void Update()

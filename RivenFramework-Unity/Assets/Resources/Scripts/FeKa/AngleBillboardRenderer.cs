@@ -18,7 +18,6 @@ public class AngleBillboardRenderer : MonoBehaviour
         if (!Initialized())
         {
             Initialize();
-            print("Not initialized");
             return;
         }
         
@@ -70,7 +69,7 @@ public class AngleBillboardRenderer : MonoBehaviour
 
     private void Initialize()
     {
-        activeCamera = GameInstance.Get<GI_PawnManager>().localPlayerCharacter.GetComponentInChildren<Camera>();
+        activeCamera = GameInstance.Get<GI_PawnManager>().localPlayerCharacter.GetComponent<Pawn>().viewPoint.GetComponent<Camera>();
     }
 }
 

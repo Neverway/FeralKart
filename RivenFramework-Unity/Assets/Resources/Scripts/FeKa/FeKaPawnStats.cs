@@ -44,6 +44,7 @@ public class FeKaPawnStats : PawnStats
 
     public int stocks = 3;
     public float shield = 0;
+    public float MaxShield = 50;
 
     [Header("Traits")] 
     public float throwForce=350;
