@@ -23,6 +23,10 @@ public class CheckpointTracker : MonoBehaviour
 
     public void Start()
     {
+    }
+
+    public void Init()
+    {
         for (int i = 0; i < raceCheckpoints.Count; i++)
         {
             raceCheckpoints[i].gameObject.SetActive(false);
@@ -32,27 +36,21 @@ public class CheckpointTracker : MonoBehaviour
 
     public void NextCheckpoint(FeKaPawn feKaPawn)
     {
-        // If we hit the last checkpoint, increase the lap counter, then loop back around
+        // When passing the goal post, increase the lap counter
+        if (feKaPawn.FeKaCurrentStats.currentCheckpoint == 0) feKaPawn.FeKaCurrentStats.currentLap++;
+
+        feKaPawn.FeKaCurrentStats.currentCheckpoint++;
+        
+        // If we hit the last checkpoint then loop back around
         if (feKaPawn.FeKaCurrentStats.currentCheckpoint >= raceCheckpoints.Count)
         {
             feKaPawn.FeKaCurrentStats.currentCheckpoint = 0;
-            feKaPawn.FeKaCurrentStats.currentLap++;
-        }
-        else
-        {
-            feKaPawn.FeKaCurrentStats.currentCheckpoint++;
         }
 
         for (int i = 0; i < raceCheckpoints.Count; i++)
         {
-            if (i == feKaPawn.FeKaCurrentStats.currentCheckpoint)
-            {
-                raceCheckpoints[i].gameObject.SetActive(true);
-            }
-            else
-            {
-                raceCheckpoints[i].gameObject.SetActive(false);
-            }
+            raceCheckpoints[i].gameObject.SetActive(
+                i == feKaPawn.FeKaCurrentStats.currentCheckpoint);
         }
     }
 }

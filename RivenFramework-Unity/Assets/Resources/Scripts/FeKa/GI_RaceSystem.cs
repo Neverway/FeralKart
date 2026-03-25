@@ -8,6 +8,7 @@ public class GI_RaceSystem : MonoBehaviour
 {
     private float startTime;
     public float timeRemaining = 600;
+    public float raceDuration = 600;
     public int totalLaps = 3;
     private bool raceInProgress;
     public GameObject RaceFinishedWidget;
@@ -17,7 +18,16 @@ public class GI_RaceSystem : MonoBehaviour
 
     public void Update()
     {
-        if (!raceInProgress) return;
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            StartRace();
+        }
+        
+        if (!raceInProgress)
+        {
+            return;
+        }
+        CheckRacerStatus();
         if (timeRemaining > 0)
         {
             timeRemaining -= Time.deltaTime;
@@ -32,12 +42,16 @@ public class GI_RaceSystem : MonoBehaviour
     [ContextMenu("Start Race")]
     public void StartRace()
     {
+        FindObjectOfType<CheckpointTracker>().Init();
+        
         racers.Clear();
         foreach (var feKaPawn in FindObjectsOfType<FeKaPawn_Base>())
         {
             feKaPawn.Init();
             racers.Add(feKaPawn);
         }
+
+        timeRemaining = raceDuration;
         startTime = Time.deltaTime;
         raceInProgress = true;
     }
