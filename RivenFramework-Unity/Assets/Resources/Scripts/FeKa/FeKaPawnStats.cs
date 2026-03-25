@@ -41,10 +41,13 @@ public class FeKaPawnStats : PawnStats
 
     [Header("FeKa Character Stats")] 
     public float respawnTime = 3;
-
     public int stocks = 3;
     public float shield = 0;
     public float MaxShield = 50;
+
+    [Header("FeKa RACE Stats")] 
+    public int currentLap;
+    public int currentCheckpoint;
 
     [Header("Traits")] 
     public float throwForce=350;
