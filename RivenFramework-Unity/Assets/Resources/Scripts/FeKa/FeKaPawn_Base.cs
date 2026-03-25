@@ -167,4 +167,17 @@ public class FeKaPawn_Base : FeKaPawn
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         isDead = false;
     }
+
+    public void Init()
+    {
+        var respawnTransform = WorldSettings.GetPlayerStartPoint().transform;
+        transform.position = respawnTransform.position;
+        transform.rotation = respawnTransform.rotation;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        isDead = false;
+        isPaused = false;
+
+        // Restore the default stats to the character
+        currentStats = (FeKaPawnStats)FeKaDefaultStats.Clone();
+    }
 }

@@ -20,7 +20,6 @@ public class FeKaPawn : Pawn
 
         defaultStats = FeKaDefaultStats;
         currentStats = (FeKaPawnStats)FeKaDefaultStats.Clone(); // Don't forget to clone so that you don't overwrite the pawns default values! ~Liz
-        Debug.Log(currentStats);
         action = FeKaaction;
     }
     

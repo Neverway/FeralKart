@@ -12,6 +12,9 @@ public class WB_HUD : MonoBehaviour
 {
     public FeKaPawn targetFeKaPawn;
     public bool findPossessedPawn;
+
+    public TMP_Text timer;
+    public TMP_Text lap;
     
     public Image characterPortrait;
     public Image shieldBar;
@@ -38,12 +41,18 @@ public class WB_HUD : MonoBehaviour
         if (!targetFeKaPawn) return;
         
         // Update all the indicators
+        UpdateTimer();
         UpdateShield();
         UpdateHealth();
         UpdateStocks();
         UpdateAbilities();
     }
 
+    private void UpdateTimer()
+    {
+        timer.text = ($"{GameInstance.Get<GI_RaceSystem>().timeRemaining}");
+        lap.text = ($"Lap {targetFeKaPawn.FeKaCurrentStats.currentLap}/{GameInstance.Get<GI_RaceSystem>().totalLaps}");
+    }
     private void UpdateShield()
     {
         // Update shield text
