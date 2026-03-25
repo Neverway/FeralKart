@@ -1,0 +1,107 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using DG.Tweening;
+using RivenFramework;
+using TMPro;
+using UnityEditor.Localization.Plugins.XLIFF.V20;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class WB_HUD : MonoBehaviour
+{
+    public FeKaPawn targetFeKaPawn;
+    public bool findPossessedPawn;
+    
+    public Image characterPortrait;
+    public Image shieldBar;
+    public Image healthBar;
+    public TMP_Text shieldText;
+    public TMP_Text healthText;
+    public GameObject stockShelf;
+    public GameObject stockReference;
+    public UI_Ability finalStrike;
+    public UI_Ability primary;
+    public UI_Ability utility;
+
+    private float previousHealth;
+    private float previousShield;
+    private List<Image> stockImages = new List<Image>(0);
+
+    void Update()
+    {
+        // Pawn reference check
+        if (findPossessedPawn)
+        {
+            targetFeKaPawn = GameInstance.Get<GI_PawnManager>().localPlayerCharacter.GetComponent<FeKaPawn>();
+        }
+        if (!targetFeKaPawn) return;
+        
+        // Update all the indicators
+        UpdateShield();
+        UpdateHealth();
+        UpdateStocks();
+        UpdateAbilities();
+    }
+
+    private void UpdateShield()
+    {
+        // Update shield text
+        shieldText.text = $"{(targetFeKaPawn.FeKaCurrentStats.shield / targetFeKaPawn.FeKaCurrentStats.MaxShield) * 100}";
+        
+        // Animate shield bar on change
+        if (targetFeKaPawn.FeKaCurrentStats.shield != previousShield)
+        {
+            shieldBar.DOKill();
+            shieldBar.fillAmount=((targetFeKaPawn.FeKaCurrentStats.shield / targetFeKaPawn.FeKaCurrentStats.MaxShield) * 100 * 0.01f);
+        }
+        previousShield = targetFeKaPawn.FeKaCurrentStats.shield;
+    }
+    private void UpdateHealth()
+    {
+        // Update health text
+        healthText.text = $"{(targetFeKaPawn.FeKaCurrentStats.health / targetFeKaPawn.FeKaCurrentStats.health) * 100}";
+        
+        // Animate health bar on change
+        if (targetFeKaPawn.FeKaCurrentStats.health != previousHealth)
+        {
+            healthBar.DOKill();
+            healthBar.fillAmount=((targetFeKaPawn.FeKaCurrentStats.health / targetFeKaPawn.FeKaCurrentStats.health) * 100 * 0.01f);
+        }
+        previousHealth = targetFeKaPawn.FeKaCurrentStats.health;
+    }
+    private void UpdateStocks()
+    {
+        if (stockImages.Count != targetFeKaPawn.FeKaCurrentStats.stocks)
+        {
+            // Clear stock images
+            for (int i = 0; i < stockImages.Count; i++)
+            {
+                Destroy(stockImages[i]);
+            }
+            stockImages.Clear();
+            
+            // Add images for each stock
+            for (int i = 0; i < targetFeKaPawn.FeKaCurrentStats.stocks; i++)
+            {
+                var newStock = Instantiate(stockReference, stockShelf.transform).GetComponent<Image>();
+                stockImages.Add(newStock);
+                newStock.gameObject.SetActive(true);
+            }
+        }
+    }
+    private void UpdateAbilities()
+    {
+        
+    }
+}
+
+[Serializable]
+public struct UI_Ability
+{
+    public Image icon;
+    public Image bar;
+    public Image keyhint;
+    public TMP_Text text;
+    public TMP_Text quantity;
+}
