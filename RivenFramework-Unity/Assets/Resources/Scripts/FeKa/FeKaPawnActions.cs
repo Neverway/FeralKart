@@ -45,12 +45,18 @@ public class FeKaPawnActions : PawnActions
     //=-----------------=
     public void Move(FeKaPawn _pawn, float _moveInput)
     {
+        var rb =  _pawn.GetComponent<Rigidbody>();
+        var currentSpeed = rb.velocity.magnitude;
+        var maxSpeed = _pawn.FeKaCurrentStats.maxSpeed;
+        
+        var speedFactor = Mathf.Clamp01(1f - (currentSpeed / maxSpeed));
+        
         foreach(var wheel in _pawn.FeKaCurrentStats.wheels)
         {
             if (wheel.axel == Axel.Rear)
             {
                 //var ct = _moveInput * _pawn.FeKaCurrentStats.accelSpeed * _pawn.FeKaCurrentStats.maxAcceleration * Time.deltaTime;
-                var ct = _moveInput * _pawn.FeKaCurrentStats.maxAcceleration;
+                var ct = _moveInput * _pawn.FeKaCurrentStats.moveTorque * speedFactor;
                 wheel.wheelCollider.motorTorque = ct;
             }
         }
@@ -63,7 +69,10 @@ public class FeKaPawnActions : PawnActions
             if (wheel.axel == Axel.Front)
             {
                 var _steerAngle = _steerInput * _pawn.FeKaCurrentStats.turnSensitivity * _pawn.FeKaCurrentStats.maxSteerAngle;
-                wheel.wheelCollider.steerAngle = Mathf.Lerp(wheel.wheelCollider.steerAngle, _steerAngle, 0.6f);
+                var newAngle = Mathf.Lerp(wheel.wheelCollider.steerAngle, _steerAngle, 0.6f);
+                if (Mathf.Abs(newAngle - _steerAngle) < 0.01f) newAngle = _steerAngle;
+                
+                wheel.wheelCollider.steerAngle = newAngle;
             }
         }
     }
@@ -75,7 +84,15 @@ public class FeKaPawnActions : PawnActions
             foreach (var wheel in _pawn.FeKaCurrentStats.wheels)
             {
                 wheel.wheelCollider.motorTorque = 0;
-                wheel.wheelCollider.brakeTorque = _pawn.FeKaCurrentStats.brakeAcceleration;
+                wheel.wheelCollider.brakeTorque = _pawn.FeKaCurrentStats.breakForce;
+            }
+        }
+        else if (_moveInput == 0)
+        {
+            foreach (var wheel in _pawn.FeKaCurrentStats.wheels)
+            {
+                wheel.wheelCollider.motorTorque = 0;
+                wheel.wheelCollider.brakeTorque = _pawn.FeKaCurrentStats.coastBreakForce;
             }
         }
         else

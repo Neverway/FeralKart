@@ -38,7 +38,7 @@ public class GameObject_FaceActiveCamera : MonoBehaviour
     /*-----[ Mono Functions ]-----------------------------------------------------------------------------------------*/
     private void Start()
     {
-        pawnManager = FindObjectOfType<GI_PawnManager>();
+        pawnManager = GameInstance.Get<GI_PawnManager>();
         InvokeRepeating(nameof(UpdateBillboard), 0, updateRate);
     }
 
@@ -47,13 +47,16 @@ public class GameObject_FaceActiveCamera : MonoBehaviour
         if (!active) return;
         if (!pawnManager)
         {
-            pawnManager = FindObjectOfType<GI_PawnManager>();
+            pawnManager = GameInstance.Get<GI_PawnManager>();
             return;
         }
 
         if (pawnManager.localPlayerCharacter && !target)
         {
-            target = pawnManager.localPlayerCharacter.GetComponentInChildren<Camera>().transform;
+            print(pawnManager.localPlayerCharacter);
+            print(pawnManager.localPlayerCharacter.GetComponent<Pawn>());
+            print(pawnManager.localPlayerCharacter.GetComponent<Pawn>().viewPoint);
+            target = pawnManager.localPlayerCharacter.GetComponent<Pawn>().viewPoint.transform;
             return;
         }
             

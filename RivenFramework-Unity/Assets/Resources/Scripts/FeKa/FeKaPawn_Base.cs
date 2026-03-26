@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using RivenFramework;
@@ -5,12 +6,16 @@ using UnityEngine;
 
 public class FeKaPawn_Base : FeKaPawn
 {
-    private new FeKaPawnActions action = new FeKaPawnActions();
+    private FeKaPawnActions action2 = new FeKaPawnActions();
     private InputActions.FEKAActions inputActions;
     private GI_WidgetManager widgetManager;
     [SerializeField] private GameObject DeathScreenWidget, RespawnScreenWidget, deathFX;
 
-    private new void Awake()
+    private float moveInput;
+    private Vector2 steerInput;
+    private bool isBreaking;
+    
+    public override void Awake()
     {
         base.Awake();
         
@@ -25,10 +30,30 @@ public class FeKaPawn_Base : FeKaPawn
 
     public void Update()
     {
+        Debug.Log($" movement: {moveInput} | " +
+                  $"wheel rpm: {FeKaCurrentStats.wheels[0].wheelCollider.rpm} | " +
+                  $"wheel rs: {FeKaCurrentStats.wheels[0].wheelCollider.rotationSpeed} | " +
+                  $"wheel bt: {FeKaCurrentStats.wheels[0].wheelCollider.brakeTorque}" +
+                  $"wheel mt: {FeKaCurrentStats.wheels[0].wheelCollider.motorTorque}");
+        
         switch (FeKaCurrentStats.controlMode)
         {
             case ControlMode.LocalPlayer:
                 LocalPlayerUpdate();
+                break;
+            case ControlMode.CPU:
+                break;
+            case ControlMode.NetworkPlayer:
+                break;
+        }
+    }
+
+    public void FixedUpdate()
+    {
+        switch (FeKaCurrentStats.controlMode)
+        {
+            case ControlMode.LocalPlayer:
+                LocalPlayerFixedUpdate();
                 break;
             case ControlMode.CPU:
                 break;
@@ -53,52 +78,50 @@ public class FeKaPawn_Base : FeKaPawn
         }
         
         // Movement
-        var steerInput = new Vector3(inputActions.Steer.ReadValue<Vector2>().x, 0,
-            inputActions.Steer.ReadValue<Vector2>().y);
-        float moveInput = 0;
+        steerInput = new Vector3(inputActions.Steer.ReadValue<Vector2>().x, 0, inputActions.Steer.ReadValue<Vector2>().y);
 
-        if (inputActions.Acelerate.IsPressed() && !inputActions.Decelerate.IsPressed())
+        isBreaking = inputActions.Handbreak.IsPressed();
+
+        if (inputActions.Acelerate.IsPressed())
         {
             moveInput = 1;
         }
-
-        else if (!inputActions.Acelerate.IsPressed() && inputActions.Decelerate.IsPressed())
+        else if (inputActions.Decelerate.IsPressed())
         {
             moveInput = -1;
         }
-
-        else if (inputActions.Acelerate.IsPressed() && inputActions.Decelerate.IsPressed())
+        else
         {
-            moveInput = 0.5f;
+            moveInput = 0;
         }
-
-        action.Move(this, moveInput);
-
-        action.Steer(this, steerInput.x);
-
-        action.Brake(this, moveInput, inputActions.Handbreak.IsPressed());
 
         // Jumping
-        if (inputActions.HopDedicated.IsPressed() ||
-            inputActions.TiltLeft.IsPressed() && inputActions.TiltRight.IsPressed())
+        if (inputActions.HopDedicated.IsPressed() || inputActions.TiltLeft.IsPressed() && inputActions.TiltRight.IsPressed())
         {
-            action.Jump(this);
-        }
-
-        // Leaning
-        if (inputActions.TiltLeft.IsPressed())
-        {
-            action.Tilt(this, FeKaCurrentStats.targetTiltAngle);
-        }
-        if (inputActions.TiltRight.IsPressed())
-        {
-            action.Tilt(this, -FeKaCurrentStats.targetTiltAngle);
+            action2.Jump(this);
         }
 
         // Item usage
         
         // CarFX
-        action.WheelEffects(this, inputActions.Handbreak.IsPressed());
+        action2.WheelEffects(this, isBreaking);
+    }
+    private void LocalPlayerFixedUpdate()
+    {
+
+        if (isPaused || isDead)
+        {
+            return;
+        }
+        
+        // Movement
+        action2.Move(this, moveInput);
+
+        action2.Steer(this, steerInput.x);
+
+        action2.Brake(this, moveInput, isBreaking);
+
+        
     }
     
     private void UpdatePauseMenu()
@@ -165,7 +188,9 @@ public class FeKaPawn_Base : FeKaPawn
     {
         ShowRespawnScreen();
         yield return new WaitForSeconds(FeKaCurrentStats.respawnTime);
-        var respawnTransform = WorldSettings.GetPlayerStartPoint().transform;
+        var lastCheckpoint = FeKaCurrentStats.currentCheckpoint - 1;
+        if (lastCheckpoint < 0) lastCheckpoint = FindObjectOfType<CheckpointTracker>().raceCheckpoints.Count;
+        var respawnTransform = FindObjectOfType<CheckpointTracker>().raceCheckpoints[lastCheckpoint].transform;
         transform.position = respawnTransform.position;
         transform.rotation = respawnTransform.rotation;
         FeKaCurrentStats.health = FeKaDefaultStats.health;
@@ -191,6 +216,8 @@ public class FeKaPawn_Base : FeKaPawn
     {
         var lastCheckpoint = FeKaCurrentStats.currentCheckpoint - 1;
         if (lastCheckpoint < 0) lastCheckpoint = FindObjectOfType<CheckpointTracker>().raceCheckpoints.Count;
+        
+        ModifyHealth(-FeKaCurrentStats.checkpointResetHealthPenalty);
         
         var respawnTransform = FindObjectOfType<CheckpointTracker>().raceCheckpoints[lastCheckpoint].transform;
         transform.position = respawnTransform.position;
