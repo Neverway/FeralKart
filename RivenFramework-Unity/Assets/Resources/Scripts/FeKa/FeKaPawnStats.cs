@@ -21,11 +21,14 @@ public class FeKaPawnStats : PawnStats
     public ControlMode controlMode;
 
     [Header("FeKa Vehicle Stats")] 
-    public float accelSpeed = 600;
     [Tooltip("How fast the vehicle accelerates")]
-    public float maxAcceleration = 25.0f;
+    public float moveTorque = 25000;
+    [Tooltip("The top speed the vehicle can accelerate in m/s ")]
+    public float maxSpeed = 30;
     [Tooltip("How quickly the vehicle slows down when the accelerator is pressed")]
-    public float brakeAcceleration = 1.0f;
+    public float breakForce = 900f;
+    [Tooltip("How much breaking is applied when no inputs are being held")]
+    public float coastBreakForce=150f;
     [Tooltip("How much control the driver has over the turn radius")]
     public float turnSensitivity = 0.8f;
     [Tooltip("How much the steering wheels can be turned")]
@@ -44,8 +47,14 @@ public class FeKaPawnStats : PawnStats
     public int stocks = 3;
     public float shield = 0;
     public float MaxShield = 50;
+    public FeKaItem utility;
+    public int utilityUsages = 0;
+    public int utilityCharge = 1;
+    public FeKaItem ability;
+    public FeKaItem finalStrike;
+    public float checkpointResetHealthPenalty = 10f;
 
-    [Header("FeKa RACE Stats")] 
+    [Header("FeKa Current Race Stats")] 
     public int currentLap;
     public int currentCheckpoint;
 

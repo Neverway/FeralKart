@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using DG.Tweening;
 using RivenFramework;
 using TMPro;
-using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -69,13 +68,13 @@ public class WB_HUD : MonoBehaviour
     private void UpdateHealth()
     {
         // Update health text
-        healthText.text = $"{(targetFeKaPawn.FeKaCurrentStats.health / targetFeKaPawn.FeKaCurrentStats.health) * 100}";
+        healthText.text = $"{(targetFeKaPawn.FeKaCurrentStats.health / targetFeKaPawn.FeKaDefaultStats.health) * 100}";
         
         // Animate health bar on change
         if (targetFeKaPawn.FeKaCurrentStats.health != previousHealth)
         {
             healthBar.DOKill();
-            healthBar.fillAmount=((targetFeKaPawn.FeKaCurrentStats.health / targetFeKaPawn.FeKaCurrentStats.health) * 100 * 0.01f);
+            healthBar.fillAmount=((targetFeKaPawn.FeKaCurrentStats.health / targetFeKaPawn.FeKaDefaultStats.health) * 100 * 0.01f);
         }
         previousHealth = targetFeKaPawn.FeKaCurrentStats.health;
     }
@@ -101,7 +100,22 @@ public class WB_HUD : MonoBehaviour
     }
     private void UpdateAbilities()
     {
-        
+        if (targetFeKaPawn.FeKaCurrentStats.utility)
+        {
+            utility.icon.enabled = true;
+            utility.icon.sprite = targetFeKaPawn.FeKaCurrentStats.utility.icon;
+            utility.bar.color = FeKaItem.GetRarityColor(targetFeKaPawn.FeKaCurrentStats.utility.rarity);
+            utility.bar.fillAmount = targetFeKaPawn.FeKaCurrentStats.utilityCharge;
+            utility.text.text = targetFeKaPawn.FeKaCurrentStats.utility.itemName;
+            utility.quantity.text = ($"{targetFeKaPawn.FeKaCurrentStats.utilityUsages}/{targetFeKaPawn.FeKaCurrentStats.utility.usages}");
+        }
+        else
+        {
+            utility.icon.enabled = false;
+            utility.bar.color = new Color(0.2f, 0.2f, 0.2f, 1f);
+            utility.text.text = "";
+            utility.quantity.text = "";
+        }
     }
 }
 

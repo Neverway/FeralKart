@@ -10164,28 +10164,28 @@ WheelCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4226815557419336404}
   serializedVersion: 2
-  m_Center: {x: 0, y: 0.24, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 0.15
   m_SuspensionSpring:
-    spring: 35000
-    damper: 4500
-    targetPosition: 0
-  m_SuspensionDistance: 0.3
+    spring: 8000
+    damper: 1000
+    targetPosition: 0.5
+  m_SuspensionDistance: 0.15
   m_ForceAppPointDistance: 0
-  m_Mass: 1
-  m_WheelDampingRate: 1
+  m_Mass: 20
+  m_WheelDampingRate: 0.25
   m_ForwardFriction:
-    m_ExtremumSlip: 2000
-    m_ExtremumValue: 255
+    m_ExtremumSlip: 0.4
+    m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
     m_AsymptoteValue: 0.5
-    m_Stiffness: 4
+    m_Stiffness: 1
   m_SidewaysFriction:
-    m_ExtremumSlip: 1500
-    m_ExtremumValue: 200
+    m_ExtremumSlip: 0.25
+    m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 3.5
+    m_Stiffness: 0.8
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -10236,28 +10236,28 @@ WheelCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5181994542788971349}
   serializedVersion: 2
-  m_Center: {x: 0, y: 0.24, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 0.15
   m_SuspensionSpring:
-    spring: 35000
-    damper: 4500
-    targetPosition: 0
-  m_SuspensionDistance: 0.3
+    spring: 8000
+    damper: 1000
+    targetPosition: 0.5
+  m_SuspensionDistance: 0.15
   m_ForceAppPointDistance: 0
-  m_Mass: 1
-  m_WheelDampingRate: 1
+  m_Mass: 20
+  m_WheelDampingRate: 0.25
   m_ForwardFriction:
-    m_ExtremumSlip: 2000
-    m_ExtremumValue: 255
+    m_ExtremumSlip: 0.4
+    m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
     m_AsymptoteValue: 0.5
-    m_Stiffness: 4
+    m_Stiffness: 1
   m_SidewaysFriction:
-    m_ExtremumSlip: 1500
-    m_ExtremumValue: 200
+    m_ExtremumSlip: 0.25
+    m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 3.5
+    m_Stiffness: 0.8
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -10392,28 +10392,28 @@ WheelCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5755876018301771775}
   serializedVersion: 2
-  m_Center: {x: 0, y: 0.24, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 0.15
   m_SuspensionSpring:
-    spring: 35000
-    damper: 4500
-    targetPosition: 0
-  m_SuspensionDistance: 0.3
+    spring: 8000
+    damper: 1000
+    targetPosition: 0.5
+  m_SuspensionDistance: 0.15
   m_ForceAppPointDistance: 0
-  m_Mass: 1
-  m_WheelDampingRate: 1
+  m_Mass: 20
+  m_WheelDampingRate: 0.25
   m_ForwardFriction:
-    m_ExtremumSlip: 2000
-    m_ExtremumValue: 255
+    m_ExtremumSlip: 0.4
+    m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
     m_AsymptoteValue: 0.5
-    m_Stiffness: 4
+    m_Stiffness: 1
   m_SidewaysFriction:
-    m_ExtremumSlip: 1500
-    m_ExtremumValue: 200
+    m_ExtremumSlip: 0.25
+    m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 3.5
+    m_Stiffness: 0.8
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -10736,28 +10736,28 @@ WheelCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7323644622959970913}
   serializedVersion: 2
-  m_Center: {x: 0, y: 0.24, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 0.15
   m_SuspensionSpring:
-    spring: 35000
-    damper: 4500
-    targetPosition: 0
-  m_SuspensionDistance: 0.3
+    spring: 8000
+    damper: 1000
+    targetPosition: 0.5
+  m_SuspensionDistance: 0.15
   m_ForceAppPointDistance: 0
-  m_Mass: 1
-  m_WheelDampingRate: 1
+  m_Mass: 20
+  m_WheelDampingRate: 0.25
   m_ForwardFriction:
-    m_ExtremumSlip: 2000
-    m_ExtremumValue: 255
+    m_ExtremumSlip: 0.4
+    m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
     m_AsymptoteValue: 0.5
-    m_Stiffness: 4
+    m_Stiffness: 1
   m_SidewaysFriction:
-    m_ExtremumSlip: 1500
-    m_ExtremumValue: 200
+    m_ExtremumSlip: 0.25
+    m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 3.5
+    m_Stiffness: 0.8
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -15657,7 +15657,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: 0, y: 3, z: -10}
+  m_FollowOffset: {x: 0, y: 2, z: -6}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -20619,8 +20619,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9018392291717064548}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.0000000011353505, z: -2.2707014e-10, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.000011630356, y: 0.23392813, z: -0.03898514, w: 0.971472}
+  m_LocalPosition: {x: -91.163795, y: 0.8456774, z: 4.794921}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -20699,17 +20699,17 @@ PrefabInstance:
     - target: {fileID: 6860228584438697348, guid: 0691e5206c095094690805245502b274,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6860228584438697348, guid: 0691e5206c095094690805245502b274,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6860228584438697348, guid: 0691e5206c095094690805245502b274,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6860228584438697348, guid: 0691e5206c095094690805245502b274,
         type: 3}
@@ -20856,10 +20856,10 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5336008974593170968}
   serializedVersion: 4
-  m_Mass: 820
+  m_Mass: 400
   m_Drag: 0.05
   m_AngularDrag: 0.5
-  m_CenterOfMass: {x: 0, y: -1, z: 0}
+  m_CenterOfMass: {x: 0, y: -0.25, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
@@ -20903,11 +20903,12 @@ MonoBehaviour:
     alliedTeams: []
     opposedTeams: []
     controlMode: 1
-    accelSpeed: 5
-    maxAcceleration: 30000
-    brakeAcceleration: 1000
-    turnSensitivity: 1
-    maxSteerAngle: 30
+    moveTorque: 2500
+    maxSpeed: 30
+    breakForce: 9000
+    coastBreakForce: 1500
+    turnSensitivity: 0.5
+    maxSteerAngle: 40
     tiltTorque: 40
     targetTiltAngle: 45
     _centerOfMass: {x: 0, y: -1, z: 0}
@@ -20936,6 +20937,12 @@ MonoBehaviour:
     stocks: 3
     shield: 0
     MaxShield: 50
+    utility: {fileID: 0}
+    utilityUsages: 0
+    utilityCharge: 1
+    ability: {fileID: 0}
+    finalStrike: {fileID: 0}
+    checkpointResetHealthPenalty: 10
     currentLap: 0
     currentCheckpoint: 0
     throwForce: 350
@@ -20993,37 +21000,37 @@ PrefabInstance:
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 83.15268
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.75
+      value: 0.6206589
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.5
+      value: 35.68519
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.99513334
+      value: 0.96816283
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.098537624
+      value: 0.08011593
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.0000000038018912
+      value: -0.23634657
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 3.7646142e-10
+      value: 0.019557789
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}

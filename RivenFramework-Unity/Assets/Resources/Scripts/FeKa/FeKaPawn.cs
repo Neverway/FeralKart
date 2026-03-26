@@ -12,15 +12,14 @@ public class FeKaPawn : Pawn
     [HideInInspector] public Rigidbody physicsbody;
     [SerializeField] public GameObject interactionPrefab;
     
-    public void Awake()
+    public virtual void Awake()
     {
         // Get references
         physicsbody = GetComponent<Rigidbody>();
-        viewPoint = transform.Find("ViewPoint");
+        if (viewPoint == null) viewPoint = transform.Find("ViewPoint");
 
         defaultStats = FeKaDefaultStats;
         currentStats = (FeKaPawnStats)FeKaDefaultStats.Clone(); // Don't forget to clone so that you don't overwrite the pawns default values! ~Liz
-        action = FeKaaction;
     }
     
     public bool IsGrounded()
