@@ -188,22 +188,22 @@ public class FeKaPawnActions : PawnActions
         rigidbody.AddForce(rigidbody.transform.up * ((FeKaPawnStats)_pawn.currentStats).jumpForce, ForceMode.Impulse);
     }
 
-    public void Tilt(FeKaPawn _pawn, float _targetZRotation)
-    {/*
-        var rigidbody = _pawn.GetComponent<Rigidbody>();
-        var currentZRotation = rigidbody.rotation.eulerAngles.z;
+    public void Tilt(FeKaPawn _pawn, float _targetZRotation, Transform visualMesh, float targetYShift = 0.2f, float _speed = 5f)
+    {
+        var currentRot = visualMesh.localEulerAngles;
+        var currentPos = visualMesh.localPosition;
+        var currentZRot = currentRot.z > 180f ? currentRot.z - 360f : currentRot.z;
 
-        // Tilt Right
-        if (_targetZRotation < 0)
-        {
-            Debug.Log($"Rotating left: {currentZRotation} < {_targetZRotation}");
-            rigidbody.AddRelativeTorque(new Vector3(0,0,-_pawn.FeKaCurrentStats.tiltTorque), ForceMode.Impulse);
-        }
-        if (_targetZRotation > 0)
-        {
-           Debug.Log($"Rotating right: {currentZRotation} < {_targetZRotation}");
-           rigidbody.AddRelativeTorque(new Vector3(0,0,_pawn.FeKaCurrentStats.tiltTorque), ForceMode.Impulse);
-        }*/
+        var newZRot = Mathf.Lerp(currentZRot, _targetZRotation, Time.deltaTime * _speed);
+        var newY = Mathf.Lerp(currentPos.y, targetYShift, Time.deltaTime * _speed);
+        
+        visualMesh.localEulerAngles = new Vector3(currentRot.x, currentRot.y, newZRot);
+        visualMesh.localPosition = new Vector3(currentPos.x, newY, currentPos.z);
+    }
+    
+    public void TiltReturnToNeutral(FeKaPawn _pawn, Transform visualMesh, float _speed = 5f)
+    {
+        Tilt(_pawn, 0f, visualMesh, 0, _speed);
     }
     
     /*

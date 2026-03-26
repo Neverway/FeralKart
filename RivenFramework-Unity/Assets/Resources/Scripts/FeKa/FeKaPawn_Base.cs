@@ -15,6 +15,12 @@ public class FeKaPawn_Base : FeKaPawn
     private Vector2 steerInput;
     private bool isBreaking;
     
+    // Barrel Roll stuff
+    private float lastTiltLeftTapTime = -1f;
+    private float lastTiltRightTapTime = -1f;
+    private bool isRolling = false;
+    private const float doubleTapWindow = 0.3f;
+    
     public override void Awake()
     {
         base.Awake();
@@ -99,6 +105,35 @@ public class FeKaPawn_Base : FeKaPawn
         if (inputActions.HopDedicated.IsPressed() || inputActions.TiltLeft.IsPressed() && inputActions.TiltRight.IsPressed())
         {
             action2.Jump(this);
+        }
+        
+        // Leaning
+        if (action2.IsOnGround(this))
+        {
+            if (inputActions.TiltLeft.WasPressedThisFrame())
+            {
+                if (!isRolling && Time.time - lastTiltLeftTapTime <= doubleTapWindow)
+                    StartCoroutine(BarrelRoll(-1));
+                else
+                    lastTiltLeftTapTime = Time.time;
+            }
+            if (inputActions.TiltRight.WasPressedThisFrame())
+            {
+                if (!isRolling && Time.time - lastTiltRightTapTime <= doubleTapWindow)
+                    StartCoroutine(BarrelRoll(1));
+                else
+                    lastTiltRightTapTime = Time.time;
+            }
+        }
+
+        if (!isRolling)
+        {
+            if (inputActions.TiltLeft.IsPressed())
+                action2.Tilt(this, FeKaCurrentStats.targetTiltAngle, FeKaCurrentStats.tiltVisualMesh);
+            else if (inputActions.TiltRight.IsPressed())
+                action2.Tilt(this, -FeKaCurrentStats.targetTiltAngle, FeKaCurrentStats.tiltVisualMesh);
+            else
+                action2.TiltReturnToNeutral(this, FeKaCurrentStats.tiltVisualMesh);
         }
 
         // Item usage
@@ -223,5 +258,53 @@ public class FeKaPawn_Base : FeKaPawn
         transform.position = respawnTransform.position;
         transform.rotation = respawnTransform.rotation;
         GetComponent<Rigidbody>().velocity = Vector3.zero;
+    }
+    
+    private IEnumerator BarrelRoll(int _direction)
+    {
+        isRolling = true;
+
+        var duration = FeKaCurrentStats.barrelRollDuration;
+        var elapsed = 0f;
+        var visualMesh = FeKaCurrentStats.tiltVisualMesh;
+        
+
+        // Nudge physics body to the side
+        physicsbody.AddForce(transform.right * _direction * FeKaCurrentStats.barrelRollForce, ForceMode.Impulse);
+        physicsbody.AddForce(transform.up * FeKaCurrentStats.barrelRollHopForce, ForceMode.Impulse);
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            var t = elapsed / duration;
+
+            // DO A BARREL ROLL!!!
+            var zRot = -_direction * 360f * t;
+            var currentRot = visualMesh.localEulerAngles;
+            visualMesh.localEulerAngles = new Vector3(currentRot.x, currentRot.y, zRot);
+
+            // Arc the roll
+            visualMesh.localPosition = new Vector3(
+                visualMesh.localPosition.x,
+                Mathf.Sin(t * Mathf.PI) * FeKaCurrentStats.barrelRollYPeak,
+                visualMesh.localPosition.z
+            );
+
+            yield return null;
+        }
+
+        // Move visual back smoothly to nuetral rotation and position
+        visualMesh.localEulerAngles = new Vector3(
+            visualMesh.localEulerAngles.x,
+            visualMesh.localEulerAngles.y,
+            0f
+        );
+        visualMesh.localPosition = new Vector3(
+            visualMesh.localPosition.x,
+            0f,
+            visualMesh.localPosition.z
+        );
+
+        isRolling = false;
     }
 }
