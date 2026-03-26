@@ -34,6 +34,11 @@ public class CheckpointTracker : MonoBehaviour
     /// </summary>
     public void Init()
     {
+        for (int i = 0; i < raceCheckpoints.Count; i++)
+        {
+            raceCheckpoints[i].checkpointIndex = i;
+            raceCheckpoints[i].gameObject.SetActive(true);
+        }
         UpdateVisibilityForLocalPlayer();
     }
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using RivenFramework;
 using UnityEngine;
 
-public class GI_RaceSystem : MonoBehaviour
+public class GI_RaceManager : MonoBehaviour
 {
     private float startTime;
     public float timeRemaining = 600;

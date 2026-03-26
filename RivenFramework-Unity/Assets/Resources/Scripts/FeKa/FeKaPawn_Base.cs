@@ -8,6 +8,7 @@ using UnityEngine.Splines;
 
 public class FeKaPawn_Base : FeKaPawn
 {
+    // Pawn Controller stuff
     private FeKaPawnActions action2 = new FeKaPawnActions();
     private InputActions.FEKAActions inputActions;
     private GI_WidgetManager widgetManager;
@@ -44,10 +45,15 @@ public class FeKaPawn_Base : FeKaPawn
     private const float itemPickupRadius = 25;
     private const float itemChaseExitRadius = 35f;
     private const float itemPickupChance = 0.65f;
+
+    [Tooltip("A reference to the race manager so the CPU can get the list of all racers when steering")]
+    private GI_RaceManager raceManager;
     
     public override void Awake()
     {
         base.Awake();
+        
+        raceManager = GameInstance.Get<GI_RaceManager>();
         
         // Subscribe to events
         OnPawnDeath += () => { OnDeath(); };
@@ -258,7 +264,11 @@ public class FeKaPawn_Base : FeKaPawn
 
         // --- Pawn avoidance ---
         var avoidanceSteer = 0f;
-        foreach (var pawn in GameInstance.Get<GI_RaceSystem>().racers)
+        if (raceManager == null)
+        {
+            GameInstance.Get<GI_RaceManager>();
+        }
+        foreach (var pawn in raceManager.racers)
         {
             if (pawn == this) continue;
             var toPawn = pawn.transform.position - transform.position;

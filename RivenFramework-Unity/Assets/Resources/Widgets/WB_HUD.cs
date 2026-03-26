@@ -31,6 +31,12 @@ public class WB_HUD : MonoBehaviour
     private float previousHealth;
     private float previousShield;
     private List<Image> stockImages = new List<Image>(0);
+    private GI_RaceManager raceManager;
+
+    private void Start()
+    {
+        raceManager = GameInstance.Get<GI_RaceManager>();
+    }
 
     void Update()
     {
@@ -51,11 +57,11 @@ public class WB_HUD : MonoBehaviour
 
     private void UpdateTimer()
     {
-        timer.text = ($"{GameInstance.Get<GI_RaceSystem>().timeRemaining:f4}");
-        lap.text = ($"Lap {targetFeKaPawn.FeKaCurrentStats.currentLap}/{GameInstance.Get<GI_RaceSystem>().totalLaps}");
+        timer.text = ($"{raceManager.timeRemaining:f4}");
+        lap.text = ($"Lap {targetFeKaPawn.FeKaCurrentStats.currentLap}/{raceManager.totalLaps}");
         speed.text = ($"{targetFeKaPawn.physicsbody.velocity.magnitude:f2} m/s");
 
-        int placementNum = GameInstance.Get<GI_RaceSystem>().GetRacerPlace(targetFeKaPawn);
+        int placementNum = raceManager.GetRacerPlace(targetFeKaPawn);
         if (placementNum == 1)
         {
             placement.text = ($"1st");
