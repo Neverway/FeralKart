@@ -14,6 +14,7 @@ public class GI_RaceSystem : MonoBehaviour
     public GameObject RaceFinishedWidget;
 
     public List<FeKaPawn_Base> racers;
+    public List<FeKaPawn_Base> racerStandings = new List<FeKaPawn_Base>();
 
 
     public void Update()
@@ -27,6 +28,7 @@ public class GI_RaceSystem : MonoBehaviour
         {
             return;
         }
+        UpdateStandings();
         CheckRacerStatus();
         if (timeRemaining > 0)
         {
@@ -71,6 +73,13 @@ public class GI_RaceSystem : MonoBehaviour
             {
                 return false;
             }
+            else if (racer.FeKaCurrentStats.controlMode == ControlMode.LocalPlayer)
+            {
+                if (!GameInstance.Get<GI_WidgetManager>().GetExistingWidget(RaceFinishedWidget.name))
+                {
+                    GameInstance.Get<GI_WidgetManager>().AddWidget(RaceFinishedWidget);
+                }
+            }
         }
 
         return true;
@@ -84,6 +93,41 @@ public class GI_RaceSystem : MonoBehaviour
             racer.isPaused = true;
         }
 
-        GameInstance.Get<GI_WidgetManager>().AddWidget(RaceFinishedWidget);
+        if (!GameInstance.Get<GI_WidgetManager>().GetExistingWidget(RaceFinishedWidget.name))
+        {
+            GameInstance.Get<GI_WidgetManager>().AddWidget(RaceFinishedWidget);
+        }
+    }
+    
+    private void UpdateStandings()
+    {
+        var checkpointCount = FindObjectOfType<CheckpointTracker>().raceCheckpoints.Count;
+    
+        racerStandings = new List<FeKaPawn_Base>(racers);
+        racerStandings.Sort((a, b) =>
+        {
+            var progressA = GetRaceProgress(a, checkpointCount);
+            var progressB = GetRaceProgress(b, checkpointCount);
+            return progressB.CompareTo(progressA);
+        });
+    }
+    
+    private float GetRaceProgress(FeKaPawn_Base pawn, int checkpointCount)
+    {
+        var checkpointTracker = FindObjectOfType<CheckpointTracker>();
+        var baseProgress = pawn.FeKaCurrentStats.currentLap * checkpointCount 
+                           + pawn.FeKaCurrentStats.currentCheckpoint;
+    
+        var nextIndex = pawn.FeKaCurrentStats.currentCheckpoint;
+        var nextPos = checkpointTracker.raceCheckpoints[nextIndex].transform.position;
+        var distToNext = Vector3.Distance(pawn.transform.position, nextPos);
+        var fraction = 1f - Mathf.Clamp01(distToNext / 100f); // 100 is the max expected checkpoint spacing (This is a crappy way of handling this and I should blow it up)
+    
+        return baseProgress + fraction;
+    }
+    
+    public int GetRacerPlace(FeKaPawn pawn)
+    {
+        return racerStandings.IndexOf((FeKaPawn_Base)pawn) + 1;
     }
 }

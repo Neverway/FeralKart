@@ -5,15 +5,14 @@ using UnityEngine;
 
 public class RaceCheckpoint : MonoBehaviour
 {
+    public int checkpointIndex;
+    public GameObject visual;
     private void OnTriggerEnter(Collider other)
     {
         FeKaPawn feKaPawn =  other.GetComponentInParent<FeKaPawn>();
-        if (feKaPawn)
-        {
-            if (feKaPawn.FeKaCurrentStats.controlMode == ControlMode.LocalPlayer)
-            {
-                FindObjectOfType<CheckpointTracker>().NextCheckpoint(feKaPawn);
-            }
-        }
+        if (feKaPawn == null) return;
+
+        if (feKaPawn.FeKaCurrentStats.currentCheckpoint == checkpointIndex)
+            FindObjectOfType<CheckpointTracker>().NextCheckpoint(feKaPawn);
     }
 }
