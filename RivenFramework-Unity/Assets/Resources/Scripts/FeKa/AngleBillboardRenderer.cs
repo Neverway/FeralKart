@@ -11,6 +11,8 @@ public class AngleBillboardRenderer : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     [SerializeField] public SpriteAngle[] spriteAngles;
     public Transform origin;
+    public bool overrideRotation = false;
+    public float zRotationOffset;
 
     // Update is called once per frame
     void Update()
@@ -25,7 +27,12 @@ public class AngleBillboardRenderer : MonoBehaviour
         
         // Rotate the sprite to face the viewer
         spriteRenderer.transform.LookAt(activeCamera.transform, transform.up);
+    
+    
         spriteRenderer.sprite = GetSpriteFromAngle();
+        
+        // Apply Z rotation offset on top of the billboard rotation
+        if (overrideRotation) spriteRenderer.transform.Rotate(0f, 0f, zRotationOffset, Space.Self);
     }
 
     /// <summary>

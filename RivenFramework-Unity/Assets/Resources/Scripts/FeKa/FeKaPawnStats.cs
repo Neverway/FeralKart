@@ -39,10 +39,18 @@ public class FeKaPawnStats : PawnStats
     public float tiltTorque = 2f;
     [Tooltip("The target rotation amount to tilt the vehicle")]
     public float targetTiltAngle = 15f;
+    [Tooltip("How long a barrel roll takes")]
+    public float barrelRollDuration = 0.4f;
+    [Tooltip("The sideways physics impulse applied when rolling")]
+    public float barrelRollForce = 8f;
+    [Tooltip("How high the visual mesh bobs during a roll")]
+    public float barrelRollYPeak = 0.3f;
+    public float barrelRollHopForce = 2600;
     [Tooltip("Override for the rigidbody's center of mass")]
     public Vector3 _centerOfMass = new Vector3(0.0f, -1.0f, 0.0f);
     [Tooltip("The wheels that drive this vehicle")]
     public List<Wheel> wheels;
+    public Transform tiltVisualMesh;
 
     [Header("FeKa Character Stats")] 
     public float respawnTime = 3;
