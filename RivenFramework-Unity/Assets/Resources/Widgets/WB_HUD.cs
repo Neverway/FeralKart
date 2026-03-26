@@ -14,6 +14,7 @@ public class WB_HUD : MonoBehaviour
 
     public TMP_Text timer;
     public TMP_Text lap;
+    public TMP_Text speed;
     
     public Image characterPortrait;
     public Image shieldBar;
@@ -51,6 +52,7 @@ public class WB_HUD : MonoBehaviour
     {
         timer.text = ($"{GameInstance.Get<GI_RaceSystem>().timeRemaining}");
         lap.text = ($"Lap {targetFeKaPawn.FeKaCurrentStats.currentLap}/{GameInstance.Get<GI_RaceSystem>().totalLaps}");
+        speed.text = ($"{targetFeKaPawn.physicsbody.velocity.magnitude} m/s");
     }
     private void UpdateShield()
     {

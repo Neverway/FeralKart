@@ -31,6 +31,8 @@ public class FeKaPawnStats : PawnStats
     public float coastBreakForce=150f;
     [Tooltip("How much control the driver has over the turn radius")]
     public float turnSensitivity = 0.8f;
+    [Tooltip("The fraction of maxSteerAngle still available at top speed (0 = no steering, 1 = full steering at all speeds)")]
+    public float highSpeedSteerFraction = 0.3f;
     [Tooltip("How much the steering wheels can be turned")]
     public float maxSteerAngle = 30.0f;
     [Tooltip("The torque to apply to the vehichle's z axis when tilting")]
