@@ -45,7 +45,7 @@ public class FeKaPawnActions : PawnActions
     //=-----------------=
     public void Move(FeKaPawn _pawn, float _moveInput)
     {
-        var rb =  _pawn.GetComponent<Rigidbody>();
+        var rb = _pawn.physicsbody;
         var currentSpeed = rb.velocity.magnitude;
         var maxSpeed = _pawn.FeKaCurrentStats.maxSpeed;
         
@@ -64,14 +64,21 @@ public class FeKaPawnActions : PawnActions
  
     public void Steer(FeKaPawn _pawn, float _steerInput)
     {
+        var rb = _pawn.physicsbody;
+        var currentSpeed = rb.velocity.magnitude;
+        var maxSpeed = _pawn.FeKaCurrentStats.maxSpeed;
+        
+        var speedRatio = Mathf.Clamp01(currentSpeed / maxSpeed);
+        var minSteerFraction = _pawn.FeKaCurrentStats.highSpeedSteerFraction;
+        var steerScale = Mathf.Lerp(1f, minSteerFraction, speedRatio);
+        
         foreach(var wheel in _pawn.FeKaCurrentStats.wheels)
         {
             if (wheel.axel == Axel.Front)
             {
-                var _steerAngle = _steerInput * _pawn.FeKaCurrentStats.turnSensitivity * _pawn.FeKaCurrentStats.maxSteerAngle;
+                var _steerAngle = _steerInput * _pawn.FeKaCurrentStats.turnSensitivity * _pawn.FeKaCurrentStats.maxSteerAngle * steerScale;
                 var newAngle = Mathf.Lerp(wheel.wheelCollider.steerAngle, _steerAngle, 0.6f);
                 if (Mathf.Abs(newAngle - _steerAngle) < 0.01f) newAngle = _steerAngle;
-                
                 wheel.wheelCollider.steerAngle = newAngle;
             }
         }

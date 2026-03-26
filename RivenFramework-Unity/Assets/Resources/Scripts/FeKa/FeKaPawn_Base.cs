@@ -30,11 +30,11 @@ public class FeKaPawn_Base : FeKaPawn
 
     public void Update()
     {
-        Debug.Log($" movement: {moveInput} | " +
+        /*Debug.Log($" movement: {moveInput} | " +
                   $"wheel rpm: {FeKaCurrentStats.wheels[0].wheelCollider.rpm} | " +
                   $"wheel rs: {FeKaCurrentStats.wheels[0].wheelCollider.rotationSpeed} | " +
                   $"wheel bt: {FeKaCurrentStats.wheels[0].wheelCollider.brakeTorque}" +
-                  $"wheel mt: {FeKaCurrentStats.wheels[0].wheelCollider.motorTorque}");
+                  $"wheel mt: {FeKaCurrentStats.wheels[0].wheelCollider.motorTorque}");*/
         
         switch (FeKaCurrentStats.controlMode)
         {

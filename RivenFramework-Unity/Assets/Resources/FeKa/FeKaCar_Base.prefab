@@ -10185,7 +10185,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 0.8
+    m_Stiffness: 1
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -10257,7 +10257,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 0.8
+    m_Stiffness: 1
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -10413,7 +10413,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 0.8
+    m_Stiffness: 1
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -10757,7 +10757,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 0.8
+    m_Stiffness: 1
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -20619,8 +20619,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9018392291717064548}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.000011630356, y: 0.23392813, z: -0.03898514, w: 0.971472}
-  m_LocalPosition: {x: -91.163795, y: 0.8456774, z: 4.794921}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -20905,10 +20905,11 @@ MonoBehaviour:
     controlMode: 1
     moveTorque: 2500
     maxSpeed: 30
-    breakForce: 9000
-    coastBreakForce: 1500
+    breakForce: 5000
+    coastBreakForce: 700
     turnSensitivity: 0.5
-    maxSteerAngle: 40
+    highSpeedSteerFraction: 0.3
+    maxSteerAngle: 20
     tiltTorque: 40
     targetTiltAngle: 45
     _centerOfMass: {x: 0, y: -1, z: 0}
@@ -21000,37 +21001,37 @@ PrefabInstance:
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 83.15268
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.6206589
+      value: 0.6666667
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 35.68519
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.96816283
+      value: 0.9965927
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.08011593
+      value: 0.08248053
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.23634657
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.019557789
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
