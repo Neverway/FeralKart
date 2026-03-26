@@ -15,6 +15,7 @@ TagManager:
   - '[StructureContainer]'
   - TilemapContainer
   - AssetContainer
+  - RacingTrackSpline
   layers:
   - Default
   - TransparentFX

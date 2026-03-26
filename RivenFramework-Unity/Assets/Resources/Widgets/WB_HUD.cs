@@ -15,6 +15,7 @@ public class WB_HUD : MonoBehaviour
     public TMP_Text timer;
     public TMP_Text lap;
     public TMP_Text speed;
+    public TMP_Text placement;
     
     public Image characterPortrait;
     public Image shieldBar;
@@ -50,9 +51,32 @@ public class WB_HUD : MonoBehaviour
 
     private void UpdateTimer()
     {
-        timer.text = ($"{GameInstance.Get<GI_RaceSystem>().timeRemaining}");
+        timer.text = ($"{GameInstance.Get<GI_RaceSystem>().timeRemaining:f4}");
         lap.text = ($"Lap {targetFeKaPawn.FeKaCurrentStats.currentLap}/{GameInstance.Get<GI_RaceSystem>().totalLaps}");
-        speed.text = ($"{targetFeKaPawn.physicsbody.velocity.magnitude} m/s");
+        speed.text = ($"{targetFeKaPawn.physicsbody.velocity.magnitude:f2} m/s");
+
+        int placementNum = GameInstance.Get<GI_RaceSystem>().GetRacerPlace(targetFeKaPawn);
+        if (placementNum == 1)
+        {
+            placement.text = ($"1st");
+            placement.color = new Color(1f, 0.8f, 0.3f, 1);
+        }
+        else if (placementNum == 2)
+        {
+            placement.text = ($"2nd");
+            placement.color = new Color(0.6f, 0.8f, 0.9f, 1);
+        }
+
+        else if (placementNum == 3)
+        {
+            placement.text = ($"3rd");
+            placement.color = new Color(0.6f, 0.3f, 0.2f, 1);
+        }
+        else
+        {
+            placement.text = ($"{placementNum}th");
+            placement.color = new Color(0.8f, 0.8f, 0.8f, 1);
+        }
     }
     private void UpdateShield()
     {

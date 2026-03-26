@@ -53,9 +53,6 @@ public class GameObject_FaceActiveCamera : MonoBehaviour
 
         if (pawnManager.localPlayerCharacter && !target)
         {
-            print(pawnManager.localPlayerCharacter);
-            print(pawnManager.localPlayerCharacter.GetComponent<Pawn>());
-            print(pawnManager.localPlayerCharacter.GetComponent<Pawn>().viewPoint);
             target = pawnManager.localPlayerCharacter.GetComponent<Pawn>().viewPoint.transform;
             return;
         }

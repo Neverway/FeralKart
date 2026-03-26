@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using RivenFramework;
 using UnityEngine;
 
 public class CheckpointTracker : MonoBehaviour
@@ -16,41 +17,48 @@ public class CheckpointTracker : MonoBehaviour
             var newCheckpoint = transform.GetChild(i).GetComponent<RaceCheckpoint>();
             if (newCheckpoint != null)
             {
+                newCheckpoint.checkpointIndex = i;
                 raceCheckpoints.Add(newCheckpoint);
             }
         }
-    }
-
-    public void Start()
-    {
     }
 
     public void Init()
     {
         for (int i = 0; i < raceCheckpoints.Count; i++)
         {
-            raceCheckpoints[i].gameObject.SetActive(false);
+            raceCheckpoints[i].checkpointIndex = i;
+            raceCheckpoints[i].gameObject.SetActive(true);
         }
-        raceCheckpoints[0].gameObject.SetActive(true);
+        
+        UpdateVisibilityForLocalPlayer();
     }
 
     public void NextCheckpoint(FeKaPawn feKaPawn)
     {
-        // When passing the goal post, increase the lap counter
-        if (feKaPawn.FeKaCurrentStats.currentCheckpoint == 0) feKaPawn.FeKaCurrentStats.currentLap++;
-
         feKaPawn.FeKaCurrentStats.currentCheckpoint++;
-        
-        // If we hit the last checkpoint then loop back around
+
         if (feKaPawn.FeKaCurrentStats.currentCheckpoint >= raceCheckpoints.Count)
         {
             feKaPawn.FeKaCurrentStats.currentCheckpoint = 0;
+            feKaPawn.FeKaCurrentStats.currentLap++;
+            
         }
+
+        if (feKaPawn.FeKaCurrentStats.controlMode == ControlMode.LocalPlayer)
+        {
+            UpdateVisibilityForLocalPlayer(feKaPawn);
+        }
+    }
+    
+    private void UpdateVisibilityForLocalPlayer(FeKaPawn localPawn = null)
+    {
+        var targetCheckpoint = localPawn != null ? localPawn.FeKaCurrentStats.currentCheckpoint : 0;
 
         for (int i = 0; i < raceCheckpoints.Count; i++)
         {
-            raceCheckpoints[i].gameObject.SetActive(
-                i == feKaPawn.FeKaCurrentStats.currentCheckpoint);
+            var visual = raceCheckpoints[i].visual;
+            if (visual != null) visual.gameObject.SetActive(i == targetCheckpoint);
         }
     }
 }
