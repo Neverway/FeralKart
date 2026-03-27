@@ -1017,9 +1017,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c678dc8d68975b7bdb9d2763666aca78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  raceCountdownDuration: 3
   timeRemaining: 6000
   raceDuration: 600
   totalLaps: 3
   RaceFinishedWidget: {fileID: 5675289539813747590, guid: ca954bb8fa2756c0ebfe34f164357f40,
     type: 3}
+  RaceCountdownWidget: {fileID: 5675289539813747590, guid: 876f8e7126a23214b844518ee245e244,
+    type: 3}
   racers: []
+  racerStandings: []

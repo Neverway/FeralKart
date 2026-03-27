@@ -72,6 +72,9 @@ public class FeKaPawn_Base : FeKaPawn
                   $"wheel bt: {FeKaCurrentStats.wheels[0].wheelCollider.brakeTorque}" +
                   $"wheel mt: {FeKaCurrentStats.wheels[0].wheelCollider.motorTorque}");*/
         
+        if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.preparing) physicsbody.isKinematic = true;
+        if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.racing) physicsbody.isKinematic = false;
+        
         switch (FeKaCurrentStats.controlMode)
         {
             case ControlMode.LocalPlayer:
@@ -434,7 +437,6 @@ public class FeKaPawn_Base : FeKaPawn
 
     public void Init()
     {
-
         var respawnTransform = WorldSettings.GetPlayerStartPoint().transform;
         transform.position = respawnTransform.position;
         transform.rotation = respawnTransform.rotation;
@@ -444,6 +446,7 @@ public class FeKaPawn_Base : FeKaPawn
 
         // Restore the default stats to the character
         currentStats = (FeKaPawnStats)FeKaDefaultStats.Clone();
+        FeKaCurrentStats.racerState = FeKaPawnStats.RacerState.preparing;
     }
 
     public void RespawnAtLastCheckpoint()

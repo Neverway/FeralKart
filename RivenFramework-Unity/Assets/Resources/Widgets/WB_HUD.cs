@@ -57,7 +57,7 @@ public class WB_HUD : MonoBehaviour
 
     private void UpdateTimer()
     {
-        timer.text = ($"{raceManager.timeRemaining:f4}");
+        timer.text = ($"{raceManager.timeRemaining:f2}");
         lap.text = ($"Lap {targetFeKaPawn.FeKaCurrentStats.currentLap}/{raceManager.totalLaps}");
         speed.text = ($"{targetFeKaPawn.physicsbody.velocity.magnitude:f2} m/s");
 

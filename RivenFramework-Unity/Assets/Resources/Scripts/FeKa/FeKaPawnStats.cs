@@ -67,6 +67,17 @@ public class FeKaPawnStats : PawnStats
     [Header("FeKa Current Race Stats")] 
     public int currentLap;
     public int currentCheckpoint;
+    public int finishPlacement;
+    public float finishTime;
+    public RacerState racerState;
+    
+    public enum RacerState
+    {
+        preparing,
+        racing,
+        failed,
+        finished,
+    }
 
     [Header("Traits")] 
     public float throwForce=350;
