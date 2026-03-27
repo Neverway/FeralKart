@@ -7,11 +7,12 @@ using UnityEngine;
 public class GI_RaceManager : MonoBehaviour
 {
     private float startTime;
+    public float raceCountdownDuration = 3;
     public float timeRemaining = 600;
     public float raceDuration = 600;
     public int totalLaps = 3;
     private bool raceInProgress;
-    public GameObject RaceFinishedWidget;
+    public GameObject RaceFinishedWidget, RaceCountdownWidget;
 
     public List<FeKaPawn_Base> racers;
     public List<FeKaPawn_Base> racerStandings = new List<FeKaPawn_Base>();
@@ -53,6 +54,22 @@ public class GI_RaceManager : MonoBehaviour
             racers.Add(feKaPawn);
         }
 
+        StartCoroutine(RaceCountdown());
+    }
+
+    public IEnumerator RaceCountdown()
+    {
+        var widgetManager = GameInstance.Get<GI_WidgetManager>();
+        Destroy(widgetManager.GetExistingWidget(RaceCountdownWidget.name));
+        widgetManager.AddWidget(RaceCountdownWidget);
+        yield return new WaitForSeconds(3);
+        
+        // RELEASE ZE HOUNDS!!!
+        foreach (var racer in racers)
+        {
+            racer.FeKaCurrentStats.racerState = FeKaPawnStats.RacerState.racing;
+        }
+        
         timeRemaining = raceDuration;
         startTime = Time.deltaTime;
         raceInProgress = true;
@@ -73,12 +90,22 @@ public class GI_RaceManager : MonoBehaviour
             {
                 return false;
             }
-            else if (racer.FeKaCurrentStats.controlMode == ControlMode.LocalPlayer)
+
+            // Mark racers as finished
+            if (racer.FeKaCurrentStats.racerState != FeKaPawnStats.RacerState.finished)
             {
-                if (!GameInstance.Get<GI_WidgetManager>().GetExistingWidget(RaceFinishedWidget.name))
+                // Show the finish screen for the local player
+                if (racer.FeKaCurrentStats.controlMode == ControlMode.LocalPlayer)
                 {
-                    GameInstance.Get<GI_WidgetManager>().AddWidget(RaceFinishedWidget);
+                    if (!GameInstance.Get<GI_WidgetManager>().GetExistingWidget(RaceFinishedWidget.name))
+                    {
+                        GameInstance.Get<GI_WidgetManager>().AddWidget(RaceFinishedWidget);
+                    }
                 }
+                // Mark the racers as finished
+                racer.FeKaCurrentStats.racerState = FeKaPawnStats.RacerState.finished;
+                racer.FeKaCurrentStats.finishPlacement = GetRacerPlace(racer);
+                racer.FeKaCurrentStats.finishTime = timeRemaining;
             }
         }
 
