@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using ErryLib.Reflection;
 using UnityEngine;
 
 public class ItemSpawner : MonoBehaviour
@@ -17,11 +18,11 @@ public class ItemSpawner : MonoBehaviour
             return;
         }
         
-        icon.sprite = item.icon;
+        icon.sprite = item.details.icon;
         itemAvailable = true;
-        ring.color = FeKaItem.GetRarityColor(item.rarity);
-        glow.color = FeKaItem.GetRarityColor(item.rarity);
-        beam.color = FeKaItem.GetRarityColor(item.rarity);
+        ring.color = FeKaItem.GetRarityColor(item.details.rarity);
+        glow.color = FeKaItem.GetRarityColor(item.details.rarity);
+        beam.color = FeKaItem.GetRarityColor(item.details.rarity);
     }
 
     private void SetSpawnerDisabled()
@@ -43,7 +44,7 @@ public class ItemSpawner : MonoBehaviour
         ring.color = new Color(ring.color.r, ring.color.g, ring.color.b, 0.5f);
         glow.color = new Color(ring.color.r, ring.color.g, ring.color.b, 0.25f);
         beam.color = new Color(ring.color.r, ring.color.g, ring.color.b, 0.5f);
-        yield return new WaitForSeconds(item.respawnTime);
+        yield return new WaitForSeconds(item.details.respawnTime);
         itemAvailable = true;
         icon.gameObject.SetActive(true);
         ring.color = new Color(ring.color.r, ring.color.g, ring.color.b, 1f);
@@ -53,19 +54,17 @@ public class ItemSpawner : MonoBehaviour
 
     public void PickupItem(FeKaPawn pawn)
     {
-        if (itemAvailable is false) return;
+        if (!itemAvailable) return;
+        var itemRef = item.Clone(); // doing item.Clone allows the scriptable object to remain unmodified
+        if (itemRef?.itemBehaviour == null) return;
 
-        if (item.consumable)
-        {
-            StartCoroutine(WaitForRespawn());
-            // TODO add code here to auto use the item
-            return;
-        }
+        bool occupiesSlot = itemRef.itemBehaviour.OnPickup(pawn);
         
-        if (pawn.FeKaCurrentStats.utility != null) return;
-
-        pawn.FeKaCurrentStats.utility = item;
-        pawn.FeKaCurrentStats.utilityUsages = item.usages;
+        if (occupiesSlot)
+        {
+            if (pawn.FeKaCurrentStats.utility != null) return;
+            pawn.FeKaCurrentStats.utility = itemRef;
+        }
         
         StartCoroutine(WaitForRespawn());
     }

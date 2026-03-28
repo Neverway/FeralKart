@@ -12,9 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7324bb4c1e44b408795ada7e2b4c66f5, type: 3}
   m_Name: FeKaItem_Health
   m_EditorClassIdentifier: 
-  itemName: Health
-  icon: {fileID: 21300000, guid: 0ac4729f677ddedf980d0466b576ebf8, type: 3}
-  usages: 0
-  consumable: 1
-  respawnTime: 3
-  rarity: 1
+  details:
+    itemName: Health
+    icon: {fileID: 21300000, guid: 0ac4729f677ddedf980d0466b576ebf8, type: 3}
+    respawnTime: 3
+    rarity: 1
+  itemBehaviour:
+    rid: 8346923364940251138
+  references:
+    version: 2
+    RefIds:
+    - rid: 8346923364940251138
+      type: {class: FeKaItem_Health, ns: , asm: Assembly-CSharp}
+      data:
+        healAmount: 5

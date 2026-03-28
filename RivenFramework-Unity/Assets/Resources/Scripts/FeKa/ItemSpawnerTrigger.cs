@@ -11,10 +11,7 @@ public class ItemSpawnerTrigger : MonoBehaviour
         FeKaPawn feKaPawn =  other.GetComponentInParent<FeKaPawn>();
         if (feKaPawn)
         {
-            //if (feKaPawn.FeKaCurrentStats.controlMode == ControlMode.LocalPlayer)
-            //{
-                itemSpawner.PickupItem(feKaPawn);
-            //}
+            itemSpawner.PickupItem(feKaPawn);
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using RivenFramework;
 using UnityEngine;
 using UnityEngine.AI;
@@ -29,22 +30,34 @@ public class FeKaPawn_Base : FeKaPawn
     private float racingLineT = 0f;
     private bool racingLineBuilt = false;
 
+    private enum RecoveryState { Idle, Reversing, Realigning, ForceRespawn }
+    private RecoveryState recoveryState = RecoveryState.Idle;
+    private float recoveryTimer = 0f;
+    private const float reversePhaseTime = 1.2f;
+    private const float realignPhaseTime = 1.8f;
+
+    private float smoothedSteer = 0f;
+    private const float steerSmoothSpeed = 6f;
+
     private float stuckTimer = 0f;
     private Vector3 lastStuckCheckPos;
-    private const float stuckCheckInterval = 2f;
-    private const float stuckMoveThreshold = 2f;
-    private bool isRecovering = false;
+    private const float stuckCheckInterval = 1.5f;
+    private const float stuckMoveThreshold = 1.0f;
+    private int stuckStrikes = 0;
+    private const int maxStuckStrikes = 3;
     
     private const float pawnAvoidanceRadius = 6f;
     private const float pawnAvoidanceStrength = 0.8f;
-    private int stuckRecoveryAttempts = 0;
-    private const int maxRecoveryAttempts = 3;
     
     // CPU item stuff
     private ItemSpawner currentItemTarget = null;
-    private const float itemPickupRadius = 25;
-    private const float itemChaseExitRadius = 35f;
+    private ItemSpawner[] allItemSpawners;
+    private const float itemPickupRadius = 25f;
+    private const float itemChaseExitRadius = 40f;
     private const float itemPickupChance = 0.65f;
+    private const float itemDistanceWander = 5f;
+    private const float racingLineTrackingPercentage = 0.25f;
+    private bool isCPUFiringRocket = false;
 
     [Tooltip("A reference to the race manager so the CPU can get the list of all racers when steering")]
     private GI_RaceManager raceManager;
@@ -53,10 +66,11 @@ public class FeKaPawn_Base : FeKaPawn
     {
         base.Awake();
         
-        raceManager = GameInstance.Get<GI_RaceManager>();
         
         // Subscribe to events
         OnPawnDeath += () => { OnDeath(); };
+        OnPawnHurt += () => { OnHurt(); };
+        OnPawnHeal += () => { OnHeal(); };
         
         if (FeKaCurrentStats.controlMode != ControlMode.LocalPlayer) return;
         // Setup inputs
@@ -66,11 +80,7 @@ public class FeKaPawn_Base : FeKaPawn
 
     public void Update()
     {
-        /*Debug.Log($" movement: {moveInput} | " +
-                  $"wheel rpm: {FeKaCurrentStats.wheels[0].wheelCollider.rpm} | " +
-                  $"wheel rs: {FeKaCurrentStats.wheels[0].wheelCollider.rotationSpeed} | " +
-                  $"wheel bt: {FeKaCurrentStats.wheels[0].wheelCollider.brakeTorque}" +
-                  $"wheel mt: {FeKaCurrentStats.wheels[0].wheelCollider.motorTorque}");*/
+        raceManager ??= GameInstance.Get<GI_RaceManager>();
         
         if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.preparing) physicsbody.isKinematic = true;
         if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.racing) physicsbody.isKinematic = false;
@@ -173,6 +183,7 @@ public class FeKaPawn_Base : FeKaPawn
         }
 
         // Item usage
+        UpdateHeldItem();
         
         // CarFX
         action2.WheelEffects(this, isBreaking);
@@ -196,111 +207,167 @@ public class FeKaPawn_Base : FeKaPawn
         
     }
     
+    private void UpdateHeldItem()
+    {
+        var held = FeKaCurrentStats.utility;
+        if (held?.itemBehaviour == null) return;
+
+        held.itemBehaviour.OnUpdate(this);
+
+        if (inputActions.Utility.IsPressed())
+            held.itemBehaviour.OnUseHeld(this);
+
+        if (inputActions.Utility.WasReleasedThisFrame())
+            held.itemBehaviour.OnUseReleased(this);
+
+        // Auto-clear exhausted items
+        if (held.itemBehaviour.IsExhausted())
+            FeKaCurrentStats.utility = null;
+    }
+    
     // NPC
     private void CPUUpdate()
     {
-        if (isDead || isRecovering) return;
+        if (isDead) return;
 
         if (!racingLineBuilt)
         {
-            var container = GameObject.FindWithTag("RacingTrackSpline").GetComponent<SplineContainer>();
+            var container = GameObject.FindWithTag("RacingTrackSpline")?.GetComponent<SplineContainer>();
             if (container == null) return;
             racingLine = container.Spline;
             racingLineBuilt = true;
+            lastStuckCheckPos = transform.position;
+            allItemSpawners = FindObjectsOfType<ItemSpawner>();
+        }
+
+        if (recoveryState != RecoveryState.Idle)
+        {
+            UpdateRecoveryStateMachine();
+            return;
         }
 
         // --- Stuck detection ---
         stuckTimer += Time.deltaTime;
         if (stuckTimer >= stuckCheckInterval)
         {
-            if (Vector3.Distance(transform.position, lastStuckCheckPos) < stuckMoveThreshold) StartCoroutine(RecoverFromStuck());
-            else stuckRecoveryAttempts = 0;
-            lastStuckCheckPos = transform.position;
             stuckTimer = 0f;
+            float moved = Vector3.Distance(transform.position, lastStuckCheckPos);
+            lastStuckCheckPos = transform.position;
+
+            if (moved < stuckMoveThreshold)
+            {
+                stuckStrikes++;
+                if (stuckStrikes >= maxStuckStrikes)
+                {
+                    stuckStrikes = 0;
+                    BeginRecovery();
+                    return;
+                }
+            }
+            else
+            {
+                stuckStrikes = Mathf.Max(0, stuckStrikes - 1);
+            }
         }
 
         // --- Find where we are on the spline ---
         SplineUtility.GetNearestPoint(racingLine, transform.position, out _, out var nearestT);
-        var lookaheadT = AdvanceTAlongSpline(nearestT, GetLookaheadDistance());
-        var lookaheadPos = (Vector3)racingLine.EvaluatePosition(lookaheadT);
+
+        float speedRatio = Mathf.Clamp01(physicsbody.velocity.magnitude / FeKaCurrentStats.maxSpeed);
+        float farDist    = Mathf.Lerp(8f, 22f, speedRatio);
+        float midDist    = farDist * 0.45f;
+
+        float midT = AdvanceTAlongSpline(nearestT, midDist);
+        float farT = AdvanceTAlongSpline(nearestT, farDist);
+
+        Vector3 midPos = (Vector3)racingLine.EvaluatePosition(midT);
+        Vector3 farPos = (Vector3)racingLine.EvaluatePosition(farT);
+
+        var curvature = GetSplineCurvature(nearestT, 0.04f);
+
+        // On tight corners weight toward the nearer target for precision
+        var lookaheadPos = Vector3.Lerp(farPos, midPos, curvature * 1.5f);
 
         // --- Obstacle check between us and the lookahead point ---
         var actualTarget = lookaheadPos;
         if (Physics.Linecast(transform.position + Vector3.up * 0.5f, lookaheadPos + Vector3.up * 0.5f, out var obstacleHit) && !obstacleHit.collider.isTrigger)
         {
             var deflect = Vector3.Cross(obstacleHit.normal, Vector3.up).normalized;
-            actualTarget = obstacleHit.point + deflect * 3f;
+            actualTarget = obstacleHit.point + deflect * 3.5f;
         }
 
-         // --- Steering ---
+        // --- Steering ---
         var toTarget = actualTarget - transform.position;
         var localDir = transform.InverseTransformDirection(toTarget);
-        var geometricSteer = Mathf.Clamp(localDir.x / 10f, -1f, 1f);
+
+        float angleRad = Mathf.Atan2(localDir.x, localDir.z);
+        var geometricSteer = Mathf.Clamp(angleRad / (Mathf.PI * 0.25f), -1f, 1f);
 
         var localVelocity = transform.InverseTransformDirection(physicsbody.velocity);
-        var velocityCorrection = -localVelocity.x / (FeKaCurrentStats.maxSpeed * 1.5f);
+        var velocityCorrection = Mathf.Clamp(-localVelocity.x / (FeKaCurrentStats.maxSpeed * 1.2f), -0.4f, 0.4f);
 
         // --- Item targeting ---
-        if (currentItemTarget != null)
-        {
-            if (!currentItemTarget.itemAvailable 
-                || Vector3.Distance(transform.position, currentItemTarget.transform.position) > itemChaseExitRadius)
-            {
-                currentItemTarget = null;
-            }
-        }
-        else if (FeKaCurrentStats.utility == null && UnityEngine.Random.value < itemPickupChance * Time.deltaTime)
-        {
-            currentItemTarget = FindNearbyItemSpawner();
-        }
-
-        var itemSteer = 0f;
+        UpdateItemTarget();
         if (currentItemTarget != null)
         {
             var toItem = currentItemTarget.transform.position - transform.position;
             var localToItem = transform.InverseTransformDirection(toItem);
-            var itemSteerRaw = Mathf.Clamp(localToItem.x / 10f, -1f, 1f);
-            var forwardness = Mathf.Clamp01(localToItem.z / itemPickupRadius);
-            itemSteer = Mathf.Lerp(geometricSteer, itemSteerRaw, forwardness);
-            geometricSteer = itemSteer;
+            float itemAngle = Mathf.Atan2(localToItem.x, localToItem.z);
+            float itemSteerRaw = Mathf.Clamp(itemAngle / (Mathf.PI * 0.25f), -1f, 1f);
+
+            float itemDist = toItem.magnitude;
+            float proximityWeight = 1f - Mathf.Clamp01(itemDist / itemPickupRadius);
+
+            float lateralWeight = Mathf.Clamp01(Mathf.Abs(localToItem.x) / itemDistanceWander);
+
+            float blendWeight = Mathf.Clamp01((proximityWeight + lateralWeight) * racingLineTrackingPercentage);
+            geometricSteer = Mathf.Lerp(geometricSteer, itemSteerRaw, blendWeight);
         }
 
         // --- Pawn avoidance ---
         var avoidanceSteer = 0f;
-        if (raceManager == null)
+        if (raceManager != null)
         {
-            GameInstance.Get<GI_RaceManager>();
-        }
-        foreach (var pawn in raceManager.racers)
-        {
-            if (pawn == this) continue;
-            var toPawn = pawn.transform.position - transform.position;
-            var localToPawn = transform.InverseTransformDirection(toPawn);
-            if (localToPawn.z > 0f && toPawn.magnitude < pawnAvoidanceRadius)
+            foreach (var pawn in raceManager.racers)
             {
-                var proximity = 1f - (toPawn.magnitude / pawnAvoidanceRadius);
-                avoidanceSteer -= Mathf.Sign(localToPawn.x) * proximity * pawnAvoidanceStrength;
+                if (pawn == this) continue;
+                var toPawn = pawn.transform.position - transform.position;
+                var localToPawn = transform.InverseTransformDirection(toPawn);
+                if (localToPawn.z > 0f && toPawn.magnitude < pawnAvoidanceRadius)
+                {
+                    var proximity = 1f - (toPawn.magnitude / pawnAvoidanceRadius);
+                    avoidanceSteer -= Mathf.Sign(localToPawn.x) * proximity * pawnAvoidanceStrength;
+                }
             }
         }
 
-        steerInput = new Vector2(Mathf.Clamp(geometricSteer + velocityCorrection + avoidanceSteer, -1f, 1f), 0);
+        float rawSteer = Mathf.Clamp(geometricSteer + velocityCorrection + avoidanceSteer, -1f, 1f);
+        smoothedSteer = Mathf.Lerp(smoothedSteer, rawSteer, Time.deltaTime * steerSmoothSpeed);
+        steerInput = new Vector2(smoothedSteer, 0f);
 
         // --- Speed control ---
-        var curvature = GetSplineCurvature(nearestT, 0.05f);
         var currentSpeed = physicsbody.velocity.magnitude;
         var targetBehindUs = localDir.z < 0;
-        var speedLimit = Mathf.Lerp(FeKaCurrentStats.maxSpeed, FeKaCurrentStats.maxSpeed * 0.65f, curvature * 2f);
+        var speedLimit = Mathf.Lerp(FeKaCurrentStats.maxSpeed, FeKaCurrentStats.maxSpeed * 0.55f, curvature * 2f);
 
-        if (targetBehindUs || currentSpeed > speedLimit)
+        if (targetBehindUs)
         {
-            moveInput = targetBehindUs ? 0f : Mathf.Lerp(1f, 0f, (currentSpeed - speedLimit) / 5f);
-            isBreaking = currentSpeed > speedLimit * 1.1f;
+            moveInput = 0f;
+            isBreaking = true;
+        }
+        else if (currentSpeed > speedLimit)
+        {
+            moveInput = Mathf.Lerp(1f, 0f, (currentSpeed - speedLimit) / 6f);
+            isBreaking = currentSpeed > speedLimit * 1.15f;
         }
         else
         {
             moveInput = 1f;
             isBreaking = false;
         }
+        
+        UpdateCPUItemUsage();
+        
         racingLineT = nearestT;
     }
 
@@ -345,6 +412,7 @@ public class FeKaPawn_Base : FeKaPawn
 
     private void ShowRespawnScreen()
     {
+        if (FeKaCurrentStats.controlMode != ControlMode.LocalPlayer ) return;
         if (!widgetManager)
         {
             widgetManager = GameInstance.Get<GI_WidgetManager>();
@@ -358,6 +426,7 @@ public class FeKaPawn_Base : FeKaPawn
         Instantiate(deathFX, transform.position, transform.rotation, null);
         if (FeKaCurrentStats.stocks <= 0)
         {
+            if (FeKaCurrentStats.controlMode != ControlMode.LocalPlayer ) return;
             if (!widgetManager)
             {
                 widgetManager = GameInstance.Get<GI_WidgetManager>();
@@ -372,10 +441,26 @@ public class FeKaPawn_Base : FeKaPawn
         }
     }
 
+    private void OnHurt()
+    {
+        if (FeKaCurrentStats.health <= 0) return;
+        
+        FeKaCurrentStats.characterSpriteRenderer.color = Color.red;
+        FeKaCurrentStats.characterSpriteRenderer.DOColor(new Color(1, 1, 1, 1), 1);
+    }
+    private void OnHeal()
+    {
+        FeKaCurrentStats.characterSpriteRenderer.color = Color.green;
+        FeKaCurrentStats.characterSpriteRenderer.DOColor(new Color(1, 1, 1, 1), 1);
+    }
+
     private IEnumerator AwaitRespawn()
     {
+        FeKaCurrentStats.characterSpriteRenderer.color = Color.black;
         ShowRespawnScreen();
+        FeKaCurrentStats.characterSpriteRenderer.color = Color.black;
         yield return new WaitForSeconds(FeKaCurrentStats.respawnTime);
+        FeKaCurrentStats.characterSpriteRenderer.DOColor(new Color(1, 1, 1, 1), 1);
         var lastCheckpoint = FeKaCurrentStats.currentCheckpoint - 1;
         if (lastCheckpoint < 0) lastCheckpoint = FindObjectOfType<CheckpointTracker>().raceCheckpoints.Count-1;
         var respawnTransform = FindObjectOfType<CheckpointTracker>().raceCheckpoints[lastCheckpoint].transform;
@@ -488,50 +573,84 @@ public class FeKaPawn_Base : FeKaPawn
         return Mathf.Clamp01(angle / 90f);
     }
 
-    private IEnumerator RecoverFromStuck()
+    private void BeginRecovery()
     {
-        isRecovering = true;
-        stuckRecoveryAttempts++;
+        recoveryState = RecoveryState.Reversing;
+        recoveryTimer = 0f;
+        isBreaking    = false;
 
-        if (stuckRecoveryAttempts >= maxRecoveryAttempts)
+        SplineUtility.GetNearestPoint(racingLine, transform.position, out _, out float nearestT);
+        Vector3 linePos  = (Vector3)racingLine.EvaluatePosition(nearestT);
+        Vector3 toLine   = transform.InverseTransformDirection(linePos - transform.position);
+        float turnDir    = toLine.x >= 0f ? 1f : -1f;
+        steerInput       = new Vector2(-turnDir, 0f);
+    }
+
+    private void UpdateRecoveryStateMachine()
+    {
+        recoveryTimer += Time.deltaTime;
+
+        switch (recoveryState)
         {
-            stuckRecoveryAttempts = 0;
-            RespawnAtLastCheckpoint();
-            yield return new WaitForSeconds(0.5f);
-            isRecovering = false;
-            yield break;
-        }
-
-        SplineUtility.GetNearestPoint(racingLine, transform.position, out _, out var nearestT);
-        var linePos = (Vector3)racingLine.EvaluatePosition(nearestT);
-        var toLine = transform.InverseTransformDirection(linePos - transform.position);
-
-        var turnDirection = Mathf.Sign(toLine.x) == 0f ? 1f : Mathf.Sign(toLine.x);
-        var splineIsAhead = toLine.z > 0f;
-
-        var timer = 0f;
-        while (timer < 2f)
-        {
-            if (timer < 1f)
-            {
-                moveInput = -1f;
+            case RecoveryState.Reversing:
+                moveInput  = -1f;
                 isBreaking = false;
-                steerInput = new Vector2(-turnDirection, 0);
-            }
-            else
-            {
-                moveInput = 1f;
-                isBreaking = false;
-                steerInput = new Vector2(splineIsAhead ? turnDirection : -turnDirection, 0);
-            }
-            if (timer > 0.5f && physicsbody.velocity.magnitude > stuckMoveThreshold)
+
+                bool movedBack = Vector3.Distance(transform.position, lastStuckCheckPos) > stuckMoveThreshold * 2f;
+                if (movedBack || recoveryTimer >= reversePhaseTime)
+                {
+                    recoveryTimer = 0f;
+                    recoveryState = RecoveryState.Realigning;
+                    SplineUtility.GetNearestPoint(racingLine, transform.position, out _, out float t);
+                    Vector3 lp     = (Vector3)racingLine.EvaluatePosition(t);
+                    Vector3 toLine = transform.InverseTransformDirection(lp - transform.position);
+                    steerInput     = new Vector2(Mathf.Sign(toLine.x), 0f);
+                }
                 break;
 
-            timer += Time.deltaTime;
-            yield return null;
-        }
+            case RecoveryState.Realigning:
+                moveInput  = 1f;
+                isBreaking = false;
 
-        isRecovering = false;
+                float speed = physicsbody.velocity.magnitude;
+                SplineUtility.GetNearestPoint(racingLine, transform.position, out _, out float nearT);
+                Vector3 fwd = (Vector3)racingLine.EvaluateTangent(nearT);
+                float alignment = Vector3.Dot(transform.forward, fwd.normalized);
+
+                bool recovered = speed > stuckMoveThreshold * 2f && alignment > 0.6f;
+                if (recovered)
+                {
+                    lastStuckCheckPos = transform.position;
+                    recoveryState     = RecoveryState.Idle;
+                    smoothedSteer     = 0f;
+                }
+                else if (recoveryTimer >= realignPhaseTime)
+                {
+                    recoveryState = RecoveryState.ForceRespawn;
+                }
+                break;
+
+            case RecoveryState.ForceRespawn:
+                RespawnAtLastCheckpoint();
+                recoveryState = RecoveryState.Idle;
+                smoothedSteer = 0f;
+                break;
+        }
+    }
+
+    private void UpdateItemTarget()
+    {
+        if (currentItemTarget != null)
+        {
+            if (!currentItemTarget.itemAvailable ||
+                Vector3.Distance(transform.position, currentItemTarget.transform.position) > itemChaseExitRadius)
+                currentItemTarget = null;
+        }
+        else if (FeKaCurrentStats.utility == null &&
+                 UnityEngine.Random.value < itemPickupChance * Time.deltaTime)
+        {
+            currentItemTarget = FindNearbyItemSpawner();
+        }
     }
     
     private ItemSpawner FindNearbyItemSpawner()
@@ -539,15 +658,14 @@ public class FeKaPawn_Base : FeKaPawn
         var bestSpawner = (ItemSpawner)null;
         var bestScore = float.MinValue;
 
-        foreach (var spawner in FindObjectsOfType<ItemSpawner>())
+        foreach (var spawner in allItemSpawners)
         {
-            if (!spawner.itemAvailable) continue;
+            if (spawner == null || !spawner.itemAvailable) continue;
 
             var dist = Vector3.Distance(transform.position, spawner.transform.position);
             if (dist > itemPickupRadius) continue;
 
-            // Score = rarity weight / distance, so rare close items beat common far ones
-            var rarityWeight = (int)spawner.item.rarity + 1f;
+            var rarityWeight = (int)spawner.item.details.rarity + 1f;
             var score = rarityWeight / dist;
 
             if (score > bestScore)
@@ -558,5 +676,64 @@ public class FeKaPawn_Base : FeKaPawn
         }
 
         return bestSpawner;
+    }
+    
+    private void UpdateCPUItemUsage()
+    {
+        var held = FeKaCurrentStats.utility;
+        if (held?.itemBehaviour == null)
+        {
+            isCPUFiringRocket = false;
+            return;
+        }
+
+        held.itemBehaviour.OnUpdate(this);
+
+        if (held.itemBehaviour.IsExhausted())
+        {
+            FeKaCurrentStats.utility = null;
+            isCPUFiringRocket = false;
+            return;
+        }
+
+        if (held.itemBehaviour is FeKaItem_RocketLauncher rocketLauncher)
+        {
+            HandleCPURocketLauncher(rocketLauncher);
+        }
+    }
+    
+    private void HandleCPURocketLauncher(FeKaItem_RocketLauncher rocketLauncher)
+    {
+        if (!isCPUFiringRocket)
+        {
+            isCPUFiringRocket = true;
+            StartCoroutine(CPUFireRocket(rocketLauncher));
+        }
+    }
+
+    private IEnumerator CPUFireRocket(FeKaItem_RocketLauncher rocketLauncher)
+    {
+        var holdTimer = 0f;
+        var maxHoldTime = 16f;
+
+        rocketLauncher.OnUseHeld(this);
+
+        while (holdTimer < maxHoldTime)
+        {
+            holdTimer += Time.deltaTime;
+
+            rocketLauncher.OnUseHeld(this);
+
+            if (rocketLauncher.HasLock())
+            {
+                yield return new WaitForSeconds(0.15f);
+                break;
+            }
+
+            yield return null;
+        }
+
+        rocketLauncher.OnUseReleased(this);
+        isCPUFiringRocket = false;
     }
 }

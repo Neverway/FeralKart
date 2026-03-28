@@ -12,8 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7324bb4c1e44b408795ada7e2b4c66f5, type: 3}
   m_Name: FeKaItem_RocketLauncher
   m_EditorClassIdentifier: 
-  itemName: Rocket Launcher
-  icon: {fileID: 21300000, guid: 7f4dadc81c8f453a6ae6580f38eb4290, type: 3}
-  usages: 3
-  respawnTime: 3
-  rarity: 3
+  details:
+    itemName: Rocket Launcher
+    icon: {fileID: 21300000, guid: 7f4dadc81c8f453a6ae6580f38eb4290, type: 3}
+    respawnTime: 3
+    rarity: 3
+  itemBehaviour:
+    rid: 8346923364940251139
+  references:
+    version: 2
+    RefIds:
+    - rid: 8346923364940251139
+      type: {class: FeKaItem_RocketLauncher, ns: , asm: Assembly-CSharp}
+      data:
+        maxAmmo: 3
+        rocketPrefab: {fileID: 6598383830466623576, guid: 219fbfc5676c63d9490c08b53e893c1c,
+          type: 3}
+        targetingUIPrefab: {fileID: 4434409366504517441, guid: 28c10c8cf385ccdb685652018b31aebe,
+          type: 3}

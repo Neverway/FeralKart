@@ -135,11 +135,11 @@ public class WB_HUD : MonoBehaviour
         if (targetFeKaPawn.FeKaCurrentStats.utility)
         {
             utility.icon.enabled = true;
-            utility.icon.sprite = targetFeKaPawn.FeKaCurrentStats.utility.icon;
-            utility.bar.color = FeKaItem.GetRarityColor(targetFeKaPawn.FeKaCurrentStats.utility.rarity);
+            utility.icon.sprite = targetFeKaPawn.FeKaCurrentStats.utility.details.icon;
+            utility.bar.color = FeKaItem.GetRarityColor(targetFeKaPawn.FeKaCurrentStats.utility.details.rarity);
             utility.bar.fillAmount = targetFeKaPawn.FeKaCurrentStats.utilityCharge;
-            utility.text.text = targetFeKaPawn.FeKaCurrentStats.utility.itemName;
-            utility.quantity.text = ($"{targetFeKaPawn.FeKaCurrentStats.utilityUsages}/{targetFeKaPawn.FeKaCurrentStats.utility.usages}");
+            utility.text.text = targetFeKaPawn.FeKaCurrentStats.utility.details.itemName;
+            utility.quantity.text = ($"{targetFeKaPawn.FeKaCurrentStats.utility.itemBehaviour.GetCharge()}");
         }
         else
         {

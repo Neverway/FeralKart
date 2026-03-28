@@ -5222,6 +5222,8 @@ MonoBehaviour:
     direction: {x: 1, y: 0}
   - sprite: {fileID: -621729650, guid: 4424baeb3e4ce4a889fde08cfe4853fd, type: 3}
     direction: {x: 1, y: -1}
+  UseSpriteAngleGroup: 1
+  spriteAngleGroup: {fileID: 11400000, guid: ff7a8b2427667837d8392bea9e4cb541, type: 2}
   origin: {fileID: 766078644099949049}
   overrideRotation: 0
   zRotationOffset: 0
@@ -20661,6 +20663,37 @@ Transform:
   - {fileID: 4659724850758824046}
   m_Father: {fileID: 766078644099949049}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8907602824908294683
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5690659962836908191}
+  m_Layer: 11
+  m_Name: ProjectilePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5690659962836908191
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8907602824908294683}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.216, z: 0.507}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 766078644099949049}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9018392291717064548
 GameObject:
   m_ObjectHideFlags: 0
@@ -20854,6 +20887,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 8332517393403533926}
+    - targetCorrespondingSourceObject: {fileID: 6860228584438697348, guid: 0691e5206c095094690805245502b274,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5690659962836908191}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2276721478425129573, guid: 0691e5206c095094690805245502b274,
         type: 3}
@@ -20935,9 +20972,9 @@ MonoBehaviour:
     maxSpeed: 30
     breakForce: 5000
     coastBreakForce: 700
-    turnSensitivity: 0.5
+    turnSensitivity: 0.8
     highSpeedSteerFraction: 0.3
-    maxSteerAngle: 20
+    maxSteerAngle: 23
     tiltTorque: 300
     targetTiltAngle: 50
     barrelRollDuration: 0.5
@@ -20967,6 +21004,8 @@ MonoBehaviour:
       smokeParticle: {fileID: 381526042423635229}
       axel: 1
     tiltVisualMesh: {fileID: 665335201587076658}
+    projectileSpawnPoint: {fileID: 5690659962836908191}
+    characterSpriteRenderer: {fileID: 5535989559101859683}
     respawnTime: 3
     stocks: 3
     shield: 0
@@ -20979,6 +21018,9 @@ MonoBehaviour:
     checkpointResetHealthPenalty: 10
     currentLap: 0
     currentCheckpoint: 0
+    finishPlacement: 0
+    finishTime: 0
+    racerState: 0
     throwForce: 350
     movementSpeed: 10
     airMovementMultiplier: 0.25

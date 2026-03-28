@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9da39c759de2a5f6d93d7e6f45553414, type: 3}
+  m_Name: FeKaCar_Base
+  m_EditorClassIdentifier: 
+  spriteAngles:
+  - sprite: {fileID: 803224152, guid: 4424baeb3e4ce4a889fde08cfe4853fd, type: 3}
+    direction: {x: 0, y: 1}
+  - sprite: {fileID: -445016179, guid: 4424baeb3e4ce4a889fde08cfe4853fd, type: 3}
+    direction: {x: -1, y: 1}
+  - sprite: {fileID: -123255834, guid: 4424baeb3e4ce4a889fde08cfe4853fd, type: 3}
+    direction: {x: -1, y: 0}
+  - sprite: {fileID: 1156626652, guid: 4424baeb3e4ce4a889fde08cfe4853fd, type: 3}
+    direction: {x: -1, y: -1}
+  - sprite: {fileID: -213089200, guid: 4424baeb3e4ce4a889fde08cfe4853fd, type: 3}
+    direction: {x: 0, y: -1}
+  - sprite: {fileID: 979603263, guid: 4424baeb3e4ce4a889fde08cfe4853fd, type: 3}
+    direction: {x: 1, y: 1}
+  - sprite: {fileID: 1804975021, guid: 4424baeb3e4ce4a889fde08cfe4853fd, type: 3}
+    direction: {x: 1, y: 0}
+  - sprite: {fileID: -621729650, guid: 4424baeb3e4ce4a889fde08cfe4853fd, type: 3}
+    direction: {x: 1, y: -1}

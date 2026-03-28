@@ -123,7 +123,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: fkchar_base_0
+      name: FeKaCar_TVKellory_0
       rect:
         serializedVersion: 2
         x: 0
@@ -137,14 +137,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f8675e01912677cce98ca5e144671f4e
-      internalID: 803224152
+      spriteID: 9c30b6fa65401c83fa21051986725577
+      internalID: 67945440
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fkchar_base_1
+      name: FeKaCar_TVKellory_1
       rect:
         serializedVersion: 2
         x: 160
@@ -158,14 +158,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b553b9fdb13eb88aca4d950653dc57f0
-      internalID: -445016179
+      spriteID: 00717d088f05400bdbfe6d1a8c2f66f7
+      internalID: -1876640855
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fkchar_base_2
+      name: FeKaCar_TVKellory_2
       rect:
         serializedVersion: 2
         x: 320
@@ -179,14 +179,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d6012490569b62ef9bae07057699dc1f
-      internalID: -123255834
+      spriteID: 33581374dbe9025d3aa2f93cae0772b8
+      internalID: 1360747623
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fkchar_base_3
+      name: FeKaCar_TVKellory_3
       rect:
         serializedVersion: 2
         x: 480
@@ -200,14 +200,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b4e3518edbf5333208855c4fe91ee596
-      internalID: 1156626652
+      spriteID: 0a464f0457fc0f19a97220ba032b21b1
+      internalID: -2131169409
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fkchar_base_4
+      name: FeKaCar_TVKellory_4
       rect:
         serializedVersion: 2
         x: 0
@@ -221,14 +221,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 89d68f82d811f8194a8525f41421e91d
-      internalID: -213089200
+      spriteID: 6940028f087fcbfea9328355fb8953bd
+      internalID: 1414023635
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fkchar_base_5
+      name: FeKaCar_TVKellory_5
       rect:
         serializedVersion: 2
         x: 160
@@ -242,14 +242,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 74131ea3fec4b03d29db54e014aa86f2
-      internalID: 979603263
+      spriteID: bf339c325f0c1cb24a6157fb55192f8c
+      internalID: -2062898437
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fkchar_base_6
+      name: FeKaCar_TVKellory_6
       rect:
         serializedVersion: 2
         x: 320
@@ -263,14 +263,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2edc03c1fb695d59ab20d56b2dc8d0cd
-      internalID: 1804975021
+      spriteID: b553ec2af9f8d2788af6cf09b5c38dcc
+      internalID: -1438661037
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fkchar_base_7
+      name: FeKaCar_TVKellory_7
       rect:
         serializedVersion: 2
         x: 480
@@ -284,8 +284,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c6518c64463119f7eb485812047fe519
-      internalID: -621729650
+      spriteID: 67caf6f137985d4fead332785b3f41a8
+      internalID: 670117230
       vertices: []
       indices: 
       edges: []
@@ -301,14 +301,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      fkchar_base_0: 803224152
-      fkchar_base_1: -445016179
-      fkchar_base_2: -123255834
-      fkchar_base_3: 1156626652
-      fkchar_base_4: -213089200
-      fkchar_base_5: 979603263
-      fkchar_base_6: 1804975021
-      fkchar_base_7: -621729650
+      FeKaCar_TVKellory_0: 67945440
+      FeKaCar_TVKellory_1: -1876640855
+      FeKaCar_TVKellory_2: 1360747623
+      FeKaCar_TVKellory_3: -2131169409
+      FeKaCar_TVKellory_4: 1414023635
+      FeKaCar_TVKellory_5: -2062898437
+      FeKaCar_TVKellory_6: -1438661037
+      FeKaCar_TVKellory_7: 670117230
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

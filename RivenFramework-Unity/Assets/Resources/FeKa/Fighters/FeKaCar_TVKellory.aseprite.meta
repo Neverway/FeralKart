@@ -121,15 +121,15 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: FeKaCar_TVKellory
     originalName: 
-    pivot: {x: 0.65936744, y: -0.07751938}
+    pivot: {x: 0.47978908, y: -0.06896552}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 411
-      height: 129
+      width: 569
+      height: 145
     spriteID: ef10babe2e77541c8bf1e59a8738fe07
     spriteBone: []
     spriteOutline: []
@@ -151,10 +151,10 @@ ScriptedImporter:
     - name: FeKaCar_TVKellory
       frameIndex: 0
       cellRect:
-        x: 49
+        x: 47
         y: 10
-        width: 411
-        height: 129
+        width: 569
+        height: 145
       spriteId: ef10babe2e77541c8bf1e59a8738fe07
     linkedCells: []
     parentIndex: -1
