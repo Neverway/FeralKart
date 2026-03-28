@@ -10,9 +10,17 @@ public class AngleBillboardRenderer : MonoBehaviour
     public Camera activeCamera;
     public SpriteRenderer spriteRenderer;
     [SerializeField] public SpriteAngle[] spriteAngles;
+    public bool UseSpriteAngleGroup = false;
+    public SpriteAngleGroup spriteAngleGroup;
     public Transform origin;
     public bool overrideRotation = false;
     public float zRotationOffset;
+
+    private void Start()
+    {
+        if (UseSpriteAngleGroup) spriteAngles = spriteAngleGroup.spriteAngles;
+        spriteRenderer.flipX = true; // I guess my rotations were off, so flip the sprite??
+    }
 
     // Update is called once per frame
     void Update()

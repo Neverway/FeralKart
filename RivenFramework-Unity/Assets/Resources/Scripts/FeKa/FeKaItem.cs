@@ -1,17 +1,24 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using ErryLib.Reflection;
 using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "FeKaItem_", menuName = "FeKa/FeKaItem")]
+[Serializable]
 public class FeKaItem : ScriptableObject
 {
-    public string itemName;
-    public Sprite icon;
-    public int usages;
-    public bool consumable;
-    public float respawnTime;
-    public Rarity rarity;
+    public FeKaItem Clone()
+    {
+        FeKaItem clone = ScriptableObject.CreateInstance<FeKaItem>();
+        clone.details = details;
+        clone.itemBehaviour = itemBehaviour.GetClone();
+        return clone;
+    }
+
+    public FeKaItemDetails details;
+    [SerializeReference, Polymorphic] public ItemBehaviour itemBehaviour;
     
 
     public static Color GetRarityColor(Rarity rarity=Rarity.common)
@@ -37,6 +44,33 @@ public class FeKaItem : ScriptableObject
                 return new Color(0.6f, 0.6f, 0.6f);
         }
     }
+}
+
+[Serializable]
+public struct FeKaItemDetails
+{
+    public string itemName;
+    public Sprite icon;
+    public float respawnTime;
+    public Rarity rarity;
+}
+
+[Serializable]
+public abstract class ItemBehaviour
+{    
+    public abstract ItemBehaviour GetClone();
+    
+    public abstract bool OnPickup(FeKaPawn pawn);
+
+    public virtual void OnUpdate(FeKaPawn pawn) { }
+
+    public virtual void OnUseHeld(FeKaPawn pawn) { }
+
+    public virtual void OnUseReleased(FeKaPawn pawn) { }
+
+    public virtual int GetCharge() => -1;
+
+    public virtual bool IsExhausted() => false;
 }
 
 public enum Rarity

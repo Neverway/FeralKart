@@ -16,11 +16,12 @@ public class GI_RaceManager : MonoBehaviour
 
     public List<FeKaPawn_Base> racers;
     public List<FeKaPawn_Base> racerStandings = new List<FeKaPawn_Base>();
+    private Coroutine countdownCoroutine;
 
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1) && countdownCoroutine == null)
         {
             StartRace();
         }
@@ -45,23 +46,34 @@ public class GI_RaceManager : MonoBehaviour
     [ContextMenu("Start Race")]
     public void StartRace()
     {
+        StopAllCoroutines();
         FindObjectOfType<CheckpointTracker>().Init();
         
         racers.Clear();
-        foreach (var feKaPawn in FindObjectsOfType<FeKaPawn_Base>())
+        var checkpointTracker = FindAnyObjectByType<CheckpointTracker>();
+        var allPawns =  new List<FeKaPawn_Base>(FindObjectsOfType<FeKaPawn_Base>());
+        for (int i = 0; i < allPawns.Count; i++)
         {
-            feKaPawn.Init();
-            racers.Add(feKaPawn);
+            allPawns[i].Init();
+            
+            if (checkpointTracker.raceStartPoints != null && i < checkpointTracker.raceStartPoints.Count)
+            {
+                var startPoint = checkpointTracker.raceStartPoints[i];
+                allPawns[i].transform.SetPositionAndRotation(startPoint.position, startPoint.rotation);
+            }
+
+            racers.Add(allPawns[i]);
         }
 
-        StartCoroutine(RaceCountdown());
+        countdownCoroutine = StartCoroutine(RaceCountdown());
     }
 
     public IEnumerator RaceCountdown()
     {
         var widgetManager = GameInstance.Get<GI_WidgetManager>();
-        Destroy(widgetManager.GetExistingWidget(RaceCountdownWidget.name));
+        
         widgetManager.AddWidget(RaceCountdownWidget);
+        
         yield return new WaitForSeconds(3);
         
         // RELEASE ZE HOUNDS!!!
@@ -73,6 +85,7 @@ public class GI_RaceManager : MonoBehaviour
         timeRemaining = raceDuration;
         startTime = Time.deltaTime;
         raceInProgress = true;
+        countdownCoroutine = null;
     }
 
     public void CheckRacerStatus()

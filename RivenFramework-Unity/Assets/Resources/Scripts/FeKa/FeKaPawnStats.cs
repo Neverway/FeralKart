@@ -51,6 +51,8 @@ public class FeKaPawnStats : PawnStats
     [Tooltip("The wheels that drive this vehicle")]
     public List<Wheel> wheels;
     public Transform tiltVisualMesh;
+    public Transform projectileSpawnPoint;
+    public SpriteRenderer characterSpriteRenderer;
 
     [Header("FeKa Character Stats")] 
     public float respawnTime = 3;

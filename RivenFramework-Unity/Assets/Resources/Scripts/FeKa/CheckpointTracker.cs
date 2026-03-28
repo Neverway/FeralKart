@@ -8,6 +8,8 @@ public class CheckpointTracker : MonoBehaviour
 {
     [Tooltip("A list of all of the checkpoints on this race track in order")]
     public List<RaceCheckpoint> raceCheckpoints;
+    
+    public List<Transform> raceStartPoints;
 
     /// <summary>
     /// Called in the context menu, gathers all the checkpoints that are a child of this object,
