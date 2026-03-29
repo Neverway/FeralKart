@@ -146,10 +146,28 @@ public class WB_NetConnect : MonoBehaviour
     /// </summary>
     public void PingServerEntries()
     {
-        // Loop through all servers in the list
-            // Try to get their response data
-                // Succeeded, now set the entry's widget info
-            // Failed, set the info to X's
+        networkManager ??= GameInstance.Get<GI_NetworkManager>();
+
+        for (int i = 0; i < serverEntryList.Count; i++)
+        {
+            var entry = serverEntryList[i];
+            entry.SetPending();
+
+            StartCoroutine(networkManager.QueryServer(
+                entry.serverAddress,
+                onSuccess: (response, ping) =>
+                {
+                    entry.serverPing.text    = $"{ping}ms";
+                    entry.serverMap.text     = response.MapName;
+                    entry.serverMode.text    = response.GameMode;
+                    entry.serverPlayers.text = $"{response.PlayerCount}/{response.MaxPlayers}";
+                    entry.SetIcon(response.IconBase64);
+                },
+                onFailure: () =>
+                {
+                    entry.SetOffline();
+                }));
+        }
     }
 
 
