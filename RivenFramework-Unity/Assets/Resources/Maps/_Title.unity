@@ -673,6 +673,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1081874596842588356, guid: 49441bef8d2256233a0f4f3fed7dfb2f,
+        type: 3}
+      propertyPath: serverEntries.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1081874596842588356, guid: 49441bef8d2256233a0f4f3fed7dfb2f,
+        type: 3}
+      propertyPath: serverEntries.Array.data[0].serverName
+      value: Dummy Test Server
+      objectReference: {fileID: 0}
+    - target: {fileID: 1081874596842588356, guid: 49441bef8d2256233a0f4f3fed7dfb2f,
+        type: 3}
+      propertyPath: serverEntries.Array.data[1].serverName
+      value: Dummy Test Server2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1081874596842588356, guid: 49441bef8d2256233a0f4f3fed7dfb2f,
+        type: 3}
+      propertyPath: serverEntries.Array.data[2].serverName
+      value: Dummy Test Server3
+      objectReference: {fileID: 0}
     - target: {fileID: 4298151654670827244, guid: 49441bef8d2256233a0f4f3fed7dfb2f,
         type: 3}
       propertyPath: m_Name

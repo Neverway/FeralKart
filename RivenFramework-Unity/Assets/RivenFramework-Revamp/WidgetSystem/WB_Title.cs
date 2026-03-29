@@ -29,7 +29,8 @@ public class WB_Title : MonoBehaviour
     private GI_WorldLoader worldLoader;
     //private LevelManager levelLoader; // Added for loading the overworld levels from Cartographer
 
-    [SerializeField] private Button buttonMainGame,
+    [SerializeField] private Button buttonLocal,
+        buttonOnline,
         buttonExtras,
         buttonRanking,
         buttonSettings,
@@ -37,7 +38,7 @@ public class WB_Title : MonoBehaviour
         buttonCredits,
         buttonLanguage;
 
-    [SerializeField] private GameObject extrasWidget, rankingWidget, settingsWidget, creditsWidget, languageWidget;
+    [SerializeField] private GameObject localWidget, onlineWidget, extrasWidget, rankingWidget, settingsWidget, creditsWidget, languageWidget;
 
 
     //=-----------------=
@@ -48,7 +49,8 @@ public class WB_Title : MonoBehaviour
         widgetManager = FindObjectOfType<GI_WidgetManager>();
         worldLoader = FindObjectOfType<GI_WorldLoader>();
         //levelLoader = FindObjectOfType<LevelManager>();
-        buttonMainGame.onClick.AddListener(delegate { OnClick("buttonMainGame"); });
+        buttonLocal.onClick.AddListener(delegate { OnClick("buttonLocal"); });
+        buttonOnline.onClick.AddListener(delegate { OnClick("buttonOnline"); });
         buttonExtras.onClick.AddListener(delegate { OnClick("buttonExtras"); });
         buttonRanking.onClick.AddListener(delegate { OnClick("buttonRanking"); });
         buttonSettings.onClick.AddListener(delegate { OnClick("buttonSettings"); });
@@ -69,11 +71,13 @@ public class WB_Title : MonoBehaviour
     {
         switch (button)
         {
-            case "buttonMainGame":
-                if (!worldLoader) worldLoader = FindObjectOfType<GI_WorldLoader>();
-                //if (!levelLoader) levelLoader = FindObjectOfType<LevelManager>();
-                worldLoader.LoadWorld(targetLevelID);
-                // levelLoader.Load("", true); // Replace with function to load save file level
+            case "buttonLocal":
+                if (!widgetManager) widgetManager = FindObjectOfType<GI_WidgetManager>();
+                widgetManager.AddWidget(localWidget);
+                break;
+            case "buttonOnline":
+                if (!widgetManager) widgetManager = FindObjectOfType<GI_WidgetManager>();
+                widgetManager.AddWidget(onlineWidget);
                 break;
             case "buttonExtras":
                 if (!widgetManager) widgetManager = FindObjectOfType<GI_WidgetManager>();
