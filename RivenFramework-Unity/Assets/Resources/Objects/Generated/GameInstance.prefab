@@ -111,6 +111,7 @@ MonoBehaviour:
   - {fileID: 3989509737889599038, guid: feca747c589702e9786bf0886dfc1210, type: 3}
   - {fileID: 5675289539813747590, guid: f951f1626e8a081628c8e41d018c0094, type: 3}
   - {fileID: 5675289539813747590, guid: 9d3f675cf308c0ab6be40585eac73090, type: 3}
+  - {fileID: 1507811972370413053, guid: 562ccf347626f1c9e95a0fe519047b8a, type: 3}
 --- !u!114 &7341293665338298491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1027,4 +1028,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1c934e2a35466209b8f87a23ac63943, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  localProfile:
+    playerName: NetPlayer
+  isConnected: 0
+  connectedAddress: 
+  currentPhase: 
+  lastKnownMapName: 
   serverEntries: []
+  fighterSelectWidget: {fileID: 0}
+  connectionMessageWidget: {fileID: 0}
+  titleScreenWorldName: _Title

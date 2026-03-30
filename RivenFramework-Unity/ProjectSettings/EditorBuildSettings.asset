@@ -24,8 +24,23 @@ EditorBuildSettings:
     path: Assets/RivenFramework-Revamp/Resources/Levels/_Error.unity
     guid: 1711274c2723a1632a3217b3d3d86e07
   - enabled: 1
-    path: Assets/Resources/Maps/DevTestTrack.unity
+    path: Assets/Resources/Maps/RaceTracks/midwen_midnightcity.unity
     guid: 0e34d589a5dbc83e2a851676458f08f3
+  - enabled: 1
+    path: Assets/Resources/Maps/RaceTracks/da_howelfen.unity
+    guid: 01e93fd5395659edcb20d70c69cda3af
+  - enabled: 1
+    path: Assets/Resources/Maps/RaceTracks/auho_forrest.unity
+    guid: 1f6b90a3e4b697fa8b46bf280e032754
+  - enabled: 1
+    path: Assets/Resources/Maps/RaceTracks/wico_cabin.unity
+    guid: 753664657489efbc9bcc2d1fafc62636
+  - enabled: 1
+    path: Assets/Resources/Maps/RaceTracks/corgeo_facility.unity
+    guid: a59b4f07c556b9c16a5840e4319b5e01
+  - enabled: 1
+    path: Assets/Resources/Maps/RaceTracks/fo_mechanyon.unity
+    guid: 1dd1b6cc40e136d1a86203877c3e64b0
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: f15e32241878d7bdda685b0a87c02c59,
       type: 2}

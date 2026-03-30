@@ -5,6 +5,7 @@
 //
 //=============================================================================
 
+using RivenFramework;
 using UnityEngine;
 
 namespace Neverway.Framework.PawnManagement
@@ -33,14 +34,12 @@ namespace Neverway.Framework.PawnManagement
         //=-----------------=
         private void Start()
         {
-            widgetManager = FindObjectOfType<GI_WidgetManager>();
-            widgetManager.AddWidget(titleWidget);
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
         }
 
         private void Update()
         {
+            widgetManager ??= GameInstance.Get<GI_WidgetManager>();
+            if (!widgetManager.GetExistingWidget(titleWidget.name)) widgetManager.AddWidget(titleWidget);
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }

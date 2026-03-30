@@ -111,6 +111,8 @@ MonoBehaviour:
     type: 3}
   addServerWidget: {fileID: 1507811972370413053, guid: 67be2fcd2c6ea8d568739b46a20e23fe,
     type: 3}
+  connectionMessageWidget: {fileID: 1507811972370413053, guid: 2724ca646a97760818b83eefb25e7de2,
+    type: 3}
 --- !u!1 &1737482936598233692
 GameObject:
   m_ObjectHideFlags: 0

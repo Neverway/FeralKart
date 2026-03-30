@@ -26,7 +26,7 @@ public class WB_Pause : WidgetBlueprint
     //=-----------------=
     private GI_WidgetManager widgetManager;
     private GI_WorldLoader worldLoader;
-    [SerializeField] private Button buttonResume, buttonSettings, buttonTitle, buttonQuit, buttonRestart;
+    [SerializeField] private Button buttonResume, buttonSettings, buttonTitle, buttonQuit, buttonSelectCharacter;
     [SerializeField] private GameObject settingsWidget;
 
 
@@ -41,7 +41,7 @@ public class WB_Pause : WidgetBlueprint
         buttonSettings.onClick.AddListener(delegate { OnClick("buttonSettings"); });
         buttonTitle.onClick.AddListener(delegate { OnClick("buttonTitle"); });
         buttonQuit.onClick.AddListener(delegate { OnClick("buttonQuit"); });
-        buttonRestart.onClick.AddListener(delegate { OnClick("buttonRestart"); });
+        buttonSelectCharacter.onClick.AddListener(delegate { OnClick("buttonSelectCharacter"); });
     }
 
     private void OnDestroy()
@@ -64,16 +64,17 @@ public class WB_Pause : WidgetBlueprint
             case "buttonSettings":
                 if (widgetManager == null) widgetManager = GameInstance.Get<GI_WidgetManager>();
                 widgetManager.AddWidget(settingsWidget);
-                //GameInstance.GetWidget("WB_Settings").GetComponent<WB_Settings>().Init();
                 break;
             case "buttonTitle":
+                var networkManager = GameInstance.Get<GI_NetworkManager>();
+                networkManager?.Disconnect();
                 worldLoader.LoadWorld("_Title");
                 break;
             case "buttonQuit":
                 Application.Quit();
                 break;
-            case "buttonRestart":
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            case "buttonSelectCharacter":
+                
                 break;
         }
     }
