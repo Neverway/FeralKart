@@ -29,7 +29,7 @@ public class GI_NetworkManager : MonoBehaviour
     public string connectedAddress = "";
     public string currentPhase = null;
     public string lastKnownMapName = "";
-
+    public GameStatePacket lastGameState = null;
 
     /*-----[ Internal Variables ]-------------------------------------------------------------------------------------*/
     private string configFilePath => Path.Combine(Application.persistentDataPath, "serverlist.config");
@@ -491,6 +491,7 @@ public class GI_NetworkManager : MonoBehaviour
             {
                 string json = packet.Substring((NetProtocol.Magic + ":STATE:").Length);
                 var    gs   = JsonUtility.FromJson<GameStatePacket>(json);
+                lastGameState = gs;
                 lastKnownMapName = gs.MapName;
 
                 //Debug.Log($"[NetworkManager] STATE received. previousPhase='{currentPhase}' newPhase='{gs?.Phase}' map='{gs?.MapName}'");

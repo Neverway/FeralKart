@@ -39,23 +39,26 @@ public class WB_NetPlayerlist : MonoBehaviour
     /*-----[ Mono Functions ]-----------------------------------------------------------------------------------------*/
     private void Start()
     {
+    }
+    
+    private void OnEnable()
+    {
         networkManager ??= GameInstance.Get<GI_NetworkManager>();
-        widgetManager  ??= GameInstance.Get<GI_WidgetManager>();
+        if (networkManager.lastGameState != null) RebuildList(networkManager.lastGameState.PlayerNames);
 
-        networkManager.OnGameStateReceived += OnGameStateReceived;
-        
-        // Unlock the cursor while the playerlist is open
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible   = true;
     }
 
+    private void OnDisable()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible   = false;
+    }
+    
     private void OnDestroy()
     {
         if (networkManager != null) networkManager.OnGameStateReceived -= OnGameStateReceived;
-
-        // Re-lock the cursor when the playerlist closes
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible   = false;
     }
 
 
@@ -79,7 +82,7 @@ public class WB_NetPlayerlist : MonoBehaviour
             entryComp.pingText.text       = p.ping > 0 ? $"{p.ping}ms" : "--";
             entryComp.kickButton.onClick.AddListener(() =>
             {
-                // Kick is server-side only — for now just log; wire up a kick RPC later if needed
+                // Kick is server-side only - for now just log
                 Debug.Log($"Kick requested for {p.name}");
             });
             playerEntryObjects.Add(entryObj);
@@ -93,8 +96,7 @@ public class WB_NetPlayerlist : MonoBehaviour
     public void PopulateFromCurrentState()
     {
         networkManager ??= GameInstance.Get<GI_NetworkManager>();
-        // Pull the last known player names from the network manager if available
-        // For now this is a no-op until we cache the last GameStatePacket
+        if (networkManager.lastGameState != null) RebuildList(networkManager.lastGameState.PlayerNames);
     }
 
 
