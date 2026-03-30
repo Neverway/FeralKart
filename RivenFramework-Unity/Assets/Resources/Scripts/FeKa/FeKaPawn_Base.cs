@@ -392,18 +392,17 @@ public class FeKaPawn_Base : FeKaPawn
 
         if (inputActions.Playerlist.IsPressed())
         {
-            if (!widgetManager.GetExistingWidget("WB_NetPlayerlist"))
-            {
+            var widgetPlayerList = widgetManager.GetExistingWidget("WB_NetPlayerlist");
+            if (widgetPlayerList == null)
                 widgetManager.AddWidget("WB_NetPlayerlist");
-            }
+            else
+                widgetPlayerList.SetActive(true);
         }
         else
         {
             var widgetPlayerList = widgetManager.GetExistingWidget("WB_NetPlayerlist");
             if (widgetPlayerList != null)
-            {
-                Destroy(widgetPlayerList);
-            }
+                widgetPlayerList.SetActive(false);
         }
         
         // Lock mouse when unpaused, unlock when paused
