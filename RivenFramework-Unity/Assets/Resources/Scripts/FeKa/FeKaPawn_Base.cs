@@ -382,7 +382,16 @@ public class FeKaPawn_Base : FeKaPawn
     private void UpdatePauseMenu()
     {
         widgetManager ??= GameInstance.Get<GI_WidgetManager>();
-        isPaused = widgetManager.GetExistingWidget("WB_Pause") || widgetManager.GetExistingWidget("WB_NetPlayerlist");
+
+
+        if (widgetManager.GetExistingWidget("WB_NetPlayerlist"))
+        {
+            isPaused = widgetManager.GetExistingWidget("WB_Pause") || widgetManager.GetExistingWidget("WB_NetPlayerlist").gameObject.activeInHierarchy;
+        }
+        else
+        {
+            isPaused = widgetManager.GetExistingWidget("WB_Pause");
+        }
         
         // Pause Game
         if (inputActions.Pause.WasPressedThisFrame())
