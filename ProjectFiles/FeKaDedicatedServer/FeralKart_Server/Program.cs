@@ -134,7 +134,8 @@ void BroadcastToAll(string message)
     }
 }
 
-void BroadcastState()
+// Takes a pre-snapshotted player list so it can be called from inside a playersLock block without deadlocking
+void BroadcastStateWithSnapshot(List<PlayerNameEntry> snapshot)
 {
     string phaseStr = phase switch
     {
@@ -146,14 +147,33 @@ void BroadcastState()
 
     var statePacket = new GameStatePacket
     {
-        Phase         = phaseStr,
-        MapName       = state.MapName,
-        GameMode      = state.GameMode,
-        TimeLeft      = intermissionTimeLeft,
-        PlayerNames = players.ConvertAll(p => new PlayerNameEntry { name = p.Name, ping = p.LastPingMs })
+        Phase       = phaseStr,
+        MapName     = state.MapName,
+        GameMode    = state.GameMode,
+        TimeLeft    = intermissionTimeLeft,
+        PlayerNames = snapshot
     };
 
-    BroadcastToAll(PROTOCOL_MAGIC + ":STATE:" + JsonSerializer.Serialize(statePacket));
+    byte[] data = Encoding.UTF8.GetBytes(PROTOCOL_MAGIC + ":STATE:" + JsonSerializer.Serialize(statePacket));
+    lock (playersLock)
+    {
+        foreach (var p in players)
+        {
+            if (p.EndPoint == null) continue;
+            try { querySocket.Send(data, data.Length, p.EndPoint); }
+            catch { /* player will time out naturally */ }
+        }
+    }
+}
+
+void BroadcastState()
+{
+    List<PlayerNameEntry> snapshot;
+    lock (playersLock)
+    {
+        snapshot = players.ConvertAll(p => new PlayerNameEntry { name = p.Name, ping = p.LastPingMs });
+    }
+    BroadcastStateWithSnapshot(snapshot);
 }
 
 void StartGame()
@@ -239,6 +259,7 @@ new Thread(() =>
                 string playerName = message.Substring((PROTOCOL_MAGIC + ":JOIN:").Length).Trim();
                 if (string.IsNullOrEmpty(playerName)) playerName = "NetPlayer";
 
+                bool didJoin = false;
                 lock (playersLock)
                 {
                     if (players.Count >= state.MaxPlayers)
@@ -263,7 +284,7 @@ new Thread(() =>
                         byte[] accepted = Encoding.UTF8.GetBytes(PROTOCOL_MAGIC + ":JOIN:ACCEPTED");
                         querySocket.Send(accepted, accepted.Length, remote);
                         Log($"{playerName} joined ({remote.Address}) - {players.Count}/{state.MaxPlayers} players");
-
+                        didJoin = true;
                         
                         var newPlayerEndpoint = remote;
                         new Thread(() =>
@@ -293,6 +314,7 @@ new Thread(() =>
                         }) { IsBackground = true }.Start();
                     }
                 }
+                if (didJoin) BroadcastState();   
             }
             
             // Heartbeat
@@ -324,6 +346,7 @@ new Thread(() =>
             // Leave
             else if (message.StartsWith(PROTOCOL_MAGIC + ":LEAVE"))
             {
+                bool didLeave = false;
                 lock (playersLock)
                 {
                     var leaving = players.Find(p => p.EndPoint.ToString() == remote.ToString());
@@ -332,13 +355,16 @@ new Thread(() =>
                         players.Remove(leaving);
                         state.PlayerCount = players.Count;
                         Log($"{leaving.Name} left ({remote.Address}) - {players.Count}/{state.MaxPlayers} players");
+                        didLeave = true;
                     }
                 }
+                if (didLeave) BroadcastState();  
             }
             
             // Ready up
             else if (message.StartsWith(PROTOCOL_MAGIC + ":READY"))
             {
+                List<PlayerNameEntry> snapshot = null;
                 lock (playersLock)
                 {
                     var player = players.Find(p => p.EndPoint.ToString() == remote.ToString());
@@ -346,9 +372,10 @@ new Thread(() =>
                     {
                         player.IsReady = true;
                         Log($"{player.Name} is ready");
-                        BroadcastState();
+                        snapshot = players.ConvertAll(p => new PlayerNameEntry { name = p.Name, ping = p.LastPingMs });
                     }
                 }
+                if (snapshot != null) BroadcastStateWithSnapshot(snapshot);
             }
 
             // Map vote
@@ -404,6 +431,7 @@ new Thread(() =>
     while (true)
     {
         Thread.Sleep(5000);
+        bool didTimeout = false;
         lock (playersLock)
         {
             int removed = players.RemoveAll(p => (DateTime.UtcNow - p.LastSeen).TotalSeconds > 15);
@@ -411,8 +439,10 @@ new Thread(() =>
             {
                 state.PlayerCount = players.Count;
                 Log($"Timed out {removed} player(s) - {players.Count}/{state.MaxPlayers} players");
+                didTimeout = true;
             }
         }
+        if (didTimeout) BroadcastState();
     }
 }) { IsBackground = true }.Start();
 
