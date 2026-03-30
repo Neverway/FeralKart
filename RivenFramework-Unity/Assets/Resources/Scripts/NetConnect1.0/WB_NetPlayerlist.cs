@@ -89,7 +89,7 @@ public class WB_NetPlayerlist : MonoBehaviour
             var entryObj  = Instantiate(playerEntry, playerListRoot);
             var entryComp = entryObj.GetComponent<WB_NetPlayerlist_PlayerEntry>();
             entryComp.playerNameText.text = p.name;
-            entryComp.pingText.text       = p.ping > 0 ? $"{p.ping}ms" : "--";
+            entryComp.pingText.text = $"{p.ping}ms";
             entryComp.kickButton.onClick.AddListener(() => Debug.Log($"Kick requested for {p.name}"));
             playerEntryObjects.Add(entryObj);
         }
