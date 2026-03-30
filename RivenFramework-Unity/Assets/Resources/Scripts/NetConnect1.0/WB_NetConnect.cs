@@ -34,7 +34,7 @@ public class WB_NetConnect : MonoBehaviour
     public int currentlySelectedServerEntry = -1; // Start with no server being selected
     
     [SerializeField] private Button buttonDeleteSelected, buttonEditSelected, buttonJoinSelected, buttonRefresh, buttonAddServer, buttonCancel;
-    public GameObject confirmDeleteWidget, editServerWidget, addServerWidget;
+    public GameObject confirmDeleteWidget, editServerWidget, addServerWidget, connectionMessageWidget;
 
 
     #endregion
@@ -88,6 +88,31 @@ public class WB_NetConnect : MonoBehaviour
                 widgetManager.AddWidget(editServerWidget);
                 break;
             case "buttonJoinSelected":
+                networkManager ??= GameInstance.Get<GI_NetworkManager>();
+                widgetManager  ??= FindObjectOfType<GI_WidgetManager>();
+                string addressToJoin = networkManager.serverEntries[currentlySelectedServerEntry].serverAddress;
+
+                buttonJoinSelected.interactable = false;
+
+                ShowConnectionMessage("Connecting", $"Connecting to {addressToJoin}...", "Cancel",
+                    onButtonPressed: () =>
+                    {
+                        networkManager.Disconnect();
+                        buttonJoinSelected.interactable = true;
+                    });
+
+                StartCoroutine(networkManager.Connect(addressToJoin,
+                    onSuccess: () =>
+                    {
+                        buttonJoinSelected.interactable = true;
+                        widgetManager.ToggleWidget("WB_ConnectionMessage");
+                        widgetManager.ToggleWidget("WB_NetConnect");
+                    },
+                    onFailure: (reason) =>
+                    {
+                        buttonJoinSelected.interactable = true;
+                        ShowConnectionMessage("Connection Failed", reason, "Close");
+                    }));
                 break;
             case "buttonRefresh":
                 PingServerEntries();
@@ -180,6 +205,28 @@ public class WB_NetConnect : MonoBehaviour
         networkManager ??= FindObjectOfType<GI_NetworkManager>();
         networkManager.DeleteServerEntry(currentlySelectedServerEntry);
         Init();
+    }
+    
+    /// <summary>
+    /// Opens (or updates) the connection message popup with the given text
+    /// If the widget is already open it reuses it, otherwise it opens a fresh one
+    /// </summary>
+    private void ShowConnectionMessage(string title, string message, string btnText, Action onButtonPressed = null)
+    {
+        widgetManager ??= FindObjectOfType<GI_WidgetManager>();
+ 
+        // Re-use an existing instance if it is already open, otherwise spawn a new one
+        var existing = FindObjectOfType<WB_ConnectionMessage>();
+        if (existing != null)
+        {
+            existing.Setup(title, message, btnText, onButtonPressed);
+            return;
+        }
+ 
+        widgetManager.AddWidget(connectionMessageWidget);
+ 
+        var popup = FindObjectOfType<WB_ConnectionMessage>();
+        popup?.Setup(title, message, btnText, onButtonPressed);
     }
 
 

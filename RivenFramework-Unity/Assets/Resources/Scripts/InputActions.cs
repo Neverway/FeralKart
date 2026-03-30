@@ -2802,6 +2802,15 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Playerlist"",
+                    ""type"": ""Button"",
+                    ""id"": ""cc668010-344e-451a-a942-cb3d988a74de"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -3123,6 +3132,28 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Pause"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b53a5e5d-64c9-41a0-af5f-50f819b0afbd"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Playerlist"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8a247a18-f8ed-4a7e-9a26-ccb69f6c023f"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Playerlist"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -3237,6 +3268,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_FEKA_HopDedicated = m_FEKA.FindAction("Hop (Dedicated)", throwIfNotFound: true);
         m_FEKA_FinalStrikeDedicated = m_FEKA.FindAction("Final Strike (Dedicated)", throwIfNotFound: true);
         m_FEKA_Pause = m_FEKA.FindAction("Pause", throwIfNotFound: true);
+        m_FEKA_Playerlist = m_FEKA.FindAction("Playerlist", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -3970,6 +4002,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_FEKA_HopDedicated;
     private readonly InputAction m_FEKA_FinalStrikeDedicated;
     private readonly InputAction m_FEKA_Pause;
+    private readonly InputAction m_FEKA_Playerlist;
     public struct FEKAActions
     {
         private @InputActions m_Wrapper;
@@ -3986,6 +4019,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         public InputAction @HopDedicated => m_Wrapper.m_FEKA_HopDedicated;
         public InputAction @FinalStrikeDedicated => m_Wrapper.m_FEKA_FinalStrikeDedicated;
         public InputAction @Pause => m_Wrapper.m_FEKA_Pause;
+        public InputAction @Playerlist => m_Wrapper.m_FEKA_Playerlist;
         public InputActionMap Get() { return m_Wrapper.m_FEKA; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -4031,6 +4065,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @Pause.started += instance.OnPause;
             @Pause.performed += instance.OnPause;
             @Pause.canceled += instance.OnPause;
+            @Playerlist.started += instance.OnPlayerlist;
+            @Playerlist.performed += instance.OnPlayerlist;
+            @Playerlist.canceled += instance.OnPlayerlist;
         }
 
         private void UnregisterCallbacks(IFEKAActions instance)
@@ -4071,6 +4108,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @Pause.started -= instance.OnPause;
             @Pause.performed -= instance.OnPause;
             @Pause.canceled -= instance.OnPause;
+            @Playerlist.started -= instance.OnPlayerlist;
+            @Playerlist.performed -= instance.OnPlayerlist;
+            @Playerlist.canceled -= instance.OnPlayerlist;
         }
 
         public void RemoveCallbacks(IFEKAActions instance)
@@ -4192,5 +4232,6 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         void OnHopDedicated(InputAction.CallbackContext context);
         void OnFinalStrikeDedicated(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
+        void OnPlayerlist(InputAction.CallbackContext context);
     }
 }

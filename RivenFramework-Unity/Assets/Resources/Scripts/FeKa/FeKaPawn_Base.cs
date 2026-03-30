@@ -381,17 +381,29 @@ public class FeKaPawn_Base : FeKaPawn
     
     private void UpdatePauseMenu()
     {
-        if (!widgetManager)
-        {
-            widgetManager = GameInstance.Get<GI_WidgetManager>();
-            if (!widgetManager) return;
-        }
-        isPaused = widgetManager.GetExistingWidget("WB_Pause");
+        widgetManager ??= GameInstance.Get<GI_WidgetManager>();
+        isPaused = widgetManager.GetExistingWidget("WB_Pause") || widgetManager.GetExistingWidget("WB_NetPlayerlist");
         
         // Pause Game
         if (inputActions.Pause.WasPressedThisFrame())
         {
             widgetManager.ToggleWidget("WB_Pause");
+        }
+
+        if (inputActions.Playerlist.IsPressed())
+        {
+            if (!widgetManager.GetExistingWidget("WB_NetPlayerlist"))
+            {
+                widgetManager.AddWidget("WB_NetPlayerlist");
+            }
+        }
+        else
+        {
+            var widgetPlayerList = widgetManager.GetExistingWidget("WB_NetPlayerlist");
+            if (widgetPlayerList != null)
+            {
+                Destroy(widgetPlayerList);
+            }
         }
         
         // Lock mouse when unpaused, unlock when paused

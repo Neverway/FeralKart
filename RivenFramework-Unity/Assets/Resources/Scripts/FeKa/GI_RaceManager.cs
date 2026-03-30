@@ -141,7 +141,9 @@ public class GI_RaceManager : MonoBehaviour
     
     private void UpdateStandings()
     {
-        var checkpointCount = FindObjectOfType<CheckpointTracker>().raceCheckpoints.Count;
+        var cpt = FindObjectOfType<CheckpointTracker>();
+        if (!cpt) return;
+        var checkpointCount = cpt.raceCheckpoints.Count;
     
         racerStandings = new List<FeKaPawn_Base>(racers);
         racerStandings.Sort((a, b) =>
