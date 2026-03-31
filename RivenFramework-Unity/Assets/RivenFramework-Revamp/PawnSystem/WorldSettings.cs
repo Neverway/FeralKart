@@ -16,8 +16,11 @@ public class WorldSettings : MonoBehaviour
     //=-----------------=
     // Public Variables
     //=-----------------=
-    [Tooltip("Set this to assign the player pawn that will be spawned when this map loads")]
+    [SerializeField] public PossessMethod possessMethod;
+    [Tooltip("Set this to assign the player pawn that will be spawned when this map loads if the possess method is set to spawn new")]
     public GameObject playerPawnOverride;
+    [Tooltip("The player pawn that will be possessed when this map loads if the possess method is set to possess target")]
+    public GameObject targetPawn;
     public bool debugShowKillZones;
     [Tooltip("If true, actors will not be destroyed when going further than the world kill volume distance")]
     public bool disableWorldKillVolume;
@@ -33,6 +36,13 @@ public class WorldSettings : MonoBehaviour
     //=-----------------=
     // Private Variables
     //=-----------------=
+    [SerializeField]
+    public enum PossessMethod
+    {
+        SpawnNewPlayer,
+        PossessTarget,
+        None
+    }
 
 
     //=-----------------=
@@ -64,7 +74,8 @@ public class WorldSettings : MonoBehaviour
 
         if (!pawnManager.localPlayerCharacter)
         {
-            SpawnPlayerCharacter();
+            if (possessMethod == PossessMethod.SpawnNewPlayer) SpawnPlayerCharacter();
+            if (possessMethod == PossessMethod.PossessTarget) PossesTargetPawn();
         }
     }
 
@@ -158,6 +169,11 @@ public class WorldSettings : MonoBehaviour
         Quaternion spawnRotation = startPoint ? startPoint.rotation : Quaternion.identity;
         // Instantiate and assign the local player character
         pawnManager.localPlayerCharacter = Instantiate(classToInstantiate, spawnPosition, spawnRotation);
+    }
+
+    public void PossesTargetPawn()
+    {
+        pawnManager.localPlayerCharacter = targetPawn;
     }
 
     private bool GetPawnManager()

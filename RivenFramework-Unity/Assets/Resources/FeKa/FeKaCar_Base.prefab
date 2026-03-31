@@ -20900,6 +20900,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1875575848915633597}
+    - targetCorrespondingSourceObject: {fileID: 2276721478425129573, guid: 0691e5206c095094690805245502b274,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5572679414157354117}
   m_SourcePrefab: {fileID: 100100000, guid: 0691e5206c095094690805245502b274, type: 3}
 --- !u!4 &766078644099949049 stripped
 Transform:
@@ -21050,6 +21054,26 @@ MonoBehaviour:
   RespawnScreenWidget: {fileID: 5675289539813747590, guid: 9d3f675cf308c0ab6be40585eac73090,
     type: 3}
   deathFX: {fileID: 6271697737164727327, guid: 25f39eade9d42c71488e518259f612d7, type: 3}
+--- !u!114 &5572679414157354117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5336008974593170968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0709474ec3ae0ec0a6149087474b53d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  networkObjectUId: 
+  hasAuthority: 0
+  sendRate: 20
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolationSpeed: 15
+  interpolationBufferSize: 6
 --- !u!1001 &9153240963747986672
 PrefabInstance:
   m_ObjectHideFlags: 0
