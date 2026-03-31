@@ -21,6 +21,17 @@ public class GI_NetworkManager : MonoBehaviour
 {
     #region========================================( Variables )======================================================//
     /*-----[ Inspector Variables ]------------------------------------------------------------------------------------*/
+    [Header("Network Object Syncing")]
+    [Tooltip("Registry mapping prefab keys to prefabs for spawning over the network")]
+    public NetPrefabRegistry prefabRegistry;
+    [Tooltip("How many times per second variable changes are sent, 10 is default")]
+    public float varSyncRate = 10f;
+    
+    [Header("Spectator")]
+    [Tooltip("The prefab key registered in NetPrefabRegistry for the spectator body")]
+    public string spectatorPrefabKey = "SpectatorBody";
+    [Tooltip("World position the spectator body spawns at when entering a game world")]
+    public Vector3 spectatorSpawnPosition = Vector3.up * 5f;
 
 
     /*-----[ External Variables ]-------------------------------------------------------------------------------------*/
@@ -34,21 +45,35 @@ public class GI_NetworkManager : MonoBehaviour
     /*-----[ Internal Variables ]-------------------------------------------------------------------------------------*/
     private string configFilePath => Path.Combine(Application.persistentDataPath, "serverlist.config");
     private string profileFilePath => Path.Combine(Application.persistentDataPath, "netprofile.profile");
-    private UdpClient       _gameUdp;
-    private IPEndPoint      _serverEndpoint;
-    private Coroutine       _heartbeatCoroutine;
-    private Coroutine       _listenCoroutine;
+    private UdpClient _gameUdp;
+    private IPEndPoint _serverEndpoint;
+    private Coroutine _heartbeatCoroutine;
+    private Coroutine _listenCoroutine;
+    private Coroutine _varSyncCoroutine;
     private bool _receivedFirstState = false;
+    
+    private readonly Dictionary<string, NetTransform> netTransforms = new Dictionary<string, NetTransform>();
+    private readonly Dictionary<string, NetVarOwner> netVarOwners = new Dictionary<string, NetVarOwner>();
+    
+    // Pending network spawns
+    private readonly Dictionary<string, Action<GameObject, string>> pendingSpawnCallbacks = new Dictionary<string, Action<GameObject, string>>();
+    // Syncing network objects
+    private readonly Dictionary<string, GameObject> netObjects = new Dictionary<string, GameObject>();
+    // Serverside counter to generate network object unique id's
+    private static int nextObjectId = 1;
     
 
     /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/
+    private GI_WidgetManager widgetManager;
     [SerializeField] public List<ServerEntry> serverEntries = new List<ServerEntry>();
-    public event Action<GameStatePacket>      OnGameStateReceived;
-    public event Action<string>               OnMapVoteReceived;
-    public event Action<string>               OnKicked;
-    public event Action                       OnDisconnected;
-    public GameObject fighterSelectWidget, connectionMessageWidget;
+    public event Action<GameStatePacket> OnGameStateReceived;
+    public event Action<string, string> OnChatReceived;
+    public event Action<string> OnMapVoteReceived;
+    public event Action<string> OnKicked;
+    public event Action OnDisconnected;
+    public GameObject fighterSelectWidget, connectionMessageWidget, netChatWidget;
     [SerializeField] public string titleScreenWorldName = "_Title";
+    public string LocalSpectatorNetworkId { get; private set; } = null;
 
 
     #endregion
@@ -60,6 +85,26 @@ public class GI_NetworkManager : MonoBehaviour
     {
         OnKicked      += HandleKicked;
         OnDisconnected += HandleDisconnected;
+    }
+
+    public void Update()
+    {
+        if (isConnected)
+        {
+            widgetManager ??= GameInstance.Get<GI_WidgetManager>();
+            if (!widgetManager.GetExistingWidget(netChatWidget.gameObject.name))
+            {
+                widgetManager.AddWidget(netChatWidget);
+            }
+        }
+        else
+        {
+            widgetManager ??= GameInstance.Get<GI_WidgetManager>();
+            if (widgetManager.GetExistingWidget(netChatWidget.gameObject.name))
+            {
+                Destroy(widgetManager.GetExistingWidget(netChatWidget.gameObject.name));
+            }
+        }
     }
 
     /*-----[ Internal Functions ]-------------------------------------------------------------------------------------*/
@@ -75,7 +120,7 @@ public class GI_NetworkManager : MonoBehaviour
     /// </summary>
     private void ShowConnectionPopupAndReturnToTitle(string title, string message)
     {
-        var widgetManager = FindObjectOfType<GI_WidgetManager>();
+        widgetManager ??= FindObjectOfType<GI_WidgetManager>();
         var worldLoader = GameInstance.Get<GI_WorldLoader>();
         
         if (worldLoader != null)
@@ -102,9 +147,51 @@ public class GI_NetworkManager : MonoBehaviour
             worldLoader.LoadWorld(titleScreenWorldName);
         }
     }
-
     
-
+    /// <summary>
+    /// Spawns the local player's networked spectator body and gives it local authority.
+    /// Skips silently if one is already alive.
+    /// </summary>
+    private void SpawnSpectatorBody()
+    {
+        Debug.Log($"[SpawnSpectatorBody] Called. LocalSpectatorNetworkId='{LocalSpectatorNetworkId}'");
+        if (!string.IsNullOrEmpty(LocalSpectatorNetworkId)) return;
+ 
+        Debug.Log("called spawn spectator");
+        NetSpawner.Spawn(spectatorPrefabKey, spectatorSpawnPosition, Quaternion.identity, (go, networkId) =>
+        {
+            LocalSpectatorNetworkId = networkId;
+ 
+            var spectator = go.GetComponent<Pawn_Spectator>();
+            if (spectator != null)
+            {
+                spectator.controlMode = ControlMode.LocalPlayer;
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible   = false;
+            }
+ 
+            Debug.Log($"[NetworkManager] Spectator body spawned (id={networkId})");
+        });
+    }
+ 
+    /// <summary>
+    /// Despawns the local player's networked spectator body if one exists.
+    /// Restores the cursor for UI use.
+    /// </summary>
+    public void DespawnSpectatorBody()
+    {
+        if (string.IsNullOrEmpty(LocalSpectatorNetworkId)) return;
+ 
+        NetSpawner.Despawn(LocalSpectatorNetworkId);
+        LocalSpectatorNetworkId = null;
+ 
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible   = true;
+ 
+        Debug.Log("[NetworkManager] Spectator body despawned");
+    }
+    
+    
     /*-----[ External Functions ]-------------------------------------------------------------------------------------*/
     public void LoadServerConfigFile()
     {
@@ -298,6 +385,7 @@ public class GI_NetworkManager : MonoBehaviour
         string json = File.ReadAllText(profileFilePath);
         localProfile = JsonUtility.FromJson<NetProfile>(json) ?? new NetProfile();
     }
+    
     public void SaveNetProfile()
     {
         File.WriteAllText(profileFilePath, JsonUtility.ToJson(localProfile, true));
@@ -395,6 +483,7 @@ public class GI_NetworkManager : MonoBehaviour
         // Start heartbeat and server listen loops
         _heartbeatCoroutine = StartCoroutine(HeartbeatLoop());
         _listenCoroutine    = StartCoroutine(ListenLoop());
+        _varSyncCoroutine = StartCoroutine(VarSyncLoop());
 
         onSuccess?.Invoke();
     }
@@ -402,6 +491,8 @@ public class GI_NetworkManager : MonoBehaviour
     public void Disconnect()
     {        
         if (!isConnected) return;
+        
+        DespawnSpectatorBody();
  
         // Tell the server we are leaving
         try
@@ -417,6 +508,7 @@ public class GI_NetworkManager : MonoBehaviour
     
     private void HandleKicked(string reason)
     {
+        DespawnSpectatorBody();
         ShowConnectionPopupAndReturnToTitle("Kicked", string.IsNullOrEmpty(reason) ? "You were kicked from the server." : reason);
     }
  
@@ -424,7 +516,6 @@ public class GI_NetworkManager : MonoBehaviour
     {
         ShowConnectionPopupAndReturnToTitle("Disconnected", "You have been disconnected from the server.");
     }
-
 
     private void CleanupConnection()
     {
@@ -437,6 +528,7 @@ public class GI_NetworkManager : MonoBehaviour
         connectedAddress = "";
         currentPhase     = null;
         lastKnownMapName = ""; 
+        LocalSpectatorNetworkId = null;
         _receivedFirstState = false;
     }
     
@@ -451,6 +543,27 @@ public class GI_NetworkManager : MonoBehaviour
             yield return new WaitForSecondsRealtime(5f);
             try { _gameUdp?.Send(heartbeat, heartbeat.Length, _serverEndpoint); }
             catch { break; }
+        }
+    }
+    
+    private IEnumerator VarSyncLoop()
+    {
+        float interval = 1f / Mathf.Max(1f, varSyncRate);
+        while (isConnected)
+        {
+            yield return new WaitForSecondsRealtime(interval);
+ 
+            foreach (var kv in netVarOwners)
+            {
+                // Only send for objects this client owns
+                if (!netTransforms.TryGetValue(kv.Key, out var nt) || !nt.hasAuthority) continue;
+ 
+                var dirty = kv.Value.FlushDirtyVars();
+                if (dirty.Count == 0) continue;
+ 
+                var packet = new VariableSyncPacket { ObjectId = kv.Key, Vars = dirty };
+                SendPacket(NetProtocol.Magic + ":VARSYNC:" + JsonUtility.ToJson(packet));
+            }
         }
     }
     
@@ -491,15 +604,14 @@ public class GI_NetworkManager : MonoBehaviour
             {
                 string json = packet.Substring((NetProtocol.Magic + ":STATE:").Length);
                 var    gs   = JsonUtility.FromJson<GameStatePacket>(json);
-                lastGameState = gs;
+                Debug.Log($"[ListenLoop] STATE received. Phase={gs.Phase} previousPhase={currentPhase} _receivedFirstState={_receivedFirstState}");
+                lastGameState    = gs;
                 lastKnownMapName = gs.MapName;
-
-                //Debug.Log($"[NetworkManager] STATE received. previousPhase='{currentPhase}' newPhase='{gs?.Phase}' map='{gs?.MapName}'");
                 
                 string previousPhase = currentPhase;
                 currentPhase = gs.Phase;
-
-                // First state packet after connecting, load the servers current map
+ 
+                // First state packet after connecting - load the server's current map
                 if (!_receivedFirstState)
                 {
                     _receivedFirstState = true;
@@ -517,24 +629,62 @@ public class GI_NetworkManager : MonoBehaviour
                             }
                             GI_WorldLoader.OnWorldLoaded += OnLoaded;
                         }
+                        else
+                        {
+                            // Joined mid-game: load the world and go straight to spectator
+                            void OnLoaded()
+                            {
+                                GI_WorldLoader.OnWorldLoaded -= OnLoaded;
+                                SpawnSpectatorBody();
+                            }
+                            GI_WorldLoader.OnWorldLoaded += OnLoaded;
+                        }
                         worldLoader.LoadWorld(gs.MapName);
                     }
                 }
                 else
                 {
-                    // Ongoing: server moved to Loading, load the new map
+                    // Server moved to Loading: despawn spectator (fighter select's local camera takes over),
+                    // load the new map, then spawn the spectator body once it's ready
                     if (gs.Phase == "Loading" && previousPhase != "Loading")
                     {
+                        DespawnSpectatorBody();
+ 
                         var worldLoader = GameInstance.Get<GI_WorldLoader>();
-                        if (worldLoader != null) worldLoader.LoadWorld(gs.MapName);
+                        if (worldLoader != null)
+                        {
+                            void OnLoaded()
+                            {
+                                GI_WorldLoader.OnWorldLoaded -= OnLoaded;
+                                SpawnSpectatorBody();
+                            }
+                            GI_WorldLoader.OnWorldLoaded += OnLoaded;
+                            worldLoader.LoadWorld(gs.MapName);
+                        }
                     }
-                    // Ongoing: game ended and we're back in intermission
+                    else if (gs.Phase == "InProgress" && previousPhase == "Intermission")
+                    {
+                        // Missed the Loading phase — spawn spectator directly
+                        var worldLoader = GameInstance.Get<GI_WorldLoader>();
+                        if (worldLoader != null)
+                        {
+                            void OnLoaded()
+                            {
+                                GI_WorldLoader.OnWorldLoaded -= OnLoaded;
+                                SpawnSpectatorBody();
+                            }
+                            GI_WorldLoader.OnWorldLoaded += OnLoaded;
+                            worldLoader.LoadWorld(gs.MapName);
+                        }
+                    }
+                    // Game ended and we're back in intermission: despawn spectator, show fighter select
                     else if (gs.Phase == "Intermission" && previousPhase == "InProgress")
                     {
+                        DespawnSpectatorBody();
                         StartCoroutine(ShowFighterSelect());
                     }
                 }
-
+ 
                 OnGameStateReceived?.Invoke(gs);
             }
             else if (packet.StartsWith(NetProtocol.Magic + ":MAPVOTE:"))
@@ -548,48 +698,217 @@ public class GI_NetworkManager : MonoBehaviour
                 var worldLoader = FindObjectOfType<RivenFramework.GI_WorldLoader>();
                 if (worldLoader != null) worldLoader.LoadWorld(mapName);
             }
+            else if (packet.StartsWith(NetProtocol.Magic + NetProtocol.Chat))
+            {
+                string body   = packet[(NetProtocol.Magic + NetProtocol.Chat).Length..];
+                int    sep    = body.IndexOf(':');
+                if (sep < 0) continue;
+
+                string sender  = body[..sep];
+                string text    = body[(sep + 1)..];
+                OnChatReceived?.Invoke(sender, text);
+            }
             else if (packet.StartsWith(NetProtocol.Magic + ":PING"))
             {
                 byte[] pong = Encoding.UTF8.GetBytes(NetProtocol.Magic + ":PONG");
                 try { _gameUdp?.Send(pong, pong.Length, _serverEndpoint); }
                 catch { }
             }
+            else if (packet.StartsWith(NetProtocol.Magic + ":TSYNC:"))
+            {
+                string json = packet.Substring((NetProtocol.Magic + ":TSYNC:").Length);
+                var    tsp  = JsonUtility.FromJson<TransformSyncPacket>(json);
+                if (tsp != null && netTransforms.TryGetValue(tsp.objectUId, out var nt))
+                    nt.ReceiveTransformPacket(tsp);
+            }
+            else if (packet.StartsWith(NetProtocol.Magic + ":SPAWN:"))
+            {
+                string json = packet.Substring((NetProtocol.Magic + ":SPAWN:").Length);
+                var    sbp  = JsonUtility.FromJson<SpawnBroadcastPacket>(json);
+                if (sbp != null) HandleSpawnBroadcast(sbp);
+            }
+            else if (packet.StartsWith(NetProtocol.Magic + ":DESPAWN:"))
+            {
+                string json = packet.Substring((NetProtocol.Magic + ":DESPAWN:").Length);
+                var    dp   = JsonUtility.FromJson<DespawnPacket>(json);
+                if (dp != null) HandleDespawnBroadcast(dp);
+            }
+            else if (packet.StartsWith(NetProtocol.Magic + ":VARSYNC:"))
+            {
+                string json = packet.Substring((NetProtocol.Magic + ":VARSYNC:").Length);
+                var    vsp  = JsonUtility.FromJson<VariableSyncPacket>(json);
+                if (vsp != null && netVarOwners.TryGetValue(vsp.ObjectId, out var owner))
+                    foreach (var entry in vsp.Vars)
+                        owner.ApplyRemoteEntry(entry);
+            }
         }
     }
-
-    private void OnDestroy()
+    
+    /// <summary>Serialize and send a TSYNC packet to the server.</summary>
+    public void SendTransformSync(NetTransform nt)
     {
-        Disconnect();
+        if (!isConnected) return;
+ 
+        var packet = new TransformSyncPacket
+        {
+            objectUId = nt.networkObjectUId,
+            syncPosition = nt.syncPosition,
+            syncRotation = nt.syncRotation,
+            syncScale = nt.syncScale,
+        };
+ 
+        if (nt.syncPosition)
+        {
+            packet.px = nt.transform.position.x;
+            packet.py = nt.transform.position.y;
+            packet.pz = nt.transform.position.z;
+        }
+        if (nt.syncRotation)
+        {
+            Vector3 euler = nt.transform.rotation.eulerAngles;
+            packet.rx = euler.x;
+            packet.ry = euler.y;
+            packet.rz = euler.z;
+        }
+        if (nt.syncScale)
+        {
+            packet.sx = nt.transform.localScale.x;
+            packet.sy = nt.transform.localScale.y;
+            packet.sz = nt.transform.localScale.z;
+        }
+ 
+        SendPacket(NetProtocol.Magic + ":TSYNC:" + JsonUtility.ToJson(packet));
+    }
+    
+    /// <summary>
+    /// Request the server to spawn a networked prefab, called by NetSpawner
+    /// </summary>
+    public void RequestSpawn(string prefabKey, Vector3 position, Quaternion rotation, Action<GameObject, string> onSpawned)
+    {
+        string requestId = System.Guid.NewGuid().ToString();
+    
+        if (onSpawned != null)
+            pendingSpawnCallbacks[requestId] = onSpawned;
+
+        var req = new SpawnRequestPacket
+        {
+            PrefabKey = prefabKey,
+            RequestId = requestId,
+            PX = position.x, PY = position.y, PZ = position.z,
+            RX = rotation.eulerAngles.x, RY = rotation.eulerAngles.y, RZ = rotation.eulerAngles.z,
+        };
+
+        SendPacket(NetProtocol.Magic + ":SPAWNREQ:" + JsonUtility.ToJson(req));
+    }
+ 
+    /// <summary>Request the server to despawn a networked object. Called by NetSpawner.</summary>
+    public void RequestDespawn(string networkObjectId)
+    {
+        if (!isConnected) return;
+        var pkt = new DespawnPacket { NetworkObjectId = networkObjectId };
+        SendPacket(NetProtocol.Magic + ":DESPAWNREQ:" + JsonUtility.ToJson(pkt));
+    }
+ 
+    private void HandleSpawnBroadcast(SpawnBroadcastPacket sbp)
+    {
+        Debug.Log($"[HandleSpawnBroadcast] Received SPAWN broadcast. PrefabKey={sbp.PrefabKey} NetworkId={sbp.NetworkObjectId} RequestId={sbp.RequestId}");
+
+        if (prefabRegistry == null)
+        {
+            Debug.LogError("[GI_NetworkManager] No NetPrefabRegistry assigned — cannot spawn networked object.");
+            return;
+        }
+
+        GameObject prefab = prefabRegistry.GetPrefab(sbp.PrefabKey);
+        if (prefab == null)
+        {
+            Debug.LogError($"[GI_NetworkManager] Prefab key '{sbp.PrefabKey}' not found in registry.");
+            return;
+        }
+
+        Vector3    pos = new Vector3(sbp.PX, sbp.PY, sbp.PZ);
+        Quaternion rot = Quaternion.Euler(sbp.RX, sbp.RY, sbp.RZ);
+        GameObject go  = Instantiate(prefab, pos, rot);
+        Debug.Log($"[HandleSpawnBroadcast] Instantiated prefab at {pos}");
+
+        var nt = go.GetComponent<NetTransform>();
+        Debug.Log($"[HandleSpawnBroadcast] NetTransform found={nt != null}");
+
+        if (nt != null)
+        {
+            nt.networkObjectUId = sbp.NetworkObjectId;
+            bool hasRequestId = !string.IsNullOrEmpty(sbp.RequestId);
+            bool isInPending  = pendingSpawnCallbacks.ContainsKey(sbp.RequestId ?? "");
+            nt.hasAuthority   = hasRequestId && isInPending;
+            Debug.Log($"[HandleSpawnBroadcast] hasRequestId={hasRequestId} isInPending={isInPending} hasAuthority={nt.hasAuthority}");
+            Debug.Log($"[HandleSpawnBroadcast] pendingSpawnCallbacks keys: {string.Join(", ", pendingSpawnCallbacks.Keys)}");
+        }
+
+        netObjects[sbp.NetworkObjectId] = go;
+
+        if (nt != null && nt.hasAuthority && pendingSpawnCallbacks.TryGetValue(sbp.RequestId, out var cb))
+        {
+            Debug.Log("[HandleSpawnBroadcast] Firing spawn callback!");
+            pendingSpawnCallbacks.Remove(sbp.RequestId);
+            cb?.Invoke(go, sbp.NetworkObjectId);
+        }
+        else
+        {
+            Debug.LogWarning($"[HandleSpawnBroadcast] Callback NOT fired. nt={nt != null} hasAuthority={nt?.hasAuthority} requestId={sbp.RequestId}");
+        }
+    }
+ 
+    private void HandleDespawnBroadcast(DespawnPacket dp)
+    {
+        if (netObjects.TryGetValue(dp.NetworkObjectId, out var go))
+        {
+            if (go != null) Destroy(go);
+            netObjects.Remove(dp.NetworkObjectId);
+        }
+        netTransforms.Remove(dp.NetworkObjectId);
+        netVarOwners.Remove(dp.NetworkObjectId);
     }
     
     public void SendReady()
     {
         if (!isConnected) return;
-        byte[] data = Encoding.UTF8.GetBytes(NetProtocol.Magic + NetProtocol.Ready);
-        try { _gameUdp?.Send(data, data.Length, _serverEndpoint); }
-        catch { }
+        SendPacket(NetProtocol.Magic + NetProtocol.Ready);
     }
-
+ 
     public void SendVote(string mapName)
     {
         if (!isConnected) return;
-        byte[] data = Encoding.UTF8.GetBytes(NetProtocol.Magic + NetProtocol.Vote + mapName);
-        try { _gameUdp?.Send(data, data.Length, _serverEndpoint); }
-        catch { }
+        SendPacket(NetProtocol.Magic + NetProtocol.Vote + mapName);
     }
-
+ 
     public void SendSpectate()
     {
         if (!isConnected) return;
-        byte[] data = Encoding.UTF8.GetBytes(NetProtocol.Magic + NetProtocol.Spectate);
-        try { _gameUdp?.Send(data, data.Length, _serverEndpoint); }
-        catch { }
+        SendPacket(NetProtocol.Magic + NetProtocol.Spectate);
+    }
+    
+    /// <summary>
+    /// Sends a chat message to the server. The server will stamp our name and relay it to all clients.
+    /// </summary>
+    /// <param name="text">The message text. Clamped to 200 characters server-side.</param>
+    public void SendChat(string text)
+    {
+        if (!isConnected || string.IsNullOrWhiteSpace(text)) return;
+        SendPacket(NetProtocol.Magic + NetProtocol.Chat + text);
+    }
+ 
+    private void SendPacket(string message)
+    {
+        if (_gameUdp == null || _serverEndpoint == null) return;
+        byte[] data = Encoding.UTF8.GetBytes(message);
+        try { _gameUdp.Send(data, data.Length, _serverEndpoint); }
+        catch (Exception e) { Debug.LogWarning($"[GI_NetworkManager] Send failed: {e.Message}"); }
     }
     
     private IEnumerator ShowFighterSelect()
     {
         yield return null;
-        var widgetManager = GameInstance.Get<GI_WidgetManager>();
+        widgetManager ??= GameInstance.Get<GI_WidgetManager>();
         if (widgetManager != null && fighterSelectWidget != null)
         {
             widgetManager.AddWidget(fighterSelectWidget);
@@ -600,9 +919,47 @@ public class GI_NetworkManager : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        Disconnect();
+    }
+
 
 
     #endregion
+    
+    
+    #region ========================================( Registration )=================================================//
+    // Called by NetTransform.Start()
+    public void RegisterNetTransform(string objectId, NetTransform nt)
+    {
+        if (string.IsNullOrEmpty(objectId)) return;
+        netTransforms[objectId] = nt;
+    }
+ 
+    // Called by NetTransform.OnDestroy()
+    public void UnregisterNetTransform(string objectId)
+    {
+        netTransforms.Remove(objectId);
+    }
+ 
+    // Called by NetVarOwner.Start()
+    public void RegisterNetVarOwner(NetVarOwner owner)
+    {
+        string id = owner.NetworkObjectId;
+        if (string.IsNullOrEmpty(id)) return;
+        netVarOwners[id] = owner;
+    }
+ 
+    // Called by NetVarOwner.OnDestroy()
+    public void UnregisterNetVarOwner(NetVarOwner owner)
+    {
+        netVarOwners.Remove(owner.NetworkObjectId);
+    }
+ 
+    #endregion
+    
+    
 }
 
 // Server browser list
@@ -632,14 +989,15 @@ public static class NetProtocol
     public const string Ready    = ":READY";
     public const string Vote     = ":VOTE:";
     public const string Spectate = ":SPECTATE";
-    public const string Pong = ":PONG";
+    public const string Pong     = ":PONG";
+    public const string Chat     = ":CHAT:";  
 
     // Incoming
     public const string State    = ":STATE:";
     public const string MapVote  = ":MAPVOTE:";
     public const string LoadMap  = ":LOADMAP:";
     public const string Spawn    = ":SPAWN:";
-    public const string Ping = ":PING";
+    public const string Ping     = ":PING";
 }
 
 [Serializable]

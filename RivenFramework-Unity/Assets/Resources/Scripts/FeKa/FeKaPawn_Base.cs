@@ -77,6 +77,7 @@ public class FeKaPawn_Base : FeKaPawn
         inputActions = new InputActions().FEKA;
         inputActions.Enable();
     }
+    
 
     public void Update()
     {
@@ -386,11 +387,11 @@ public class FeKaPawn_Base : FeKaPawn
 
         if (widgetManager.GetExistingWidget("WB_NetPlayerlist"))
         {
-            isPaused = widgetManager.GetExistingWidget("WB_Pause") || widgetManager.GetExistingWidget("WB_NetPlayerlist").gameObject.activeInHierarchy;
+            isPaused = widgetManager.GetExistingWidget("WB_Pause") || widgetManager.GetExistingWidget("WB_NetPlayerlist").gameObject.activeInHierarchy || FindObjectOfType<WB_NetChat>().isTyping;;
         }
         else
         {
-            isPaused = widgetManager.GetExistingWidget("WB_Pause");
+            isPaused = widgetManager.GetExistingWidget("WB_Pause") || FindObjectOfType<WB_NetChat>().isTyping;;
         }
         
         // Pause Game

@@ -21,10 +21,10 @@ public class GI_RaceManager : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1) && countdownCoroutine == null)
+        /*if (Input.GetKeyDown(KeyCode.Alpha1) && countdownCoroutine == null)
         {
             StartRace();
-        }
+        }*/
         
         if (!raceInProgress)
         {

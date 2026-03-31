@@ -48,6 +48,7 @@ public class LB_World : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (HUDWidgetPrefab == null) return;
         if (!widgetManager) widgetManager = FindObjectOfType<GI_WidgetManager>();
         else if (!createdHUD)
         {

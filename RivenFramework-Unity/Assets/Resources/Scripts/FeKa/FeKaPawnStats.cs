@@ -115,13 +115,6 @@ public class FeKaPawnStats : PawnStats
     public float crouchDistance = 0.5f;
     public Vector3 crouchColliderOffset = new Vector3(0, 0.25f, 0);
 }
-
-public enum ControlMode
-{
-    LocalPlayer,
-    CPU,
-    NetworkPlayer
-};
  
 public enum Axel
 {

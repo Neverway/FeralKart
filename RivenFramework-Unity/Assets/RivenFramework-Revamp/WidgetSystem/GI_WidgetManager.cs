@@ -175,9 +175,16 @@ public class GI_WidgetManager : MonoBehaviour
     /// Add the widget from the UI, with the specified WB script, or remove it if it's already present
     /// </summary>
     /// <returns>Returns true if the widget was added and false if it was removed</returns>
-    public bool ToggleWidget<T>() where T : WidgetBlueprint =>
-        ToggleWidget(GetWidgetPrefab<T>().name);
+    public bool ToggleWidget<T>() where T : WidgetBlueprint => ToggleWidget(GetWidgetPrefab<T>().name);
 
+
+    public void DestroyExistingWidget(string _widgetName)
+    {
+        if (GetExistingWidget(_widgetName))
+        {
+            Destroy(GetExistingWidget(_widgetName));
+        }
+    }
     
     /// <summary>
     /// Get the specified widget object if it's present on the user interface

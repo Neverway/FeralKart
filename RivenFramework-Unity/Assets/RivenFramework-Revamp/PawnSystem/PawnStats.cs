@@ -23,3 +23,10 @@ public abstract class PawnStats : ICloneable
     
     public abstract object Clone();
 }
+
+public enum ControlMode
+{
+    LocalPlayer,
+    CPU,
+    NetworkPlayer
+};

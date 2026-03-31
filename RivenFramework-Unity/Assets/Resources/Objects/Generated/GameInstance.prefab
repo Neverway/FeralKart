@@ -1028,13 +1028,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1c934e2a35466209b8f87a23ac63943, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefabRegistry: {fileID: 11400000, guid: 48cbf9d54aa0d4061bbf7d8458a5ccfa, type: 2}
+  varSyncRate: 10
+  spectatorPrefabKey: SpectatorBody
+  spectatorSpawnPosition: {x: 0, y: 5, z: 0}
   localProfile:
     playerName: NetPlayer
   isConnected: 0
   connectedAddress: 
   currentPhase: 
   lastKnownMapName: 
-  serverEntries: []
-  fighterSelectWidget: {fileID: 0}
-  connectionMessageWidget: {fileID: 0}
+  lastGameState:
+    Phase: 
+    MapName: 
+    GameMode: 
+    TimeLeft: 0
+    PlayerNames: []
+  serverEntries:
+  - serverName: Dummy Test Server
+    serverAddress: 
+  - serverName: Dummy Test Server2
+    serverAddress: 
+  - serverName: Dummy Test Server3
+    serverAddress: 
+  fighterSelectWidget: {fileID: 1507811972370413053, guid: 98f621f6728a5bc21a5841ed01822590,
+    type: 3}
+  connectionMessageWidget: {fileID: 1507811972370413053, guid: 2724ca646a97760818b83eefb25e7de2,
+    type: 3}
+  netChatWidget: {fileID: 1507811972370413053, guid: 6455912b1c50078539c6615af2ba1a5f,
+    type: 3}
   titleScreenWorldName: _Title

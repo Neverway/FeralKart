@@ -17,21 +17,18 @@ using UnityEngine.UI;
 public class WB_FighterSelect : MonoBehaviour
 {
     #region========================================( Variables )======================================================//
-    /*-----[ Inspector Variables ]------------------------------------------------------------------------------------*/
-
-
-    /*-----[ External Variables ]-------------------------------------------------------------------------------------*/
-
-
     /*-----[ Internal Variables ]-------------------------------------------------------------------------------------*/
     private bool isReady = false;
     private List<GameObject> playerEntryObjects = new List<GameObject>();
 
+
     /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/
     private GI_NetworkManager networkManager;
     private GI_WidgetManager  widgetManager;
+    private CharacterSelection characterSelection;
     public TMP_Text intermissionText, readyCountText, timerText;
     public Button readyButton, spectateButton;
+    public WB_FighterSelect_FighterButton[] fighterButtons;
     public Transform playerListRoot;
     public GameObject playerEntry;
 
@@ -44,23 +41,34 @@ public class WB_FighterSelect : MonoBehaviour
     /*-----[ Mono Functions ]-----------------------------------------------------------------------------------------*/
     private void Start()
     {
-        networkManager ??= GameInstance.Get<GI_NetworkManager>();
-        widgetManager  ??= FindObjectOfType<GI_WidgetManager>();
+        networkManager     = GameInstance.Get<GI_NetworkManager>();
+        widgetManager      ??= FindObjectOfType<GI_WidgetManager>();
+        characterSelection ??= FindObjectOfType<CharacterSelection>();
 
         readyButton.onClick.AddListener(OnClickReady);
         spectateButton.onClick.AddListener(OnClickSpectate);
 
-        // Subscribe to server state updates
         networkManager.OnGameStateReceived += OnGameStateReceived;
 
         // Show spectate button only if game is already in progress
         bool midGame = networkManager.currentPhase == "InProgress";
         readyButton.gameObject.SetActive(!midGame);
         spectateButton.gameObject.SetActive(midGame);
+
+        characterSelection.Initialize();
+        SelectCharacter(fighterButtons[0].characterID);
+        fighterButtons[0].SetVisuallySelected(true);
+        
+        
+        // Destroy the pause menu or hud widgets if they are stuck open
+        widgetManager.DestroyExistingWidget("WB_HUD");
+        widgetManager.DestroyExistingWidget("WB_Title");
+        widgetManager.DestroyExistingWidget("WB_Pause");
     }
 
     private void OnDestroy()
     {
+        characterSelection.Close();
         if (networkManager != null) networkManager.OnGameStateReceived -= OnGameStateReceived;
     }
 
@@ -77,28 +85,19 @@ public class WB_FighterSelect : MonoBehaviour
     private void OnClickSpectate()
     {
         networkManager.SendSpectate();
-        // TODO: enable freecam and hide this widget
         widgetManager.ToggleWidget(gameObject.name);
     }
 
     private void OnGameStateReceived(GameStatePacket gs)
     {
         // Update phase label
-        switch (gs.Phase)
+        intermissionText.text = gs.Phase switch
         {
-            case "Intermission":
-                intermissionText.text = "Intermission";
-                break;
-            case "Loading":
-                intermissionText.text = "Loading map...";
-                break;
-            case "InProgress":
-                intermissionText.text = "Game In Progress";
-                break;
-            default:
-                intermissionText.text = gs.Phase;
-                break;
-        }
+            "Intermission" => "Intermission",
+            "Loading"      => "Loading map...",
+            "InProgress"   => "Game In Progress",
+            _              => gs.Phase
+        };
 
         // Update timer
         timerText.text = gs.Phase == "Intermission" ? $"Starting in: {gs.TimeLeft}s" : "";
@@ -107,7 +106,6 @@ public class WB_FighterSelect : MonoBehaviour
         foreach (var obj in playerEntryObjects) Destroy(obj);
         playerEntryObjects.Clear();
 
-        int readyCount = 0;
         foreach (var entry in gs.PlayerNames)
         {
             var entryObj  = Instantiate(playerEntry, playerListRoot);
@@ -119,7 +117,8 @@ public class WB_FighterSelect : MonoBehaviour
 
         readyCountText.text = $"{gs.PlayerNames.Count} players in lobby";
 
-        // If the server just moved to Loading, close this widget
+        // Close this widget when the server moves to Loading.
+        // GI_NetworkManager handles despawning any old spectator body and spawning the new one
         if (gs.Phase == "Loading")
         {
             widgetManager ??= GameInstance.Get<GI_WidgetManager>();
@@ -127,8 +126,14 @@ public class WB_FighterSelect : MonoBehaviour
         }
     }
 
+
     /*-----[ External Functions ]-------------------------------------------------------------------------------------*/
-    
+    public void SelectCharacter(string characterID)
+    {
+        characterSelection.ViewCharacter(characterID);
+        foreach (var btn in fighterButtons)
+            btn.SetVisuallySelected(false);
+    }
 
 
     #endregion
