@@ -17,7 +17,17 @@ public class Pawn_Spectator : Pawn
 {
     #region========================================( Variables )======================================================//
     /*-----[ Inspector Variables ]------------------------------------------------------------------------------------*/
-    public ControlMode controlMode;
+    public ControlMode _controlMode;
+    public ControlMode controlMode
+    {
+        get => _controlMode;
+        set
+        {
+            _controlMode = value;
+            if (_camera != null) _camera.enabled = (value == ControlMode.LocalPlayer);
+        }
+    }
+    
     [Header("Freecam Movement")]
     [Tooltip("Base movement speed in units per second")]
     public float moveSpeed = 10f;
@@ -38,6 +48,7 @@ public class Pawn_Spectator : Pawn
     /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/
     private InputActions.FEKAActions inputActions;
     private Camera _camera;
+    public Camera Camera => _camera;
     private GI_WidgetManager widgetManager;
 
 
@@ -50,6 +61,7 @@ public class Pawn_Spectator : Pawn
     {
         _camera = GetComponentInChildren<Camera>();
         
+        
         // Setup inputs
         inputActions = new InputActions().FEKA;
         inputActions.Enable();
@@ -60,10 +72,21 @@ public class Pawn_Spectator : Pawn
         // Initialise yaw/pitch from whatever rotation we spawned at so there's no snap
         _yaw   = transform.eulerAngles.y;
         _pitch = _camera != null ? _camera.transform.localEulerAngles.x : 0f;
+        var nettrans = GetComponent<NetTransform>();
+        GI_NetworkManager.LogToFile($"[WOWZA] This pawn ({gameObject.name} | {nettrans.networkObjectUId}) was just created!!)");
     }
  
     public void Update()
     {
+        var nettrans = GetComponent<NetTransform>();
+        if (nettrans.hasAuthority)
+        {
+            GI_NetworkManager.LogToFile($"[HOLYSHIT] This pawn ({gameObject.name} | {nettrans.networkObjectUId}) is controlled by the local client!)");
+        }
+        else
+        {
+            GI_NetworkManager.LogToFile($"[AWSHOOT] This pawn ({gameObject.name} | {nettrans.networkObjectUId}) is NOT controlled by the local client!)");
+        }
         if (controlMode != ControlMode.LocalPlayer) return;
  
         UpdatePauseMenu();

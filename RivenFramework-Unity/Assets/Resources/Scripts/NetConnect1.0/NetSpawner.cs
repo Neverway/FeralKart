@@ -53,42 +53,6 @@ public static class NetSpawner
     }
 }
 
-/// <summary>
-/// ScriptableObject that maps a string key to a prefab.
-/// Create one via right-click > Create > FeralKart > Net Prefab Registry.
-/// </summary>
-[CreateAssetMenu(menuName = "Neverway/Networking/Net Prefab Registry", fileName = "NetPrefabRegistry")]
-public class NetPrefabRegistry : ScriptableObject
-{
-    [Serializable]
-    public class Entry
-    {
-        public string     Key;
-        public GameObject Prefab;
-    }
- 
-    public List<Entry> Entries = new List<Entry>();
- 
-    private Dictionary<string, GameObject> _lookup;
- 
-    /// <summary>Returns the prefab for the given key, or null if not found.</summary>
-    public GameObject GetPrefab(string key)
-    {
-        if (_lookup == null)
-            BuildLookup();
-        return _lookup.TryGetValue(key, out var go) ? go : null;
-    }
- 
-    private void BuildLookup()
-    {
-        _lookup = new Dictionary<string, GameObject>();
-        foreach (var e in Entries)
-        {
-            if (!string.IsNullOrEmpty(e.Key) && e.Prefab != null)
-                _lookup[e.Key] = e.Prefab;
-        }
-    }
-}
 
 [Serializable]
 public class SpawnRequestPacket
