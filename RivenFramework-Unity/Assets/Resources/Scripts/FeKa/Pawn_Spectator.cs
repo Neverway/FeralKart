@@ -79,14 +79,6 @@ public class Pawn_Spectator : Pawn
     public void Update()
     {
         var nettrans = GetComponent<NetTransform>();
-        if (nettrans.hasAuthority)
-        {
-            GI_NetworkManager.LogToFile($"[HOLYSHIT] This pawn ({gameObject.name} | {nettrans.networkObjectUId}) is controlled by the local client!)");
-        }
-        else
-        {
-            GI_NetworkManager.LogToFile($"[AWSHOOT] This pawn ({gameObject.name} | {nettrans.networkObjectUId}) is NOT controlled by the local client!)");
-        }
         if (controlMode != ControlMode.LocalPlayer) return;
  
         UpdatePauseMenu();
@@ -159,9 +151,7 @@ public class Pawn_Spectator : Pawn
         _pitch -= mouseY;
         _pitch  = Mathf.Clamp(_pitch, -89f, 89f);
  
-        transform.rotation = Quaternion.Euler(0f, _yaw, 0f);
-        if (_camera != null)
-            _camera.transform.localRotation = Quaternion.Euler(_pitch, 0f, 0f);
+        transform.rotation = Quaternion.Euler(_pitch, _yaw, 0f);
     }
  
     private void HandleMove()

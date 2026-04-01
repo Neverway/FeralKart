@@ -89,7 +89,7 @@ public class NetTransform : MonoBehaviour
     /*-----[ Mono Functions ]-----------------------------------------------------------------------------------------*/
     private void Awake()
     {
-        sendInterval = 1;
+        sendInterval = 1f / Mathf.Max(1f, sendRate); 
         lastSentPosition = transform.position;
         lastSentRotation = transform.rotation;
         lastSentScale = transform.localScale;
@@ -159,7 +159,7 @@ public class NetTransform : MonoBehaviour
         {
             position = packet.syncPosition ? new Vector3(packet.px, packet.py, packet.pz) : transform.position,
             rotation = packet.syncRotation ? Quaternion.Euler(packet.rx, packet.ry, packet.rz) : transform.rotation,
-            scale = packet.syncScale ? new Vector3(packet.px, packet.py, packet.pz) : transform.localScale
+            scale = packet.syncScale ? new Vector3(packet.sx, packet.sy, packet.sz) : transform.localScale
         };
 
         while (snapshots.Count >= interpolationBufferSize) snapshots.Dequeue();

@@ -124,6 +124,10 @@ int       intermissionTimeLeft = intermissionTime;
 var votes     = new Dictionary<string, int>();
 var votesLock = new object();
 
+// Server network object spawns
+var liveSpawns     = new List<SpawnBroadcastPacket>();
+var liveSpawnsLock = new object();
+
 // Single UDP socket shared by all threads
 var querySocket = new UdpClient(new IPEndPoint(IPAddress.Any, queryPort));
 Log($"UDP listener started on port {queryPort}");
@@ -244,6 +248,7 @@ void StartGame()
     // Clear votes and ready flags so the next intermission starts clean
     lock (votesLock)  { votes.Clear(); }
     lock (playersLock){ foreach (var p in players) p.IsReady = false; }
+    lock (liveSpawnsLock) { liveSpawns.Clear(); }
 
     Log($"Starting game on '{targetMap}'");
     BroadcastState();
@@ -349,6 +354,16 @@ void HandleJoin(string message, IPEndPoint remote)
                 byte[] stateBytes = Encoding.UTF8.GetBytes(PROTOCOL_MAGIC + ":STATE:" + JsonSerializer.Serialize(welcome));
                 try { querySocket.Send(stateBytes, stateBytes.Length, newEndpoint); }
                 catch { }
+                lock (liveSpawnsLock)
+                {
+                    foreach (var spawn in liveSpawns)
+                    {
+                        var replaySpawn = spawn with { RequestId = "" };
+                        byte[] spawnBytes = Encoding.UTF8.GetBytes(PROTOCOL_MAGIC + ":SPAWN:" + JsonSerializer.Serialize(replaySpawn));
+                        try { querySocket.Send(spawnBytes, spawnBytes.Length, newEndpoint); }
+                        catch { }
+                    }
+                }
             }) { IsBackground = true }.Start();
         }
     }
@@ -485,13 +500,55 @@ void HandleSpawnRequest(string message, IPEndPoint remote)
         PX = req.PX, PY = req.PY, PZ = req.PZ,
         RX = req.RX, RY = req.RY, RZ = req.RZ,
     };
+    
+    lock (liveSpawnsLock) { liveSpawns.Add(broadcast); } 
+    
     BroadcastToAll(PROTOCOL_MAGIC + ":SPAWN:" + JsonSerializer.Serialize(broadcast));
 }
 
 void HandleDespawn(string message, IPEndPoint remote)
 {
     string body = message[(PROTOCOL_MAGIC + ":DESPAWNREQ:").Length..];
+    var dp = JsonSerializer.Deserialize<DespawnPacket>(body);
+
+    if (dp != null)
+    {
+        lock (liveSpawnsLock)
+            liveSpawns.RemoveAll(s => s.NetworkObjectId == dp.NetworkObjectId);
+    }
+
     BroadcastToAll(PROTOCOL_MAGIC + ":DESPAWN:" + body);
+}
+
+void HandleTransformSync(string message, IPEndPoint remote)
+{
+    // Just relay the raw packet to everyone except the sender
+    byte[] data = Encoding.UTF8.GetBytes(message);
+    lock (playersLock)
+    {
+        foreach (var p in players)
+        {
+            if (p.EndPoint == null) continue;
+            if (p.EndPoint.ToString() == remote.ToString()) continue;
+            try { querySocket.Send(data, data.Length, p.EndPoint); }
+            catch { }
+        }
+    }
+}
+
+void HandleVarSync(string message, IPEndPoint remote)
+{
+    byte[] data = Encoding.UTF8.GetBytes(message);
+    lock (playersLock)
+    {
+        foreach (var p in players)
+        {
+            if (p.EndPoint == null) continue;
+            if (p.EndPoint.ToString() == remote.ToString()) continue;
+            try { querySocket.Send(data, data.Length, p.EndPoint); }
+            catch { }
+        }
+    }
 }
 
 
@@ -537,6 +594,8 @@ new Thread(() =>
             else if (message.StartsWith(PROTOCOL_MAGIC + ":CHAT:"))    HandleChat(message, remote);
             else if (message.StartsWith(PROTOCOL_MAGIC + ":SPAWNREQ:"))  HandleSpawnRequest(message, remote);
             else if (message.StartsWith(PROTOCOL_MAGIC + ":DESPAWNREQ:")) HandleDespawn(message, remote);
+            else if (message.StartsWith(PROTOCOL_MAGIC + ":TSYNC:"))     HandleTransformSync(message, remote);
+            else if (message.StartsWith(PROTOCOL_MAGIC + ":VARSYNC:"))   HandleVarSync(message, remote);
         }
         catch (Exception e)
         {
