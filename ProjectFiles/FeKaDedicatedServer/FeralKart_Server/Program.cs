@@ -358,6 +358,8 @@ void HandleJoin(string message, IPEndPoint remote)
                 {
                     foreach (var spawn in liveSpawns)
                     {
+                        if (spawn.OwnerEndpoint == newEndpoint.ToString()) continue;
+                        
                         var replaySpawn = new SpawnBroadcastPacket
                         {
                             NetworkObjectId = spawn.NetworkObjectId,
@@ -504,6 +506,7 @@ void HandleSpawnRequest(string message, IPEndPoint remote)
         NetworkObjectId = Guid.NewGuid().ToString(),
         PrefabKey = req.PrefabKey,
         RequestId = req.RequestId,
+        OwnerEndpoint   = remote.ToString(),
         PX = req.PX, PY = req.PY, PZ = req.PZ,
         RX = req.RX, RY = req.RY, RZ = req.RZ,
     };
@@ -949,6 +952,7 @@ class SpawnBroadcastPacket
     public string NetworkObjectId { get; set; } = "";
     public string PrefabKey { get; set; } = "";
     public string RequestId { get; set; } = "";
+    public string OwnerEndpoint   { get; set; } = "";
     public float PX { get; set; } public float PY { get; set; } public float PZ { get; set; }
     public float RX { get; set; } public float RY { get; set; } public float RZ { get; set; }
 }
