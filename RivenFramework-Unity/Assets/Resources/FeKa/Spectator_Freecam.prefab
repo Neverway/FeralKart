@@ -107,7 +107,7 @@ MonoBehaviour:
   despawnOnDeathDelay: 3
   viewPoint: {fileID: 2224517659817797691}
   physObjectAttachmentPoint: {fileID: 0}
-  controlMode: 0
+  _controlMode: 2
   moveSpeed: 10
   sprintMultiplier: 3
   lookSensitivity: 2
@@ -335,6 +335,11 @@ PrefabInstance:
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1301064606120009362, guid: 273f560cf23f789b987aeac1af365c4d,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8649991843322933473, guid: 273f560cf23f789b987aeac1af365c4d,

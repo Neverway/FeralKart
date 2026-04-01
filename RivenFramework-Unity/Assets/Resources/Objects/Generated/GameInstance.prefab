@@ -1028,7 +1028,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1c934e2a35466209b8f87a23ac63943, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabRegistry: {fileID: 11400000, guid: 48cbf9d54aa0d4061bbf7d8458a5ccfa, type: 2}
+  prefabRegistry: {fileID: 11400000, guid: e6ee964228879bea4bbc0dcdaeb468cb, type: 2}
   varSyncRate: 10
   spectatorPrefabKey: SpectatorBody
   spectatorSpawnPosition: {x: 0, y: 5, z: 0}
