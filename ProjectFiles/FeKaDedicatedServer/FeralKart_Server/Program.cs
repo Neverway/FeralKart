@@ -358,7 +358,14 @@ void HandleJoin(string message, IPEndPoint remote)
                 {
                     foreach (var spawn in liveSpawns)
                     {
-                        var replaySpawn = spawn with { RequestId = "" };
+                        var replaySpawn = new SpawnBroadcastPacket
+                        {
+                            NetworkObjectId = spawn.NetworkObjectId,
+                            PrefabKey       = spawn.PrefabKey,
+                            RequestId       = "",
+                            PX = spawn.PX, PY = spawn.PY, PZ = spawn.PZ,
+                            RX = spawn.RX, RY = spawn.RY, RZ = spawn.RZ,
+                        };
                         byte[] spawnBytes = Encoding.UTF8.GetBytes(PROTOCOL_MAGIC + ":SPAWN:" + JsonSerializer.Serialize(replaySpawn));
                         try { querySocket.Send(spawnBytes, spawnBytes.Length, newEndpoint); }
                         catch { }
@@ -944,4 +951,9 @@ class SpawnBroadcastPacket
     public string RequestId { get; set; } = "";
     public float PX { get; set; } public float PY { get; set; } public float PZ { get; set; }
     public float RX { get; set; } public float RY { get; set; } public float RZ { get; set; }
+}
+
+class DespawnPacket
+{
+    public string NetworkObjectId { get; set; } = "";
 }
