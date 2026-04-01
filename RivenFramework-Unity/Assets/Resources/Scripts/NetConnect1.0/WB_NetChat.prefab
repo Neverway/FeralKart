@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a3709113fcebb0b19119f1add767e02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxMessages: 50
+  maxMessages: 5
   isTyping: 0
   chatHistory: {fileID: 5315893743411494257}
   chatInput: {fileID: 2837256302424816483}
@@ -92,6 +92,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontSize
       value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 87490435302119722, guid: e939f13b17fb3bcb582ebe98d53fc04a,
+        type: 3}
+      propertyPath: m_isRichText
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 87490435302119722, guid: e939f13b17fb3bcb582ebe98d53fc04a,
         type: 3}

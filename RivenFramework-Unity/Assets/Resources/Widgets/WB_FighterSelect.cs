@@ -64,6 +64,9 @@ public class WB_FighterSelect : MonoBehaviour
         widgetManager.DestroyExistingWidget("WB_HUD");
         widgetManager.DestroyExistingWidget("WB_Title");
         widgetManager.DestroyExistingWidget("WB_Pause");
+        
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     private void OnDestroy()
