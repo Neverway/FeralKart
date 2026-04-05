@@ -1034,6 +1034,7 @@ MonoBehaviour:
   spectatorSpawnPosition: {x: 0, y: 5, z: 0}
   localProfile:
     playerName: NetPlayer
+    sessionToken: 
   isConnected: 0
   connectedAddress: 
   currentPhase: 
@@ -1044,6 +1045,7 @@ MonoBehaviour:
     GameMode: 
     TimeLeft: 0
     PlayerNames: []
+  isOp: 0
   serverEntries:
   - serverName: Dummy Test Server
     serverAddress: 
@@ -1056,5 +1058,7 @@ MonoBehaviour:
   connectionMessageWidget: {fileID: 1507811972370413053, guid: 2724ca646a97760818b83eefb25e7de2,
     type: 3}
   netChatWidget: {fileID: 1507811972370413053, guid: 6455912b1c50078539c6615af2ba1a5f,
+    type: 3}
+  netVoteKickWidget: {fileID: 1507811972370413053, guid: bf1a8c35a800986e496e40ded5222fd0,
     type: 3}
   titleScreenWorldName: _Title
