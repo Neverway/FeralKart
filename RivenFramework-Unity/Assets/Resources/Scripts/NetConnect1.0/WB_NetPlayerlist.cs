@@ -83,14 +83,21 @@ public class WB_NetPlayerlist : MonoBehaviour
 
         if (players == null) return;
     
-        foreach (var p in players)
+        foreach (var player in players)
         {
-            Debug.Log($"[Playerlist] Adding entry for {p.name}");
+            Debug.Log($"[Playerlist] Adding entry for {player.name}");
             var entryObj  = Instantiate(playerEntry, playerListRoot);
             var entryComp = entryObj.GetComponent<WB_NetPlayerlist_PlayerEntry>();
-            entryComp.playerNameText.text = p.name;
-            entryComp.pingText.text = $"{p.ping}ms";
-            entryComp.kickButton.onClick.AddListener(() => Debug.Log($"Kick requested for {p.name}"));
+            entryComp.playerNameText.text = player.name;
+            entryComp.pingText.text = $"{player.ping}ms";
+            entryComp.kickButton.onClick.AddListener(() =>
+            {
+                var nm = GameInstance.Get<GI_NetworkManager>();
+                if (nm.isOp)
+                    nm.SendPacket(NetProtocol.Magic + NetProtocol.Chat + "kick " + player.name);
+                else
+                    nm.RequestVoteKick(player.name);
+            });
             playerEntryObjects.Add(entryObj);
         }
     }

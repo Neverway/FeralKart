@@ -92,13 +92,16 @@ public class Pawn_Spectator : Pawn
         widgetManager ??= GameInstance.Get<GI_WidgetManager>();
 
 
+        var netchat = FindObjectOfType<WB_NetChat>();
         if (widgetManager.GetExistingWidget("WB_NetPlayerlist"))
         {
-            isPaused = widgetManager.GetExistingWidget("WB_Pause") || widgetManager.GetExistingWidget("WB_NetPlayerlist").gameObject.activeInHierarchy || FindObjectOfType<WB_NetChat>().isTyping;
+            if (netchat) isPaused = widgetManager.GetExistingWidget("WB_Pause") || widgetManager.GetExistingWidget("WB_NetPlayerlist").gameObject.activeInHierarchy || netchat.isTyping;
+            else isPaused = widgetManager.GetExistingWidget("WB_Pause") || widgetManager.GetExistingWidget("WB_NetPlayerlist").gameObject.activeInHierarchy;
         }
         else
         {
-            isPaused = widgetManager.GetExistingWidget("WB_Pause") || FindObjectOfType<WB_NetChat>().isTyping;
+            if (netchat) isPaused = widgetManager.GetExistingWidget("WB_Pause") || netchat.isTyping;
+            else isPaused = widgetManager.GetExistingWidget("WB_Pause");
         }
         
         // Pause Game
