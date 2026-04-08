@@ -7,7 +7,6 @@
 //
 //====================================================================================================================//
 
-using System.Collections;
 using System.Collections.Generic;
 using RivenFramework;
 using UnityEngine;
@@ -15,19 +14,15 @@ using UnityEngine;
 public class WB_NetPlayerlist : MonoBehaviour
 {
     #region========================================( Variables )======================================================//
-    /*-----[ Inspector Variables ]------------------------------------------------------------------------------------*/
 
-
-    /*-----[ External Variables ]-------------------------------------------------------------------------------------*/
-
-
-    /*-----[ Internal Variables ]-------------------------------------------------------------------------------------*/
+    /*-----[ Internal Variables ]---------------------------------------------------------------------------------*/
     private List<GameObject> playerEntryObjects = new List<GameObject>();
+    private List<PlayerNameEntry> lastKnownPlayers = null;
 
 
-    /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/
+    /*-----[ Reference Variables ]---------------------------------------------------------------------------------*/
     private GI_NetworkManager networkManager;
-    private GI_WidgetManager  widgetManager;
+    private GI_WidgetManager widgetManager;
     public Transform playerListRoot;
     public GameObject playerEntry;
 
@@ -36,82 +31,78 @@ public class WB_NetPlayerlist : MonoBehaviour
 
 
     #region=======================================( Functions )=======================================================//
-    /*-----[ Mono Functions ]-----------------------------------------------------------------------------------------*/
 
-    
+    /*-----[ Mono Functions ]--------------------------------------------------------------------------------------*/
+
     private void OnEnable()
     {
         networkManager ??= GameInstance.Get<GI_NetworkManager>();
-    
-        if (networkManager == null) { Debug.LogError("[Playerlist] networkManager is NULL"); return; }
-    
-        networkManager.OnGameStateReceived += OnGameStateReceived;
-        Debug.Log($"[Playerlist] Subscribed. lastGameState is {(networkManager.lastGameState == null ? "NULL" : "SET")}");
-    
-        if (networkManager.lastGameState != null)
+
+        if (networkManager == null)
         {
-            Debug.Log($"[Playerlist] Populating from lastGameState, {networkManager.lastGameState.PlayerNames?.Count} players");
-            RebuildList(networkManager.lastGameState.PlayerNames);
+            Debug.LogError("[Playerlist] networkManager is NULL");
+            return;
         }
 
+        networkManager.OnPlayerListReceived += OnPlayerListReceived;
+
+        // If we already have a player list from before this widget was opened, populate immediately
+        if (lastKnownPlayers != null) RebuildList(lastKnownPlayers);
+
         Cursor.lockState = CursorLockMode.None;
-        Cursor.visible   = true;
+        Cursor.visible = true;
     }
 
     private void OnDisable()
     {
-        if (networkManager != null) networkManager.OnGameStateReceived -= OnGameStateReceived;
+        if (networkManager != null)
+            networkManager.OnPlayerListReceived -= OnPlayerListReceived;
+
         Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible   = false;
+        Cursor.visible = false;
     }
 
 
-    /*-----[ Internal Functions ]-------------------------------------------------------------------------------------*/
+    /*-----[ Internal Functions ]----------------------------------------------------------------------------------*/
 
-    private void OnGameStateReceived(GameStatePacket gs)
+    private void OnPlayerListReceived(PlayerListPacket playerListPacket)
     {
-        Debug.Log($"[Playerlist] OnGameStateReceived fired, {gs?.PlayerNames?.Count} players");
-        RebuildList(gs.PlayerNames);
+        lastKnownPlayers = playerListPacket.PlayerNames;
+        RebuildList(playerListPacket.PlayerNames);
     }
-
 
     private void RebuildList(List<PlayerNameEntry> players)
     {
-        Debug.Log($"[Playerlist] RebuildList called with {players?.Count} players");
-        foreach (var obj in playerEntryObjects) Destroy(obj);
+        foreach (var entryObject in playerEntryObjects)
+            Destroy(entryObject);
         playerEntryObjects.Clear();
 
         if (players == null) return;
-    
+
         foreach (var player in players)
         {
-            Debug.Log($"[Playerlist] Adding entry for {player.name}");
-            var entryObj  = Instantiate(playerEntry, playerListRoot);
-            var entryComp = entryObj.GetComponent<WB_NetPlayerlist_PlayerEntry>();
-            entryComp.playerNameText.text = player.name;
-            entryComp.pingText.text = $"{player.ping}ms";
-            entryComp.kickButton.onClick.AddListener(() =>
+            var entryObject = Instantiate(playerEntry, playerListRoot);
+            var entryComponent = entryObject.GetComponent<WB_NetPlayerlist_PlayerEntry>();
+            entryComponent.playerNameText.text = player.name;
+            entryComponent.pingText.text = $"{player.ping}ms";
+
+            entryComponent.kickButton.onClick.AddListener(() =>
             {
-                var nm = GameInstance.Get<GI_NetworkManager>();
-                if (nm.isOp)
-                    nm.SendPacket(NetProtocol.Magic + NetProtocol.Chat + "kick " + player.name);
+                var networkManager = GameInstance.Get<GI_NetworkManager>();
+                if (networkManager == null) return;
+
+                if (networkManager.isOp)
+                    networkManager.SendChat("/kick " + player.name);
                 else
-                    nm.RequestVoteKick(player.name);
+                    networkManager.RequestVoteKick(player.name);
             });
-            playerEntryObjects.Add(entryObj);
+
+            playerEntryObjects.Add(entryObject);
         }
     }
 
-    /*-----[ External Functions ]-------------------------------------------------------------------------------------*/
-    /// <summary>
-    /// Call this to do a one-time populate without waiting for the next state packet
-    /// </summary>
-    public void PopulateFromCurrentState()
-    {
-        networkManager ??= GameInstance.Get<GI_NetworkManager>();
-        if (networkManager.lastGameState != null) RebuildList(networkManager.lastGameState.PlayerNames);
-    }
 
+    /*-----[ External Functions ]----------------------------------------------------------------------------------*/
 
     #endregion
 }

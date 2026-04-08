@@ -23,26 +23,21 @@ public class GI_NetworkManager : MonoBehaviour
     #region========================================( Variables )======================================================//
 
     /*-----[ Inspector Variables ]---------------------------------------------------------------------------------*/
+    [Header("Protocol")]
+    [Tooltip("Must match the ProtocolMagic field in the server's server.config")]
+    public string protocolMagic = "NyNet";
+
     [Header("Network Object Syncing")]
     [Tooltip("Registry mapping prefab keys to prefabs for spawning over the network")]
     public NetPrefabRegistry prefabRegistry;
     [Tooltip("How many times per second variable changes are sent, 10 is default")]
     public float varSyncRate = 10f;
 
-    [Header("Spectator")]
-    [Tooltip("The prefab key registered in NetPrefabRegistry for the spectator body")]
-    public string spectatorPrefabKey = "SpectatorBody";
-    [Tooltip("World position the spectator body spawns at when entering a game world")]
-    public Vector3 spectatorSpawnPosition = Vector3.up * 5f;
-
 
     /*-----[ External Variables ]---------------------------------------------------------------------------------*/
     public NetProfile localProfile = new NetProfile();
     public bool isConnected = false;
     public string connectedAddress = "";
-    public string currentPhase = null;
-    public string lastKnownMapName = "";
-    public GameStatePacket lastGameState = null;
     public bool isOp = false;
 
 
@@ -50,8 +45,7 @@ public class GI_NetworkManager : MonoBehaviour
     private string configFilePath => Path.Combine(Application.persistentDataPath, "serverlist.config");
     private string profileFilePath => Path.Combine(Application.persistentDataPath, "netprofile.profile");
 
-    private readonly System.Collections.Concurrent.ConcurrentQueue<string> inboundPackets
-        = new System.Collections.Concurrent.ConcurrentQueue<string>();
+    private readonly System.Collections.Concurrent.ConcurrentQueue<string> inboundPackets = new System.Collections.Concurrent.ConcurrentQueue<string>();
     private Thread receiveThread;
 
     // UDP socket and server connection
@@ -64,21 +58,15 @@ public class GI_NetworkManager : MonoBehaviour
     private Coroutine varSyncCoroutine;
 
     // Connection state flags
-    private bool receivedFirstState = false;
     private bool worldIsReady = false;
     private bool isLoadingWorld = false;
 
     // Network object tracking
-    private readonly Dictionary<string, NetTransform> netTransforms
-        = new Dictionary<string, NetTransform>();
-    private readonly Dictionary<string, NetVarOwner> netVarOwners
-        = new Dictionary<string, NetVarOwner>();
-    private readonly Dictionary<string, Action<GameObject, string>> pendingSpawnCallbacks
-        = new Dictionary<string, Action<GameObject, string>>();
-    private readonly Dictionary<string, GameObject> netObjects
-        = new Dictionary<string, GameObject>();
-    private readonly List<SpawnBroadcastPacket> pendingSpawnQueue
-        = new List<SpawnBroadcastPacket>();
+    private readonly Dictionary<string, NetTransform> netTransforms = new Dictionary<string, NetTransform>();
+    private readonly Dictionary<string, NetVarOwner> netVarOwners = new Dictionary<string, NetVarOwner>();
+    private readonly Dictionary<string, Action<GameObject, string>> pendingSpawnCallbacks = new Dictionary<string, Action<GameObject, string>>();
+    private readonly Dictionary<string, GameObject> netObjects = new Dictionary<string, GameObject>();
+    private readonly List<SpawnBroadcastPacket> pendingSpawnQueue = new List<SpawnBroadcastPacket>();
 
 
     /*-----[ Reference Variables ]---------------------------------------------------------------------------------*/
@@ -87,23 +75,14 @@ public class GI_NetworkManager : MonoBehaviour
     [SerializeField] public List<ServerEntry> serverEntries = new List<ServerEntry>();
 
     // Events that other scripts can subscribe to
-    public event Action<GameStatePacket> OnGameStateReceived;
+    public event Action<string> OnRawPacketReceived;
+    public event Action<PlayerListPacket> OnPlayerListReceived;
     public event Action<string, string> OnChatReceived;
-    public event Action<string> OnMapVoteReceived;
     public event Action<string> OnKicked;
     public event Action OnDisconnected;
     public event Action<bool> OnOpStatusChanged;
     public event Action<VoteKickPacket> OnVoteKickReceived;
     public event Action<VoteKickResultPacket> OnVoteKickResultReceived;
-
-    // Widget prefabs assigned in the Inspector
-    public GameObject fighterSelectWidget;
-    public GameObject connectionMessageWidget;
-    public GameObject netChatWidget;
-    public GameObject netVoteKickWidget;
-
-    [SerializeField] public string titleScreenWorldName = "_Title";
-    public string LocalSpectatorNetworkId { get; private set; } = null;
 
     #endregion
 
@@ -122,23 +101,6 @@ public class GI_NetworkManager : MonoBehaviour
     public void Update()
     {
         widgetManager ??= GameInstance.Get<GI_WidgetManager>();
-
-        if (isConnected)
-        {
-            if (!widgetManager.GetExistingWidget(netChatWidget.gameObject.name))
-                widgetManager.AddWidget(netChatWidget);
-
-            if (!widgetManager.GetExistingWidget(netVoteKickWidget.gameObject.name))
-                widgetManager.AddWidget(netVoteKickWidget);
-        }
-        else
-        {
-            var existingChat = widgetManager.GetExistingWidget(netChatWidget.gameObject.name);
-            if (existingChat != null) Destroy(existingChat);
-
-            var existingVoteKick = widgetManager.GetExistingWidget(netVoteKickWidget.gameObject.name);
-            if (existingVoteKick != null) Destroy(existingVoteKick);
-        }
     }
 
     private void OnDestroy()
@@ -159,136 +121,21 @@ public class GI_NetworkManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Shows a popup message to the player and then loads the title screen world.
-    /// Used when the player is kicked or disconnected.
-    /// </summary>
-    private void ShowConnectionPopupAndReturnToTitle(string title, string message)
-    {
-        widgetManager ??= FindObjectOfType<GI_WidgetManager>();
-        var worldLoader = GameInstance.Get<GI_WorldLoader>();
-        if (worldLoader == null) return;
-
-        void OnLoaded()
-        {
-            GI_WorldLoader.OnWorldLoaded -= OnLoaded;
-            if (widgetManager == null || connectionMessageWidget == null) return;
-
-            var existing = FindObjectOfType<WB_ConnectionMessage>();
-            if (existing != null)
-            {
-                existing.Setup(title, message, "Close");
-                return;
-            }
-
-            widgetManager.AddWidget(connectionMessageWidget);
-            FindObjectOfType<WB_ConnectionMessage>()?.Setup(title, message, "Close");
-        }
-
-        GI_WorldLoader.OnWorldLoaded += OnLoaded;
-        worldLoader.LoadWorld(titleScreenWorldName);
-    }
-
-    /// <summary>
-    /// Spawns the local player's networked spectator body and gives it local authority.
-    /// Does nothing if one is already alive.
-    /// </summary>
-    private void SpawnSpectatorBody()
-    {
-        LogToFile($"[SpawnSpectatorBody] Called. LocalSpectatorNetworkId='{LocalSpectatorNetworkId}'");
-        if (!string.IsNullOrEmpty(LocalSpectatorNetworkId)) return;
-
-        NetSpawner.Spawn(spectatorPrefabKey, spectatorSpawnPosition, Quaternion.identity, (go, networkId) =>
-        {
-            LocalSpectatorNetworkId = networkId;
-
-            var spectator = go.GetComponent<Pawn_Spectator>();
-            if (spectator != null)
-            {
-                spectator.controlMode = ControlMode.LocalPlayer;
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-            }
-            else
-            {
-                LogToFile("[SpawnSpectatorBody] WARNING: Pawn_Spectator component not found on spawned object!");
-            }
-
-            LogToFile($"[SpawnSpectatorBody] Spectator body spawned. networkId={networkId} controlMode={spectator?._controlMode}");
-        });
-    }
-
-    /// <summary>
-    /// Despawns the local player's networked spectator body if one exists.
-    /// Restores the cursor for UI use.
-    /// </summary>
-    public void DespawnSpectatorBody()
-    {
-        if (string.IsNullOrEmpty(LocalSpectatorNetworkId)) return;
-
-        LogToFile($"[DespawnSpectatorBody] Despawning id='{LocalSpectatorNetworkId}'");
-        NetSpawner.Despawn(LocalSpectatorNetworkId);
-        LocalSpectatorNetworkId = null;
-
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-    }
-
-    /// <summary>
-    /// Loads the named world and calls the callback once it is ready.
-    /// Any spawn packets that arrived while the world was loading are flushed before the callback fires.
-    /// </summary>
-    private void LoadWorldAndThen(string mapName, Action onLoaded)
-    {
-        LogToFile($"[LoadWorldAndThen] Requested load of '{mapName}'. isLoadingWorld={isLoadingWorld}");
-        if (isLoadingWorld) return;
-
-        isLoadingWorld = true;
-        worldIsReady = false;
-
-        var worldLoader = GameInstance.Get<GI_WorldLoader>();
-        if (worldLoader == null)
-        {
-            LogToFile("[LoadWorldAndThen] ERROR: GI_WorldLoader not found!");
-            return;
-        }
-
-        void OnLoaded()
-        {
-            GI_WorldLoader.OnWorldLoaded -= OnLoaded;
-            isLoadingWorld = false;
-            worldIsReady = true;
-
-            LogToFile($"[LoadWorldAndThen] '{mapName}' ready. Flushing {pendingSpawnQueue.Count} queued spawn(s).");
-            foreach (var spawnBroadcastPacket in pendingSpawnQueue)
-                HandleSpawnBroadcast(spawnBroadcastPacket);
-            pendingSpawnQueue.Clear();
-
-            onLoaded?.Invoke();
-        }
-
-        GI_WorldLoader.OnWorldLoaded += OnLoaded;
-        worldLoader.LoadWorld(mapName);
-    }
-
-    /// <summary>
-    /// Called when the server kicks this client. Shows a popup and returns to the title screen.
+    /// Called when the server kicks this client.
+    /// Fires OnKicked so game-specific code can react (show a popup, return to menu, etc.)
     /// </summary>
     private void HandleKicked(string reason)
     {
         LogToFile($"[HandleKicked] reason='{reason}'");
-        DespawnSpectatorBody();
-        ShowConnectionPopupAndReturnToTitle(
-            "Kicked",
-            string.IsNullOrEmpty(reason) ? "You were kicked from the server." : reason);
     }
 
     /// <summary>
-    /// Called when the client disconnects from the server. Returns to the title screen.
+    /// Called when the client disconnects from the server.
+    /// Fires OnDisconnected so game-specific code can react.
     /// </summary>
     private void HandleDisconnected()
     {
-        LogToFile("[HandleDisconnected] Returning to title.");
-        ShowConnectionPopupAndReturnToTitle("Disconnected", "You have been disconnected from the server.");
+        LogToFile("[HandleDisconnected] Disconnected from server.");
     }
 
     /// <summary>
@@ -309,11 +156,7 @@ public class GI_NetworkManager : MonoBehaviour
 
         isConnected = false;
         connectedAddress = "";
-        currentPhase = null;
-        lastKnownMapName = "";
-        LocalSpectatorNetworkId = null;
         worldIsReady = false;
-        receivedFirstState = false;
 
         pendingSpawnCallbacks.Clear();
         netObjects.Clear();
@@ -331,7 +174,7 @@ public class GI_NetworkManager : MonoBehaviour
     /// </summary>
     private IEnumerator HeartbeatLoop()
     {
-        byte[] heartbeat = Encoding.UTF8.GetBytes(NetProtocol.Magic + ":HEARTBEAT");
+        byte[] heartbeat = Encoding.UTF8.GetBytes(protocolMagic + ":HEARTBEAT");
         while (isConnected)
         {
             yield return new WaitForSecondsRealtime(5f);
@@ -367,7 +210,7 @@ public class GI_NetworkManager : MonoBehaviour
                 if (dirtyVars.Count == 0) continue;
 
                 var packet = new VariableSyncPacket { ObjectId = kvp.Key, Vars = dirtyVars };
-                SendPacket(NetProtocol.Magic + ":VARSYNC:" + JsonUtility.ToJson(packet));
+                SendPacket(protocolMagic + ":VARSYNC:" + JsonUtility.ToJson(packet));
             }
         }
     }
@@ -398,7 +241,7 @@ public class GI_NetworkManager : MonoBehaviour
             }
             LogToFile("[ReceiveThread] Exited.");
         })
-        { IsBackground = true, Name = "FeKa-Receive" };
+        { IsBackground = true, Name = "NyNet-Receive" };
 
         receiveThread.Start();
     }
@@ -422,11 +265,12 @@ public class GI_NetworkManager : MonoBehaviour
     /// <summary>
     /// Reads an incoming packet string and routes it to the appropriate handler based on its command prefix.
     /// Called from PacketDrainLoop on the Unity main thread, so Unity API calls are safe here.
+    /// Game-specific packet handling should subscribe to OnRawPacketReceived rather than modifying this method.
     /// </summary>
     private void ProcessPacket(string packet)
     {
         // --- Opped ---
-        if (packet == NetProtocol.Magic + NetProtocol.Opped)
+        if (packet == protocolMagic + ":OPPED")
         {
             isOp = true;
             OnOpStatusChanged?.Invoke(true);
@@ -434,7 +278,7 @@ public class GI_NetworkManager : MonoBehaviour
         }
 
         // --- Deopped ---
-        if (packet == NetProtocol.Magic + NetProtocol.Deopped)
+        if (packet == protocolMagic + ":DEOPPED")
         {
             isOp = false;
             OnOpStatusChanged?.Invoke(false);
@@ -442,120 +286,78 @@ public class GI_NetworkManager : MonoBehaviour
         }
 
         // --- Kicked ---
-        if (packet.StartsWith(NetProtocol.Magic + ":KICKED:"))
+        if (packet.StartsWith(protocolMagic + ":KICKED:"))
         {
-            string reason = packet.Substring((NetProtocol.Magic + ":KICKED:").Length);
+            string reason = packet.Substring((protocolMagic + ":KICKED:").Length);
             LogToFile($"[ProcessPacket] KICKED reason='{reason}'");
             CleanupConnection();
             OnKicked?.Invoke(reason);
             return;
         }
 
-        // --- Game State ---
-        if (packet.StartsWith(NetProtocol.Magic + ":STATE:"))
+        // --- Player List ---
+        // The engine sends the connected player list so the client can display it.
+        // Game-specific state (phase, map, timeleft) is sent by game rules code and
+        // handled via OnRawPacketReceived below.
+        if (packet.StartsWith(protocolMagic + ":PLAYERLIST:"))
         {
-            string json = packet.Substring((NetProtocol.Magic + ":STATE:").Length);
-            var gameState = JsonUtility.FromJson<GameStatePacket>(json);
-            LogToFile($"[ProcessPacket] STATE Phase={gameState.Phase} Map={gameState.MapName}");
-
-            lastGameState = gameState;
-            lastKnownMapName = gameState.MapName;
-
-            string previousPhase = currentPhase;
-            currentPhase = gameState.Phase;
-
-            // First state received after connecting: load the server's current map
-            if (!receivedFirstState)
-            {
-                receivedFirstState = true;
-                if (gameState.Phase != "InProgress")
-                    LoadWorldAndThen(gameState.MapName, () => StartCoroutine(ShowFighterSelect()));
-                else
-                    LoadWorldAndThen(gameState.MapName, () => SpawnSpectatorBody());
-            }
-            else
-            {
-                // Server started loading a new map
-                if (gameState.Phase == "Loading" && previousPhase != "Loading")
-                {
-                    DespawnSpectatorBody();
-                    LoadWorldAndThen(gameState.MapName, () => SpawnSpectatorBody());
-                }
-                // Game went in-progress but we missed the Loading phase
-                else if (gameState.Phase == "InProgress" && previousPhase == "Intermission")
-                {
-                    LoadWorldAndThen(gameState.MapName, () => SpawnSpectatorBody());
-                }
-                // Game ended, return to intermission
-                else if (gameState.Phase == "Intermission" && previousPhase == "InProgress")
-                {
-                    DespawnSpectatorBody();
-                    StartCoroutine(ShowFighterSelect());
-                }
-            }
-
-            OnGameStateReceived?.Invoke(gameState);
-            return;
-        }
-
-        // --- Map Vote ---
-        if (packet.StartsWith(NetProtocol.Magic + ":MAPVOTE:"))
-        {
-            OnMapVoteReceived?.Invoke(packet.Substring((NetProtocol.Magic + ":MAPVOTE:").Length));
+            string json = packet.Substring((protocolMagic + ":PLAYERLIST:").Length);
+            var playerList = JsonUtility.FromJson<PlayerListPacket>(json);
+            if (playerList != null) OnPlayerListReceived?.Invoke(playerList);
             return;
         }
 
         // --- Chat ---
-        if (packet.StartsWith(NetProtocol.Magic + NetProtocol.Chat))
+        if (packet.StartsWith(protocolMagic + ":CHAT:"))
         {
-            string body = packet[(NetProtocol.Magic + NetProtocol.Chat).Length..];
+            string body = packet.Substring((protocolMagic + ":CHAT:").Length);
             int separatorIndex = body.IndexOf(':');
             if (separatorIndex >= 0)
-                OnChatReceived?.Invoke(body[..separatorIndex], body[(separatorIndex + 1)..]);
+                OnChatReceived?.Invoke(body.Substring(0, separatorIndex), body.Substring(separatorIndex + 1));
             return;
         }
 
         // --- Ping ---
-        if (packet.StartsWith(NetProtocol.Magic + ":PING"))
+        if (packet.StartsWith(protocolMagic + ":PING"))
         {
-            byte[] pong = Encoding.UTF8.GetBytes(NetProtocol.Magic + ":PONG");
+            byte[] pong = Encoding.UTF8.GetBytes(protocolMagic + ":PONG");
             try { gameUdp?.Send(pong, pong.Length, serverEndpoint); } catch { }
             return;
         }
 
         // --- Transform Sync ---
-        if (packet.StartsWith(NetProtocol.Magic + ":TSYNC:"))
+        if (packet.StartsWith(protocolMagic + ":TSYNC:"))
         {
             var transformSyncPacket = JsonUtility.FromJson<TransformSyncPacket>(
-                packet.Substring((NetProtocol.Magic + ":TSYNC:").Length));
+                packet.Substring((protocolMagic + ":TSYNC:").Length));
             if (transformSyncPacket != null && netTransforms.TryGetValue(transformSyncPacket.objectUId, out var netTransform))
                 netTransform.ReceiveTransformPacket(transformSyncPacket);
             return;
         }
 
         // --- Spawn ---
-        if (packet.StartsWith(NetProtocol.Magic + ":SPAWN:"))
+        if (packet.StartsWith(protocolMagic + ":SPAWN:"))
         {
             var spawnBroadcastPacket = JsonUtility.FromJson<SpawnBroadcastPacket>(
-                packet.Substring((NetProtocol.Magic + ":SPAWN:").Length));
+                packet.Substring((protocolMagic + ":SPAWN:").Length));
             if (spawnBroadcastPacket != null) HandleSpawnBroadcast(spawnBroadcastPacket);
             return;
         }
 
         // --- Despawn ---
-        if (packet.StartsWith(NetProtocol.Magic + ":DESPAWN:"))
+        if (packet.StartsWith(protocolMagic + ":DESPAWN:"))
         {
             var despawnPacket = JsonUtility.FromJson<DespawnPacket>(
-                packet.Substring((NetProtocol.Magic + ":DESPAWN:").Length));
+                packet.Substring((protocolMagic + ":DESPAWN:").Length));
             if (despawnPacket != null) HandleDespawnBroadcast(despawnPacket);
             return;
         }
 
         // --- Variable Sync ---
-        if (packet.StartsWith(NetProtocol.Magic + ":VARSYNC:"))
+        if (packet.StartsWith(protocolMagic + ":VARSYNC:"))
         {
             var variableSyncPacket = JsonUtility.FromJson<VariableSyncPacket>(
-                packet.Substring((NetProtocol.Magic + ":VARSYNC:").Length));
+                packet.Substring((protocolMagic + ":VARSYNC:").Length));
             if (variableSyncPacket != null && netVarOwners.TryGetValue(variableSyncPacket.ObjectId, out var varOwner))
             {
                 foreach (var entry in variableSyncPacket.Vars)
@@ -565,22 +367,28 @@ public class GI_NetworkManager : MonoBehaviour
         }
 
         // --- Vote Kick ---
-        if (packet.StartsWith(NetProtocol.Magic + ":VOTEKICK:"))
+        if (packet.StartsWith(protocolMagic + ":VOTEKICK:"))
         {
             var voteKickPacket = JsonUtility.FromJson<VoteKickPacket>(
-                packet.Substring((NetProtocol.Magic + ":VOTEKICK:").Length));
+                packet.Substring((protocolMagic + ":VOTEKICK:").Length));
             if (voteKickPacket != null) OnVoteKickReceived?.Invoke(voteKickPacket);
             return;
         }
 
         // --- Vote Kick Result ---
-        if (packet.StartsWith(NetProtocol.Magic + ":VOTEKICKRESULT:"))
+        if (packet.StartsWith(protocolMagic + ":VOTEKICKRESULT:"))
         {
             var voteKickResultPacket = JsonUtility.FromJson<VoteKickResultPacket>(
-                packet.Substring((NetProtocol.Magic + ":VOTEKICKRESULT:").Length));
+                packet.Substring((protocolMagic + ":VOTEKICKRESULT:").Length));
             if (voteKickResultPacket != null) OnVoteKickResultReceived?.Invoke(voteKickResultPacket);
             return;
         }
+
+        // --- Unknown / Game-Specific ---
+        // Any packet that does not match a NyNet engine command is forwarded to subscribers.
+        // Game-specific code (like FeralKart) subscribes to OnRawPacketReceived to handle
+        // things like STATE, MAPVOTE, LOADMAP, and FINISH packets.
+        OnRawPacketReceived?.Invoke(packet);
     }
 
 
@@ -652,6 +460,29 @@ public class GI_NetworkManager : MonoBehaviour
         netVarOwners.Remove(despawnPacket.NetworkObjectId);
     }
 
+    /// <summary>
+    /// Notifies the network manager that a world has finished loading.
+    /// Call this from your world loader once the scene is ready so queued spawns can be flushed.
+    /// </summary>
+    public void NotifyWorldReady()
+    {
+        LogToFile($"[NotifyWorldReady] World ready. Flushing {pendingSpawnQueue.Count} queued spawn(s).");
+        worldIsReady = true;
+        foreach (var spawnBroadcastPacket in pendingSpawnQueue)
+            HandleSpawnBroadcast(spawnBroadcastPacket);
+        pendingSpawnQueue.Clear();
+    }
+
+    /// <summary>
+    /// Notifies the network manager that a world is about to unload.
+    /// Call this before loading a new scene so spawn packets do not fire into a scene mid-teardown.
+    /// </summary>
+    public void NotifyWorldUnloading()
+    {
+        LogToFile("[NotifyWorldUnloading] World unloading, clearing ready state.");
+        worldIsReady = false;
+    }
+
 
     /*-----[ External Functions ]----------------------------------------------------------------------------------*/
 
@@ -694,7 +525,7 @@ public class GI_NetworkManager : MonoBehaviour
     public IEnumerator QueryServer(string address, Action<ServerQueryResponse, int> onSuccess, Action onFailure)
     {
         string host = address;
-        int port = NetProtocol.QueryPort;
+        int port = NetProtocol.DefaultPort;
         if (address.Contains(':'))
         {
             var addressParts = address.Split(':');
@@ -728,7 +559,7 @@ public class GI_NetworkManager : MonoBehaviour
         {
             udpClient = new UdpClient();
             udpClient.Client.ReceiveTimeout = Mathf.RoundToInt(NetProtocol.TimeoutSeconds * 1000);
-            byte[] queryBytes = Encoding.UTF8.GetBytes(NetProtocol.Magic + ":QUERY");
+            byte[] queryBytes = Encoding.UTF8.GetBytes(protocolMagic + ":QUERY");
             udpClient.Send(queryBytes, queryBytes.Length, resolvedEndpoint);
         }
         catch { udpClient?.Close(); onFailure?.Invoke(); yield break; }
@@ -763,7 +594,7 @@ public class GI_NetworkManager : MonoBehaviour
         }
         if (timedOut || rawResponse == null) { onFailure?.Invoke(); yield break; }
 
-        string responsePrefix = NetProtocol.Magic + ":RESPONSE:";
+        string responsePrefix = protocolMagic + ":RESPONSE:";
         if (!rawResponse.StartsWith(responsePrefix)) { onFailure?.Invoke(); yield break; }
 
         ServerQueryResponse queryResult;
@@ -799,7 +630,7 @@ public class GI_NetworkManager : MonoBehaviour
         LogToFile($"[Connect] Attempting connection to '{address}'.");
 
         string host = address;
-        int port = NetProtocol.QueryPort;
+        int port = NetProtocol.DefaultPort;
         if (address.Contains(':'))
         {
             var addressParts = address.Split(':');
@@ -833,7 +664,7 @@ public class GI_NetworkManager : MonoBehaviour
         // Open the socket and send the JOIN packet, including our stored session token
         gameUdp = new UdpClient();
         byte[] joinBytes = Encoding.UTF8.GetBytes(
-            NetProtocol.Magic + ":JOIN:" + localProfile.playerName + ":" + localProfile.sessionToken);
+            protocolMagic + ":JOIN:" + localProfile.playerName + ":" + localProfile.sessionToken);
 
         try { gameUdp.Send(joinBytes, joinBytes.Length, serverEndpoint); }
         catch { gameUdp.Close(); onFailure?.Invoke("Could not reach server."); yield break; }
@@ -850,18 +681,18 @@ public class GI_NetworkManager : MonoBehaviour
             {
                 var remote = new IPEndPoint(IPAddress.Any, 0);
                 string reply = Encoding.UTF8.GetString(gameUdp.Receive(ref remote));
-                string acceptedPrefix = NetProtocol.Magic + ":JOIN:ACCEPTED";
+                string acceptedPrefix = protocolMagic + ":JOIN:ACCEPTED";
 
                 if (reply.StartsWith(acceptedPrefix))
                 {
                     accepted = true;
                     // The token follows the colon after ACCEPTED
                     if (reply.Length > acceptedPrefix.Length + 1)
-                        receivedToken = reply[(acceptedPrefix.Length + 1)..];
+                        receivedToken = reply.Substring(acceptedPrefix.Length + 1);
                 }
-                else if (reply.StartsWith(NetProtocol.Magic + ":JOIN:REJECTED:"))
+                else if (reply.StartsWith(protocolMagic + ":JOIN:REJECTED:"))
                 {
-                    rejectMessage = reply.Substring((NetProtocol.Magic + ":JOIN:REJECTED:").Length);
+                    rejectMessage = reply.Substring((protocolMagic + ":JOIN:REJECTED:").Length);
                 }
 
                 gotReply = true;
@@ -913,10 +744,9 @@ public class GI_NetworkManager : MonoBehaviour
         if (!isConnected) return;
         LogToFile("[Disconnect] Disconnecting.");
 
-        DespawnSpectatorBody();
         try
         {
-            byte[] leavePacket = Encoding.UTF8.GetBytes(NetProtocol.Magic + ":LEAVE");
+            byte[] leavePacket = Encoding.UTF8.GetBytes(protocolMagic + ":LEAVE");
             gameUdp?.Send(leavePacket, leavePacket.Length, serverEndpoint);
         }
         catch { }
@@ -960,7 +790,7 @@ public class GI_NetworkManager : MonoBehaviour
             packet.sz = netTransform.transform.localScale.z;
         }
 
-        SendPacket(NetProtocol.Magic + ":TSYNC:" + JsonUtility.ToJson(packet));
+        SendPacket(protocolMagic + ":TSYNC:" + JsonUtility.ToJson(packet));
     }
 
     /// <summary>
@@ -987,7 +817,7 @@ public class GI_NetworkManager : MonoBehaviour
             RZ = rotation.eulerAngles.z
         };
 
-        SendPacket(NetProtocol.Magic + ":SPAWNREQ:" + JsonUtility.ToJson(spawnRequest));
+        SendPacket(protocolMagic + ":SPAWNREQ:" + JsonUtility.ToJson(spawnRequest));
     }
 
     /// <summary>
@@ -998,37 +828,18 @@ public class GI_NetworkManager : MonoBehaviour
     {
         if (!isConnected) return;
         LogToFile($"[RequestDespawn] networkId={networkObjectId}");
-        SendPacket(NetProtocol.Magic + ":DESPAWNREQ:" + JsonUtility.ToJson(new DespawnPacket { NetworkObjectId = networkObjectId }));
+        SendPacket(protocolMagic + ":DESPAWNREQ:" + JsonUtility.ToJson(new DespawnPacket { NetworkObjectId = networkObjectId }));
     }
 
     /// <summary>
-    /// Tells the server this player is ready to start the game.
+    /// Tells the server this player is ready to start, along with their chosen character or "spectate".
+    /// The characterChoice should be a prefab key registered in NetPrefabRegistry, or the string "spectate".
     /// </summary>
-    public void SendReady()
+    public void SendReady(string characterChoice)
     {
         if (!isConnected) return;
-        LogToFile("[SendReady] Sending READY.");
-        SendPacket(NetProtocol.Magic + NetProtocol.Ready);
-    }
-
-    /// <summary>
-    /// Casts a vote for the given map name during intermission.
-    /// </summary>
-    public void SendVote(string mapName)
-    {
-        if (!isConnected) return;
-        LogToFile($"[SendVote] Voting for '{mapName}'.");
-        SendPacket(NetProtocol.Magic + NetProtocol.Vote + mapName);
-    }
-
-    /// <summary>
-    /// Tells the server this player is switching to spectator mode.
-    /// </summary>
-    public void SendSpectate()
-    {
-        if (!isConnected) return;
-        LogToFile("[SendSpectate] Sending SPECTATE.");
-        SendPacket(NetProtocol.Magic + NetProtocol.Spectate);
+        LogToFile($"[SendReady] Sending READY with choice='{characterChoice}'.");
+        SendPacket(protocolMagic + ":READY:" + characterChoice);
     }
 
     /// <summary>
@@ -1038,7 +849,7 @@ public class GI_NetworkManager : MonoBehaviour
     public void SendChat(string text)
     {
         if (!isConnected || string.IsNullOrWhiteSpace(text)) return;
-        SendPacket(NetProtocol.Magic + NetProtocol.Chat + text);
+        SendPacket(protocolMagic + ":CHAT:" + text);
     }
 
     /// <summary>
@@ -1048,7 +859,7 @@ public class GI_NetworkManager : MonoBehaviour
     public void RequestVoteKick(string targetName)
     {
         if (!isConnected) return;
-        SendPacket(NetProtocol.Magic + ":VOTEKICKREQ:" + JsonUtility.ToJson(new VoteKickRequest { TargetName = targetName }));
+        SendPacket(protocolMagic + ":VOTEKICKREQ:" + JsonUtility.ToJson(new VoteKickRequest { TargetName = targetName }));
     }
 
     /// <summary>
@@ -1057,12 +868,12 @@ public class GI_NetworkManager : MonoBehaviour
     public void CastVoteKick(bool votedYes)
     {
         if (!isConnected) return;
-        SendPacket(NetProtocol.Magic + ":VOTEKICKCAST:" + JsonUtility.ToJson(new VoteKickCast { VotedYes = votedYes }));
+        SendPacket(protocolMagic + ":VOTEKICKCAST:" + JsonUtility.ToJson(new VoteKickCast { VotedYes = votedYes }));
     }
 
     /// <summary>
     /// Serializes and sends a raw string packet to the server over UDP.
-    /// TODO I have temporarily made this method public since WB_NetPlayerlist needs access to it to initiate a vote-kick ~Liz
+    /// Use this to send game-specific packets that NyNet does not know about.
     /// </summary>
     public void SendPacket(string message)
     {
@@ -1076,19 +887,6 @@ public class GI_NetworkManager : MonoBehaviour
         {
             LogToFile($"[SendPacket] ERROR: {error.Message}");
         }
-    }
-
-    /// <summary>
-    /// Waits one frame for the world to finish initializing, then shows the fighter select widget.
-    /// </summary>
-    private IEnumerator ShowFighterSelect()
-    {
-        yield return null;
-        widgetManager ??= GameInstance.Get<GI_WidgetManager>();
-        if (widgetManager != null && fighterSelectWidget != null)
-            widgetManager.AddWidget(fighterSelectWidget);
-        else
-            LogToFile("[ShowFighterSelect] WARNING: widgetManager or fighterSelectWidget is null.");
     }
 
 
@@ -1158,33 +956,12 @@ public class ServerEntryListWrapper
     public List<ServerEntry> servers;
 }
 
-// Protocol constants shared between GI_NetworkManager and any script that sends or receives packets.
-// The magic string and port must match the dedicated server's configuration exactly.
+// Protocol constants shared across NyNet. The magic string must match the server's ProtocolMagic config value.
+// Game-specific constants (like vote commands or game state prefixes) should be defined in game-side code.
 public static class NetProtocol
 {
-    public const string Magic = "FeKa";
-    public const int QueryPort = 27015;
+    public const int DefaultPort = 27015;
     public const float TimeoutSeconds = 3f;
-
-    // Outgoing (client -> server)
-    public const string Ready = ":READY";
-    public const string Vote = ":VOTE:";
-    public const string Spectate = ":SPECTATE";
-    public const string Pong = ":PONG";
-    public const string Chat = ":CHAT:";
-    public const string VoteKickRequest = ":VOTEKICKREQ:";
-    public const string VoteKick = ":VOTEKICK:";
-    public const string VoteKickCast = ":VOTEKICKCAST:";
-    public const string VoteKickResult = ":VOTEKICKRESULT:";
-
-    // Incoming (server -> client)
-    public const string Opped = ":OPPED";
-    public const string Deopped = ":DEOPPED";
-    public const string State = ":STATE:";
-    public const string MapVote = ":MAPVOTE:";
-    public const string LoadMap = ":LOADMAP:";
-    public const string Spawn = ":SPAWN:";
-    public const string Ping = ":PING";
 }
 
 // The player's locally stored profile, saved to disk between sessions
@@ -1207,7 +984,7 @@ public class ServerQueryResponse
     public string IconBase64;
 }
 
-// A compact player entry included in STATE packets
+// A compact player entry included in player list packets
 [Serializable]
 public class PlayerNameEntry
 {
@@ -1215,14 +992,10 @@ public class PlayerNameEntry
     public int ping;
 }
 
-// The full game state snapshot sent by the server to all clients
+// The player list packet sent by the server to all clients
 [Serializable]
-public class GameStatePacket
+public class PlayerListPacket
 {
-    public string Phase;
-    public string MapName;
-    public string GameMode;
-    public int TimeLeft;
     public List<PlayerNameEntry> PlayerNames;
 }
 

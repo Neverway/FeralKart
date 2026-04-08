@@ -7,7 +7,6 @@
 //
 //====================================================================================================================//
 
-using System.Collections;
 using System.Collections.Generic;
 using RivenFramework;
 using TMPro;
@@ -17,14 +16,16 @@ using UnityEngine.UI;
 public class WB_FighterSelect : MonoBehaviour
 {
     #region========================================( Variables )======================================================//
-    /*-----[ Internal Variables ]-------------------------------------------------------------------------------------*/
+
+    /*-----[ Internal Variables ]---------------------------------------------------------------------------------*/
     private bool isReady = false;
+    private string selectedCharacterId = "";
     private List<GameObject> playerEntryObjects = new List<GameObject>();
 
 
-    /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/
+    /*-----[ Reference Variables ]---------------------------------------------------------------------------------*/
     private GI_NetworkManager networkManager;
-    private GI_WidgetManager  widgetManager;
+    private GI_WidgetManager widgetManager;
     private CharacterSelection characterSelection;
     public TMP_Text intermissionText, readyCountText, timerText;
     public Button readyButton, spectateButton;
@@ -36,35 +37,35 @@ public class WB_FighterSelect : MonoBehaviour
     #endregion
 
 
-    #region=======================================( Functions )======================================================= //
+    #region=======================================( Functions )=======================================================//
 
-    /*-----[ Mono Functions ]-----------------------------------------------------------------------------------------*/
+    /*-----[ Mono Functions ]--------------------------------------------------------------------------------------*/
+
     private void Start()
     {
-        networkManager     = GameInstance.Get<GI_NetworkManager>();
-        widgetManager      ??= FindObjectOfType<GI_WidgetManager>();
+        networkManager = GameInstance.Get<GI_NetworkManager>();
+        widgetManager ??= FindObjectOfType<GI_WidgetManager>();
         characterSelection ??= FindObjectOfType<CharacterSelection>();
 
         readyButton.onClick.AddListener(OnClickReady);
         spectateButton.onClick.AddListener(OnClickSpectate);
 
-        networkManager.OnGameStateReceived += OnGameStateReceived;
+        networkManager.OnRawPacketReceived += OnRawPacketReceived;
 
-        // Show spectate button only if game is already in progress
-        bool midGame = networkManager.currentPhase == "InProgress";
-        readyButton.gameObject.SetActive(!midGame);
-        spectateButton.gameObject.SetActive(midGame);
+        // Select the first fighter by default
+        if (fighterButtons.Length > 0)
+        {
+            SelectCharacter(fighterButtons[0].characterID);
+            fighterButtons[0].SetVisuallySelected(true);
+        }
 
         characterSelection.Initialize();
-        SelectCharacter(fighterButtons[0].characterID);
-        fighterButtons[0].SetVisuallySelected(true);
-        
-        
-        // Destroy the pause menu or hud widgets if they are stuck open
+
+        // Destroy any leftover in-game widgets that should not be visible in the lobby
         widgetManager.DestroyExistingWidget("WB_HUD");
         widgetManager.DestroyExistingWidget("WB_Title");
         widgetManager.DestroyExistingWidget("WB_Pause");
-        
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -72,57 +73,80 @@ public class WB_FighterSelect : MonoBehaviour
     private void OnDestroy()
     {
         characterSelection.Close();
-        if (networkManager != null) networkManager.OnGameStateReceived -= OnGameStateReceived;
+        if (networkManager != null)
+            networkManager.OnRawPacketReceived -= OnRawPacketReceived;
     }
 
 
-    /*-----[ Internal Functions ]-------------------------------------------------------------------------------------*/
+    /*-----[ Internal Functions ]----------------------------------------------------------------------------------*/
+
     private void OnClickReady()
     {
         if (isReady) return;
         isReady = true;
         readyButton.interactable = false;
-        networkManager.SendReady();
+
+        // Pass the selected character ID so the server knows what to spawn for this player
+        networkManager.SendReady(selectedCharacterId);
     }
 
     private void OnClickSpectate()
     {
-        networkManager.SendSpectate();
+        // "spectate" is the reserved choice string the server uses to spawn a spectator body
+        networkManager.SendReady("spectate");
         widgetManager.ToggleWidget(gameObject.name);
     }
 
-    private void OnGameStateReceived(GameStatePacket gs)
+    private void OnRawPacketReceived(string packet)
     {
-        // Update phase label
-        intermissionText.text = gs.Phase switch
-        {
-            "Intermission" => "Intermission",
-            "Loading"      => "Loading map...",
-            "InProgress"   => "Game In Progress",
-            _              => gs.Phase
-        };
+        // Only handle Feral Kart STATE packets here
+        // All other unrecognised packets are ignored by this widget
+        string statePrefix = networkManager.protocolMagic + ":STATE:";
+        if (!packet.StartsWith(statePrefix)) return;
 
-        // Update timer
-        timerText.text = gs.Phase == "Intermission" ? $"Starting in: {gs.TimeLeft}s" : "";
+        string json = packet.Substring(statePrefix.Length);
+        var gameState = JsonUtility.FromJson<FeKa_GameStatePacket>(json);
+        if (gameState == null) return;
 
-        // Rebuild player list
-        foreach (var obj in playerEntryObjects) Destroy(obj);
+        // Update the phase label
+        if (gameState.Phase == "Intermission")
+            intermissionText.text = "Intermission";
+        else if (gameState.Phase == "Loading")
+            intermissionText.text = "Loading map...";
+        else if (gameState.Phase == "InProgress")
+            intermissionText.text = "Game In Progress";
+        else
+            intermissionText.text = gameState.Phase;
+
+        // Update the countdown timer
+        timerText.text = gameState.Phase == "Intermission" ? $"Starting in: {gameState.TimeLeft}s" : "";
+
+        // Show the ready button during intermission, spectate button if joining mid-match
+        bool midGame = gameState.Phase == "InProgress";
+        readyButton.gameObject.SetActive(!midGame);
+        spectateButton.gameObject.SetActive(midGame);
+
+        // Rebuild the lobby player list
+        foreach (var entryObject in playerEntryObjects)
+            Destroy(entryObject);
         playerEntryObjects.Clear();
 
-        foreach (var entry in gs.PlayerNames)
+        if (gameState.PlayerNames != null)
         {
-            var entryObj  = Instantiate(playerEntry, playerListRoot);
-            var entryComp = entryObj.GetComponent<WB_FighterSelect_PlayerEntry>();
-            entryComp.playerNameText.text = entry.name;
-            entryComp.kickButton.gameObject.SetActive(false);
-            playerEntryObjects.Add(entryObj);
+            foreach (var playerEntry2 in gameState.PlayerNames)
+            {
+                var entryObject = Instantiate(playerEntry, playerListRoot);
+                var entryComponent = entryObject.GetComponent<WB_FighterSelect_PlayerEntry>();
+                entryComponent.playerNameText.text = playerEntry2.name;
+                entryComponent.kickButton.gameObject.SetActive(false);
+                playerEntryObjects.Add(entryObject);
+            }
         }
 
-        readyCountText.text = $"{gs.PlayerNames.Count} players in lobby";
+        readyCountText.text = $"{gameState.PlayerNames?.Count ?? 0} players in lobby";
 
-        // Close this widget when the server moves to Loading.
-        // GI_NetworkManager handles despawning any old spectator body and spawning the new one
-        if (gs.Phase == "Loading")
+        // Close this widget once the server starts loading the map
+        if (gameState.Phase == "Loading")
         {
             widgetManager ??= GameInstance.Get<GI_WidgetManager>();
             widgetManager.ToggleWidget(gameObject.name);
@@ -130,12 +154,14 @@ public class WB_FighterSelect : MonoBehaviour
     }
 
 
-    /*-----[ External Functions ]-------------------------------------------------------------------------------------*/
+    /*-----[ External Functions ]----------------------------------------------------------------------------------*/
+
     public void SelectCharacter(string characterID)
     {
+        selectedCharacterId = characterID;
         characterSelection.ViewCharacter(characterID);
-        foreach (var btn in fighterButtons)
-            btn.SetVisuallySelected(false);
+        foreach (var button in fighterButtons)
+            button.SetVisuallySelected(false);
     }
 
 
