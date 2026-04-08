@@ -7,53 +7,47 @@
 //
 //====================================================================================================================//
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class WB_FighterSelect_FighterButton : MonoBehaviour
 {
     #region========================================( Variables )======================================================//
-    /*-----[ Inspector Variables ]------------------------------------------------------------------------------------*/
+
+    /*-----[ Inspector Variables ]---------------------------------------------------------------------------------*/
     public string characterID;
     [Header("Selection Colorization")]
     public Color normalColor, selectedColor;
     public Image colorizedImage;
 
 
-    /*-----[ External Variables ]-------------------------------------------------------------------------------------*/
-
-
-    /*-----[ Internal Variables ]-------------------------------------------------------------------------------------*/
-
-
-    /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/
+    /*-----[ Reference Variables ]---------------------------------------------------------------------------------*/
     public WB_FighterSelect fighterSelect;
 
 
     #endregion
 
 
-    #region=======================================( Functions )======================================================= //
+    #region=======================================( Functions )=======================================================//
 
-    /*-----[ Mono Functions ]-----------------------------------------------------------------------------------------*/
+    /*-----[ Mono Functions ]--------------------------------------------------------------------------------------*/
 
-
-    /*-----[ Internal Functions ]-------------------------------------------------------------------------------------*/
-
-
-    /*-----[ External Functions ]-------------------------------------------------------------------------------------*/
     public void Start()
     {
-        GetComponent<Button>().onClick.AddListener(SetNetConnectsSelectedServer);
+        GetComponent<Button>().onClick.AddListener(OnButtonClicked);
     }
 
-    private void SetNetConnectsSelectedServer()
+
+    /*-----[ Internal Functions ]----------------------------------------------------------------------------------*/
+
+    private void OnButtonClicked()
     {
         fighterSelect.SelectCharacter(characterID);
         SetVisuallySelected(true);
     }
+
+
+    /*-----[ External Functions ]----------------------------------------------------------------------------------*/
 
     public void SetVisuallySelected(bool isSelected)
     {
