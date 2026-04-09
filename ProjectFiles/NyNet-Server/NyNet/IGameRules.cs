@@ -33,7 +33,10 @@ public interface IGameRules
     /// <summary>Returns the map name and game mode to show in the server browser.</summary>
     ServerBrowserInfo GetServerBrowserInfo();
 
-
+    // Called by the engine for any console command it does not recognise (This is for gamerule commands)
+    bool ExecuteGameCommand(string cmd, string arg, ConnectedPlayer? source);
+    
+    
     // State broadcasting
 
     /// <summary>

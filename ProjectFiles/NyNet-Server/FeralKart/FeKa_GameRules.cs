@@ -1,17 +1,8 @@
 // =========================================================================================================
 // FeralKartGameRules
 // =========================================================================================================
-// Implements IGameRules for Feral Kart.
-// Owns all kart-specific server logic: intermission, map selection, player spawning, and race flow.
-// Communicates with clients using the FeKa: protocol prefix for game-specific packets.
-//
-// FeKa-specific packets sent by this class:
-//   FeKa:STATE:<json>       - Full game state (phase, map, time left, player list)
-//   FeKa:LOADMAP:<mapname>  - Tell all clients to load a map
-//   FeKa:RESULTS:<json>     - Race results broadcast at the end of a race
-//
-// FeKa-specific packets received by this class (via OnUnknownPacket):
-//   FeKa:FINISH:<json>      - A player reporting their race finish or failure stats
+// Implements IGameRules for Feral Kart
+// Owns all kart-specific server logic: intermission, map selection, player spawning, and race flow
 // =========================================================================================================
 
 using System;
@@ -23,56 +14,57 @@ using System.Threading;
 public class FeralKartGameRules : IGameRules
 {
     #region ========================================( Variables )======================================================//
-    /*-----[ Constants ]--------------------------------------------------------------------------------------*/
+
+    /*-----[ Constants ]---------------------------------------------------------------------------------------*/
     private const string FEKA_MAGIC = "FeKa";
     private const int LOAD_WAIT_MILLISECONDS = 15000;
 
-    /*-----[ Engine Reference ]-------------------------------------------------------------------------------*/
-    // All calls back into the server go through this interface
+    /*-----[ Engine Reference ]--------------------------------------------------------------------------------*/
     private readonly IGameRulesEngine engine;
 
-    /*-----[ Config ]-----------------------------------------------------------------------------------------*/
+    /*-----[ Config ]------------------------------------------------------------------------------------------*/
     private readonly FeKa_ServerConfig config;
 
-    /*-----[ Game Phase ]-------------------------------------------------------------------------------------*/
+    /*-----[ Game Phase ]--------------------------------------------------------------------------------------*/
     private GamePhase currentPhase = GamePhase.Intermission;
     private readonly object phaseLock = new object();
     private int intermissionTimeLeft;
     private string currentMap = "";
 
-    /*-----[ Lookup Table 1: Character/Spectate Choice Per Player ]-------------------------------------------*/
-    // Value is either "spectate" or a prefab key string like "kart_liz"
+    /*-----[ Lookup Table 1: Character/Spectate Choice Per Player ]--------------------------------------------*/
     private readonly Dictionary<ConnectedPlayer, string> playerChoices = new();
     private readonly object playerChoicesLock = new object();
 
-    /*-----[ Lookup Table 2: Network Object ID Per Player ]---------------------------------------------------*/
-    // Tracks which spawned object belongs to which player so we can despawn it when they leave
+    /*-----[ Lookup Table 2: Network Object ID Per Player ]----------------------------------------------------*/
     private readonly Dictionary<ConnectedPlayer, string> playerNetworkObjects = new();
     private readonly object playerNetworkObjectsLock = new object();
 
-    /*-----[ Lookup Table 3: Race Results Per Player ]--------------------------------------------------------*/
+    /*-----[ Lookup Table 3: Race Results Per Player ]---------------------------------------------------------*/
     private readonly Dictionary<ConnectedPlayer, FinishPacket> raceResults = new();
     private readonly object raceResultsLock = new object();
 
-    /*-----[ Threads ]----------------------------------------------------------------------------------------*/
+    /*-----[ Threads ]-----------------------------------------------------------------------------------------*/
     private Thread? intermissionThread;
     private Thread? raceTimerThread;
+
     #endregion
 
 
     #region =======================================( Functions )======================================================//
-    /*-----[ Constructor ]------------------------------------------------------------------------------------*/
+
+    /*-----[ Constructor ]-------------------------------------------------------------------------------------*/
 
     public FeralKartGameRules(IGameRulesEngine engine, FeKa_ServerConfig config)
     {
         this.engine = engine;
         this.config = config;
         intermissionTimeLeft = config.IntermissionDuration;
+        Log("Entering intermission.");
         StartIntermissionTimer();
     }
 
 
-    /*-----[ IGameRules Implementation ]----------------------------------------------------------------------*/
+    /*-----[ IGameRules Implementation ]-----------------------------------------------------------------------*/
 
     public void OnPlayerJoined(ConnectedPlayer player)
     {
@@ -84,8 +76,9 @@ public class FeralKartGameRules : IGameRules
                 string networkObjectId = engine.RequestSpawnAndGetId("prefab_spectator", 0f, 0f, 0f, 0f, 0f, 0f);
                 lock (playerNetworkObjectsLock)
                     playerNetworkObjects[player] = networkObjectId;
+
+                Log($"'{player.Name}' joined mid-race, spawned as spectator.");
             }
-            // If intermission or loading, do nothing here - the client will show the fighter select screen
         }
     }
 
@@ -101,23 +94,28 @@ public class FeralKartGameRules : IGameRules
         if (networkObjectId != null)
             engine.RequestDespawn(networkObjectId);
 
-        // Remove their choice and results - players who disconnect do not appear on the results screen
+        // Remove their choice and results - players who disconnect mid-race do not appear on the results screen
         lock (playerChoicesLock) playerChoices.Remove(player);
         lock (raceResultsLock) raceResults.Remove(player);
     }
 
     public void OnPlayerReady(ConnectedPlayer player, string choice)
     {
-        // Store the player's character choice so we know what to spawn when the race starts
         lock (playerChoicesLock)
             playerChoices[player] = choice;
 
+        Log($"'{player.Name}' is ready (choice: {choice}).");
+
         // Check if all connected players have now readied up
         var allConnectedPlayers = engine.GetConnectedPlayers();
-        bool allPlayersReady = allConnectedPlayers.Count > 0 && allConnectedPlayers.TrueForAll(p => playerChoices.ContainsKey(p));
+        bool allPlayersReady = allConnectedPlayers.Count > 0
+            && allConnectedPlayers.TrueForAll(p => playerChoices.ContainsKey(p));
 
         if (allPlayersReady)
+        {
+            Log("All players are ready.");
             OnAllPlayersReady();
+        }
     }
 
     public void OnAllPlayersReady()
@@ -126,7 +124,7 @@ public class FeralKartGameRules : IGameRules
         {
             if (currentPhase != GamePhase.Intermission) return;
 
-            // Stop the intermission timer since all players are ready early
+            // Stop the intermission timer since all players readied up early
             intermissionThread?.Interrupt();
 
             StartGame();
@@ -140,7 +138,6 @@ public class FeralKartGameRules : IGameRules
 
     public void OnUnknownPacket(string message, IPEndPoint remote)
     {
-        // Handle FeKa-specific incoming packets here
         if (message.StartsWith(FEKA_MAGIC + ":FINISH:"))
         {
             string json = message[(FEKA_MAGIC + ":FINISH:").Length..];
@@ -151,6 +148,7 @@ public class FeralKartGameRules : IGameRules
             var sender = allPlayers.Find(p => p.EndPoint?.ToString() == remote.ToString());
             if (sender == null) return;
 
+            Log($"'{sender.Name}' finished the race (failed={finishPacket.Failed}, placement={finishPacket.Placement}).");
             OnFinishPacketReceived(sender, finishPacket);
         }
     }
@@ -164,9 +162,100 @@ public class FeralKartGameRules : IGameRules
         };
     }
 
+    public bool ExecuteGameCommand(string cmd, string arg, ConnectedPlayer? source)
+    {
+        switch (cmd)
+        {
+            case "gamehelp":
+            {
+                if (source != null)
+                {
+                    engine.SendToPlayer(source, FEKA_MAGIC + ":CHAT:Server:Game commands: /startgame, /endgame, /setmap <mapname>");
+                    break;
+                }
+                Console.WriteLine("  startgame               force-start the game immediately");
+                Console.WriteLine("  endgame                 force-end the race and return to intermission");
+                Console.WriteLine("  setmap <mapname>        change the map and restart the game");
+                break;
+            }
 
-    /*-----[ State Broadcasting ]-----------------------------------------------------------------------------*/
-    // Called by the engine whenever it needs to push a fresh state to all clients.
+            case "startgame":
+            {
+                lock (phaseLock)
+                {
+                    if (currentPhase == GamePhase.InProgress)
+                    {
+                        if (source != null)
+                            engine.SendToPlayer(source, FEKA_MAGIC + ":CHAT:Server:The game is already in progress.");
+                        else
+                            Console.WriteLine("  The game is already in progress.");
+                        break;
+                    }
+
+                    intermissionThread?.Interrupt();
+                    Log($"Game force-started by {(source?.Name ?? "console")}.");
+                    StartGame();
+                }
+                break;
+            }
+
+            case "endgame":
+            {
+                lock (phaseLock)
+                {
+                    if (currentPhase == GamePhase.Intermission)
+                    {
+                        if (source != null)
+                            engine.SendToPlayer(source, FEKA_MAGIC + ":CHAT:Server:Already in intermission.");
+                        else
+                            Console.WriteLine("  Already in intermission.");
+                        break;
+                    }
+
+                    raceTimerThread?.Interrupt();
+                    Log($"Game force-ended by {(source?.Name ?? "console")}.");
+                    OnRaceEnd();
+                }
+                break;
+            }
+
+            case "setmap":
+            {
+                if (string.IsNullOrEmpty(arg))
+                {
+                    if (source != null)
+                        engine.SendToPlayer(source, FEKA_MAGIC + ":CHAT:Server:Usage: /setmap <mapname>");
+                    else
+                        Console.WriteLine("  Usage: setmap <mapname>");
+                    break;
+                }
+
+                lock (phaseLock)
+                {
+                    // If a race is running, interrupt it cleanly before forcing the new map
+                    if (currentPhase == GamePhase.InProgress)
+                        raceTimerThread?.Interrupt();
+
+                    intermissionThread?.Interrupt();
+
+                    // Override the map for the next StartGame call by injecting it into the pool temporarily
+                    // StartGame calls PickMap, so we just directly set currentMap and kick off the load
+                    currentMap = arg;
+                    Log($"Map set to '{arg}' by {(source?.Name ?? "console")}. Starting game.");
+                    StartGameWithMap(arg);
+                }
+                break;
+            }
+
+            default:
+                return false;
+        }
+
+        return true;
+    }
+
+
+    /*-----[ State Broadcasting ]------------------------------------------------------------------------------*/
 
     public void BroadcastGameState(List<ConnectedPlayer> players)
     {
@@ -201,15 +290,23 @@ public class FeralKartGameRules : IGameRules
     }
 
 
-    /*-----[ Internal Game Flow ]-----------------------------------------------------------------------------*/
+    /*-----[ Internal Game Flow ]------------------------------------------------------------------------------*/
 
     private void StartGame()
     {
-        currentMap = PickMap();
-        currentPhase = GamePhase.Loading;
+        StartGameWithMap(PickMap());
+    }
 
+    private void StartGameWithMap(string mapName)
+    {
+        currentMap = mapName;
+        currentPhase = GamePhase.Loading;
+        intermissionTimeLeft = config.IntermissionDuration;
+
+        lock (playerChoicesLock) playerChoices.Clear();
         lock (raceResultsLock) raceResults.Clear();
 
+        Log($"Loading map '{currentMap}'.");
         engine.BroadcastToAll(FEKA_MAGIC + ":LOADMAP:" + currentMap);
         engine.BroadcastState();
 
@@ -221,6 +318,7 @@ public class FeralKartGameRules : IGameRules
             lock (phaseLock)
             {
                 currentPhase = GamePhase.InProgress;
+                Log("Game is now in progress.");
                 SpawnAllPlayers();
                 engine.BroadcastState();
                 StartRaceTimer();
@@ -241,7 +339,6 @@ public class FeralKartGameRules : IGameRules
             if (choice == null)
                 choice = "spectate";
 
-            // If the player chose a character, use their chosen prefab key, otherwise use the spectator prefab
             string prefabKey = choice == "spectate" ? "prefab_spectator" : choice;
             string networkObjectId = engine.RequestSpawnAndGetId(prefabKey, 0f, 0f, 0f, 0f, 0f, 0f);
 
@@ -259,11 +356,12 @@ public class FeralKartGameRules : IGameRules
             try
             {
                 Thread.Sleep(raceDurationSeconds * 1000);
+                Log("Race timer expired.");
                 OnRaceEnd();
             }
             catch (ThreadInterruptedException)
             {
-                // The race ended early because all players finished, so the timer was interrupted intentionally
+                // The race ended early - either all players finished or it was force-ended
             }
         }) { IsBackground = true };
         raceTimerThread.Start();
@@ -286,7 +384,7 @@ public class FeralKartGameRules : IGameRules
 
         if (allRacersDone)
         {
-            // All racers finished, so end the race early and interrupt the race timer
+            Log("All racers have finished. Ending race early.");
             raceTimerThread?.Interrupt();
             OnRaceEnd();
         }
@@ -323,6 +421,7 @@ public class FeralKartGameRules : IGameRules
             })
         };
 
+        Log($"Race ended. Broadcasting results for {sortedResults.Count} player(s).");
         engine.BroadcastToAll(FEKA_MAGIC + ":RESULTS:" + JsonSerializer.Serialize(resultsPacket));
 
         // Despawn all player network bodies
@@ -343,6 +442,7 @@ public class FeralKartGameRules : IGameRules
                 intermissionTimeLeft = config.IntermissionDuration;
                 lock (playerChoicesLock) playerChoices.Clear();
                 engine.BroadcastState();
+                Log("Entering intermission.");
                 StartIntermissionTimer();
             }
         }) { IsBackground = true }.Start();
@@ -365,12 +465,12 @@ public class FeralKartGameRules : IGameRules
                     }
                 }
 
-                // Timer ran out, start the game with whoever is ready
+                Log("Intermission timer expired. Starting game.");
                 OnAllPlayersReady();
             }
             catch (ThreadInterruptedException)
             {
-                // Timer was interrupted because all players readied up early
+                // Timer was interrupted because all players readied up early or a command forced a start
             }
         }) { IsBackground = true };
         intermissionThread.Start();
@@ -378,7 +478,7 @@ public class FeralKartGameRules : IGameRules
 
     private string PickMap()
     {
-        // TODO: Replace with a map voting system when that feature is implemented
+        // TODO Replace with a map voting system when that feature is implemented
         var randomNumberGenerator = new Random();
         return config.MapPool[randomNumberGenerator.Next(config.MapPool.Count)];
     }
@@ -393,6 +493,12 @@ public class FeralKartGameRules : IGameRules
             default:                     return "Intermission";
         }
     }
+
+    private void Log(string message)
+    {
+        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] [FeKa] {message}");
+    }
+
     #endregion
 }
 

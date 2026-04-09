@@ -56,6 +56,24 @@ public class WB_NetChat : MonoBehaviour
                 isTyping = false;
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Backslash))
+        {
+            if (!isTyping)
+            {
+                chatInput.text += "/";
+                chatInput.caretPosition = chatInput.text.Length;
+                chatInput.gameObject.SetActive(true);
+                chatInput.ActivateInputField();
+                isTyping = true;
+            }
+            else if (isTyping)
+            {
+                chatInput.DeactivateInputField();
+                chatInput.gameObject.SetActive(false);
+                isTyping = false;
+            }
+        }
     }
 
     private void OnEnable()

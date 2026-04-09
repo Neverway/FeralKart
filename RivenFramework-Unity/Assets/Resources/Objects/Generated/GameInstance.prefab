@@ -27,6 +27,7 @@ GameObject:
   - component: {fileID: 801976210690049862}
   - component: {fileID: 4221692472099686432}
   - component: {fileID: 1081874596842588356}
+  - component: {fileID: 951813145587847522}
   m_Layer: 0
   m_Name: GameInstance
   m_TagString: Untagged
@@ -1044,3 +1045,34 @@ MonoBehaviour:
     serverAddress: 
   - serverName: Dummy Test Server3
     serverAddress: 
+--- !u!114 &951813145587847522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4298151654670827244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d84459a082caf958978ca892fde8b69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spectatorPrefabKey: SpectatorBody
+  spectatorSpawnPosition: {x: 0, y: 5, z: 0}
+  titleScreenWorldName: _Title
+  fighterSelectWidget: {fileID: 1507811972370413053, guid: 98f621f6728a5bc21a5841ed01822590,
+    type: 3}
+  connectionMessageWidget: {fileID: 1507811972370413053, guid: 2724ca646a97760818b83eefb25e7de2,
+    type: 3}
+  netChatWidget: {fileID: 1507811972370413053, guid: 6455912b1c50078539c6615af2ba1a5f,
+    type: 3}
+  netVoteKickWidget: {fileID: 1507811972370413053, guid: bf1a8c35a800986e496e40ded5222fd0,
+    type: 3}
+  currentPhase: 
+  currentMapName: 
+  lastGameState:
+    Phase: 
+    MapName: 
+    GameMode: 
+    TimeLeft: 0
+    PlayerNames: []
