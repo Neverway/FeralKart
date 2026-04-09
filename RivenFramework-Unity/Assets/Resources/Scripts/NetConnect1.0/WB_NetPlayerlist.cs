@@ -17,11 +17,11 @@ public class WB_NetPlayerlist : MonoBehaviour
 
     /*-----[ Internal Variables ]---------------------------------------------------------------------------------*/
     private List<GameObject> playerEntryObjects = new List<GameObject>();
-    private List<PlayerNameEntry> lastKnownPlayers = null;
 
 
     /*-----[ Reference Variables ]---------------------------------------------------------------------------------*/
     private GI_NetworkManager networkManager;
+    private FeKa_GameRules fekaGameRules;
     private GI_WidgetManager widgetManager;
     public Transform playerListRoot;
     public GameObject playerEntry;
@@ -37,17 +37,18 @@ public class WB_NetPlayerlist : MonoBehaviour
     private void OnEnable()
     {
         networkManager ??= GameInstance.Get<GI_NetworkManager>();
+        fekaGameRules ??= FindObjectOfType<FeKa_GameRules>();
 
-        if (networkManager == null)
+        if (fekaGameRules == null)
         {
-            Debug.LogError("[Playerlist] networkManager is NULL");
+            Debug.LogError("[Playerlist] FeKa_GameRules not found.");
             return;
         }
 
-        networkManager.OnPlayerListReceived += OnPlayerListReceived;
+        fekaGameRules.OnGameStateReceived += OnGameStateReceived;
 
-        // If we already have a player list from before this widget was opened, populate immediately
-        if (lastKnownPlayers != null) RebuildList(lastKnownPlayers);
+        if (fekaGameRules.lastGameState != null)
+            RebuildList(fekaGameRules.lastGameState.PlayerNames);
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -55,8 +56,8 @@ public class WB_NetPlayerlist : MonoBehaviour
 
     private void OnDisable()
     {
-        if (networkManager != null)
-            networkManager.OnPlayerListReceived -= OnPlayerListReceived;
+        if (fekaGameRules != null)
+            fekaGameRules.OnGameStateReceived -= OnGameStateReceived;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -65,10 +66,9 @@ public class WB_NetPlayerlist : MonoBehaviour
 
     /*-----[ Internal Functions ]----------------------------------------------------------------------------------*/
 
-    private void OnPlayerListReceived(PlayerListPacket playerListPacket)
+    private void OnGameStateReceived(FeKa_GameStatePacket gameState)
     {
-        lastKnownPlayers = playerListPacket.PlayerNames;
-        RebuildList(playerListPacket.PlayerNames);
+        RebuildList(gameState.PlayerNames);
     }
 
     private void RebuildList(List<PlayerNameEntry> players)
@@ -88,7 +88,6 @@ public class WB_NetPlayerlist : MonoBehaviour
 
             entryComponent.kickButton.onClick.AddListener(() =>
             {
-                var networkManager = GameInstance.Get<GI_NetworkManager>();
                 if (networkManager == null) return;
 
                 if (networkManager.isOp)

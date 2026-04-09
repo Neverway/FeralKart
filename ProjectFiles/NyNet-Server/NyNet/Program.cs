@@ -709,7 +709,7 @@ void ExecuteCommand(string cmd, string arg, ConnectedPlayer? source = null)
         {
             if (source != null)
             {
-                Send(PROTOCOL_MAGIC + ":CHAT:Server:Commands: /say, /kick, /status, /players, /op, /deop, /ban, /unban, /banlist", source.EndPoint!);
+                Send(PROTOCOL_MAGIC + ":CHAT:Server:Commands: /say, /kick, /status, /players, /op, /deop, /ban, /unban, /banlist, /gamehelp", source.EndPoint!);
                 break;
             }
             Console.WriteLine("  status                        show current server info");
@@ -725,6 +725,7 @@ void ExecuteCommand(string cmd, string arg, ConnectedPlayer? source = null)
             Console.WriteLine("  unban <token or name>         unban a player");
             Console.WriteLine("  banlist                       list all bans");
             Console.WriteLine("  quit                          shut down the server");
+            Console.WriteLine("  (game commands available - type 'gamehelp')");
             break;
         }
 
@@ -1058,10 +1059,13 @@ void ExecuteCommand(string cmd, string arg, ConnectedPlayer? source = null)
 
         default:
         {
-            if (source != null)
-                Send(PROTOCOL_MAGIC + ":CHAT:Server:Unknown command '" + cmd + "'. Try /help.", source.EndPoint!);
-            else
-                Console.WriteLine($"  Unknown command '{cmd}'. Type 'help' for a list of commands.");
+            if (!gameRules.ExecuteGameCommand(cmd, arg, source))
+            {
+                if (source != null)
+                    Send(PROTOCOL_MAGIC + ":CHAT:Server:Unknown command '" + cmd + "'. Try /help.", source.EndPoint!);
+                else
+                    Console.WriteLine($"  Unknown command '{cmd}'. Type 'help' for a list of commands.");
+            }
             break;
         }
     }

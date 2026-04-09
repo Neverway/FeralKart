@@ -25,6 +25,7 @@ public class WB_FighterSelect : MonoBehaviour
 
     /*-----[ Reference Variables ]---------------------------------------------------------------------------------*/
     private GI_NetworkManager networkManager;
+    private FeKa_GameRules fekaGameRules;
     private GI_WidgetManager widgetManager;
     private CharacterSelection characterSelection;
     public TMP_Text intermissionText, readyCountText, timerText;
@@ -44,13 +45,15 @@ public class WB_FighterSelect : MonoBehaviour
     private void Start()
     {
         networkManager = GameInstance.Get<GI_NetworkManager>();
+        fekaGameRules = FindObjectOfType<FeKa_GameRules>();
         widgetManager ??= FindObjectOfType<GI_WidgetManager>();
         characterSelection ??= FindObjectOfType<CharacterSelection>();
 
         readyButton.onClick.AddListener(OnClickReady);
         spectateButton.onClick.AddListener(OnClickSpectate);
 
-        networkManager.OnRawPacketReceived += OnRawPacketReceived;
+        if (fekaGameRules != null)
+            fekaGameRules.OnGameStateReceived += OnGameStateReceived;
 
         // Select the first fighter by default
         if (fighterButtons.Length > 0)
@@ -66,6 +69,13 @@ public class WB_FighterSelect : MonoBehaviour
         widgetManager.DestroyExistingWidget("WB_Title");
         widgetManager.DestroyExistingWidget("WB_Pause");
 
+        bool midGame = fekaGameRules != null && fekaGameRules.currentPhase == "InProgress";
+        readyButton.gameObject.SetActive(!midGame);
+        spectateButton.gameObject.SetActive(true);
+
+        if (fekaGameRules != null && fekaGameRules.lastGameState != null)
+            OnGameStateReceived(fekaGameRules.lastGameState);
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -73,8 +83,8 @@ public class WB_FighterSelect : MonoBehaviour
     private void OnDestroy()
     {
         characterSelection.Close();
-        if (networkManager != null)
-            networkManager.OnRawPacketReceived -= OnRawPacketReceived;
+        if (fekaGameRules != null)
+            fekaGameRules.OnGameStateReceived -= OnGameStateReceived;
     }
 
 
@@ -85,30 +95,17 @@ public class WB_FighterSelect : MonoBehaviour
         if (isReady) return;
         isReady = true;
         readyButton.interactable = false;
-
-        // Pass the selected character ID so the server knows what to spawn for this player
         networkManager.SendReady(selectedCharacterId);
     }
 
     private void OnClickSpectate()
     {
-        // "spectate" is the reserved choice string the server uses to spawn a spectator body
         networkManager.SendReady("spectate");
         widgetManager.ToggleWidget(gameObject.name);
     }
 
-    private void OnRawPacketReceived(string packet)
+    private void OnGameStateReceived(FeKa_GameStatePacket gameState)
     {
-        // Only handle Feral Kart STATE packets here
-        // All other unrecognised packets are ignored by this widget
-        string statePrefix = networkManager.protocolMagic + ":STATE:";
-        if (!packet.StartsWith(statePrefix)) return;
-
-        string json = packet.Substring(statePrefix.Length);
-        var gameState = JsonUtility.FromJson<FeKa_GameStatePacket>(json);
-        if (gameState == null) return;
-
-        // Update the phase label
         if (gameState.Phase == "Intermission")
             intermissionText.text = "Intermission";
         else if (gameState.Phase == "Loading")
@@ -118,26 +115,23 @@ public class WB_FighterSelect : MonoBehaviour
         else
             intermissionText.text = gameState.Phase;
 
-        // Update the countdown timer
         timerText.text = gameState.Phase == "Intermission" ? $"Starting in: {gameState.TimeLeft}s" : "";
 
-        // Show the ready button during intermission, spectate button if joining mid-match
         bool midGame = gameState.Phase == "InProgress";
         readyButton.gameObject.SetActive(!midGame);
-        spectateButton.gameObject.SetActive(midGame);
+        spectateButton.gameObject.SetActive(true);
 
-        // Rebuild the lobby player list
         foreach (var entryObject in playerEntryObjects)
             Destroy(entryObject);
         playerEntryObjects.Clear();
 
         if (gameState.PlayerNames != null)
         {
-            foreach (var playerEntry2 in gameState.PlayerNames)
+            foreach (var player in gameState.PlayerNames)
             {
                 var entryObject = Instantiate(playerEntry, playerListRoot);
                 var entryComponent = entryObject.GetComponent<WB_FighterSelect_PlayerEntry>();
-                entryComponent.playerNameText.text = playerEntry2.name;
+                entryComponent.playerNameText.text = player.name;
                 entryComponent.kickButton.gameObject.SetActive(false);
                 playerEntryObjects.Add(entryObject);
             }
@@ -145,7 +139,6 @@ public class WB_FighterSelect : MonoBehaviour
 
         readyCountText.text = $"{gameState.PlayerNames?.Count ?? 0} players in lobby";
 
-        // Close this widget once the server starts loading the map
         if (gameState.Phase == "Loading")
         {
             widgetManager ??= GameInstance.Get<GI_WidgetManager>();
