@@ -32,10 +32,21 @@ public class WB_HUD : MonoBehaviour
     private float previousShield;
     private List<Image> stockImages = new List<Image>(0);
     private GI_RaceManager raceManager;
+    private FeKa_GameRules fekaGameRules;
 
     private void Start()
     {
         raceManager = GameInstance.Get<GI_RaceManager>();
+        fekaGameRules = FindObjectOfType<FeKa_GameRules>();
+        if (fekaGameRules != null) fekaGameRules.OnGameStateReceived += OnGameStateReceived;
+        
+        if (fekaGameRules != null && fekaGameRules.lastGameState != null)
+            OnGameStateReceived(fekaGameRules.lastGameState);
+    }
+    private void OnDestroy()
+    {
+        if (fekaGameRules != null)
+            fekaGameRules.OnGameStateReceived -= OnGameStateReceived;
     }
 
     void Update()
@@ -43,21 +54,20 @@ public class WB_HUD : MonoBehaviour
         // Pawn reference check
         if (findPossessedPawn)
         {
-            targetFeKaPawn = GameInstance.Get<GI_PawnManager>().localPlayerCharacter.GetComponent<FeKaPawn>();
+            targetFeKaPawn ??= GetLocalPlayer();
         }
         if (!targetFeKaPawn) return;
         
         // Update all the indicators
-        UpdateTimer();
         UpdateShield();
         UpdateHealth();
         UpdateStocks();
         UpdateAbilities();
     }
 
-    private void UpdateTimer()
+    private void OnGameStateReceived(FeKa_GameStatePacket gameState)
     {
-        timer.text = ($"{raceManager.timeRemaining:f2}");
+        timer.text = ($"{gameState.TimeLeft}");
         lap.text = ($"Lap {targetFeKaPawn.FeKaCurrentStats.currentLap}/{raceManager.totalLaps}");
         speed.text = ($"{targetFeKaPawn.physicsbody.velocity.magnitude:f2} m/s");
 
@@ -148,6 +158,17 @@ public class WB_HUD : MonoBehaviour
             utility.text.text = "";
             utility.quantity.text = "";
         }
+    }
+
+
+    public FeKaPawn_Base GetLocalPlayer()
+    {
+        foreach (var fekaPawn in FindObjectsOfType<FeKaPawn_Base>())
+        {
+            if (fekaPawn.controlMode == ControlMode.LocalPlayer) return fekaPawn;
+        }
+
+        return null;
     }
 }
 

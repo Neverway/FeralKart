@@ -21054,6 +21054,9 @@ MonoBehaviour:
   RespawnScreenWidget: {fileID: 5675289539813747590, guid: 9d3f675cf308c0ab6be40585eac73090,
     type: 3}
   deathFX: {fileID: 6271697737164727327, guid: 25f39eade9d42c71488e518259f612d7, type: 3}
+  HUDWidget: {fileID: 5675289539813747590, guid: fe684846353bbd2c78d7fd52def9c340,
+    type: 3}
+  _controlMode: 0
 --- !u!114 &5572679414157354117
 MonoBehaviour:
   m_ObjectHideFlags: 0

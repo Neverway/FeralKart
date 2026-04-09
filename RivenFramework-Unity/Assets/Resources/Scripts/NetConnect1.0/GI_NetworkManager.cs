@@ -627,6 +627,7 @@ public class GI_NetworkManager : MonoBehaviour
     /// </summary>
     public IEnumerator Connect(string address, Action onSuccess, Action<string> onFailure)
     {
+        Disconnect();  // For the love of cats, make sure to disconnect from any connected servers before connecting to a new one!!!!
         LogToFile($"[Connect] Attempting connection to '{address}'.");
 
         string host = address;

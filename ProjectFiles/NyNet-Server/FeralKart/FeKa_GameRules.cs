@@ -29,6 +29,7 @@ public class FeralKartGameRules : IGameRules
     private GamePhase currentPhase = GamePhase.Intermission;
     private readonly object phaseLock = new object();
     private int intermissionTimeLeft;
+    private int raceTimeLeft = 0;
     private string currentMap = "";
 
     /*-----[ Lookup Table 1: Character/Spectate Choice Per Player ]--------------------------------------------*/
@@ -50,7 +51,7 @@ public class FeralKartGameRules : IGameRules
     #endregion
 
 
-    #region =======================================( Functions )======================================================//
+    #region =======================================( Functions )=================m=====================================//
 
     /*-----[ Constructor ]-------------------------------------------------------------------------------------*/
 
@@ -93,6 +94,13 @@ public class FeralKartGameRules : IGameRules
         }
         if (networkObjectId != null)
             engine.RequestDespawn(networkObjectId);
+
+        if (player.EndPoint != null)
+        {
+            var clientOwnedIds = engine.GetSpawnIdsByOwner(player.EndPoint.ToString());
+            foreach (var ownedId in clientOwnedIds)
+                engine.RequestDespawn(ownedId);
+        }
 
         // Remove their choice and results - players who disconnect mid-race do not appear on the results screen
         lock (playerChoicesLock) playerChoices.Remove(player);
@@ -230,17 +238,22 @@ public class FeralKartGameRules : IGameRules
                     break;
                 }
 
+                if (!config.MapPool.Contains(arg))
+                {
+                    if (source != null)
+                        engine.SendToPlayer(source, FEKA_MAGIC + ":CHAT:Server:Invalid map '" + arg + "'.");
+                    else
+                        Console.WriteLine($"  Invalid map '{arg}'. Check your feka.config MapPool.");
+                    break;
+                }
+
                 lock (phaseLock)
                 {
-                    // If a race is running, interrupt it cleanly before forcing the new map
                     if (currentPhase == GamePhase.InProgress)
                         raceTimerThread?.Interrupt();
 
                     intermissionThread?.Interrupt();
 
-                    // Override the map for the next StartGame call by injecting it into the pool temporarily
-                    // StartGame calls PickMap, so we just directly set currentMap and kick off the load
-                    currentMap = arg;
                     Log($"Map set to '{arg}' by {(source?.Name ?? "console")}. Starting game.");
                     StartGameWithMap(arg);
                 }
@@ -266,7 +279,7 @@ public class FeralKartGameRules : IGameRules
             Phase = phaseString,
             MapName = currentMap,
             GameMode = config.GameMode,
-            TimeLeft = intermissionTimeLeft,
+            TimeLeft = currentPhase == GamePhase.InProgress ? raceTimeLeft : intermissionTimeLeft,
             PlayerNames = players.ConvertAll(p => new PlayerNameEntry { name = p.Name, ping = p.LastPingMs })
         };
 
@@ -282,7 +295,7 @@ public class FeralKartGameRules : IGameRules
             Phase = phaseString,
             MapName = currentMap,
             GameMode = config.GameMode,
-            TimeLeft = intermissionTimeLeft,
+            TimeLeft = currentPhase == GamePhase.InProgress ? raceTimeLeft : intermissionTimeLeft,
             PlayerNames = players.ConvertAll(p => new PlayerNameEntry { name = p.Name, ping = p.LastPingMs })
         };
 
@@ -303,10 +316,11 @@ public class FeralKartGameRules : IGameRules
         currentPhase = GamePhase.Loading;
         intermissionTimeLeft = config.IntermissionDuration;
 
-        lock (playerChoicesLock) playerChoices.Clear();
         lock (raceResultsLock) raceResults.Clear();
 
         Log($"Loading map '{currentMap}'.");
+
+        engine.BroadcastToAll(FEKA_MAGIC + ":CHAT:Server:Server is changing level...");
         engine.BroadcastToAll(FEKA_MAGIC + ":LOADMAP:" + currentMap);
         engine.BroadcastState();
 
@@ -320,6 +334,7 @@ public class FeralKartGameRules : IGameRules
                 currentPhase = GamePhase.InProgress;
                 Log("Game is now in progress.");
                 SpawnAllPlayers();
+                lock (playerChoicesLock) playerChoices.Clear();
                 engine.BroadcastState();
                 StartRaceTimer();
             }
@@ -336,26 +351,33 @@ public class FeralKartGameRules : IGameRules
                 playerChoices.TryGetValue(player, out choice!);
 
             // Default to spectator if no choice was recorded (e.g. the timer forced the match to start)
-            if (choice == null)
-                choice = "spectate";
-
-            string prefabKey = choice == "spectate" ? "prefab_spectator" : choice;
-            string networkObjectId = engine.RequestSpawnAndGetId(prefabKey, 0f, 0f, 0f, 0f, 0f, 0f);
-
-            lock (playerNetworkObjectsLock)
-                playerNetworkObjects[player] = networkObjectId;
+            if (choice == null || choice == "spectate")
+            {
+                string networkObjectId = engine.RequestSpawnAndGetId("prefab_spectator", 0f, 0f, 0f, 0f, 0f, 0f);
+                lock (playerNetworkObjectsLock)
+                    playerNetworkObjects[player] = networkObjectId;
+            }
         }
     }
-
     private void StartRaceTimer()
     {
         raceTimerThread = new Thread(() =>
         {
             // TODO: Make race duration configurable in FeKa_ServerConfig
-            int raceDurationSeconds = 300;
+            raceTimeLeft = 300;
             try
             {
-                Thread.Sleep(raceDurationSeconds * 1000);
+                while (raceTimeLeft > 0)
+                {
+                    Thread.Sleep(1000);
+                    lock (phaseLock)
+                    {
+                        if (currentPhase != GamePhase.InProgress) return;
+                        raceTimeLeft--;
+                        engine.BroadcastState();
+                    }
+                }
+
                 Log("Race timer expired.");
                 OnRaceEnd();
             }

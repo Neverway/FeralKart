@@ -29,4 +29,6 @@ public interface IGameRulesEngine
 
     /// <summary>Asks GameRules to broadcast the current game state to all clients.</summary>
     void BroadcastState();
+    
+    List<string> GetSpawnIdsByOwner(string ownerEndpoint);
 }

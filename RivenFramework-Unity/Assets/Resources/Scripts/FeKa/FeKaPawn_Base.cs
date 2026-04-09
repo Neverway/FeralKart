@@ -13,7 +13,21 @@ public class FeKaPawn_Base : FeKaPawn
     private FeKaPawnActions action2 = new FeKaPawnActions();
     private InputActions.FEKAActions inputActions;
     private GI_WidgetManager widgetManager;
-    [SerializeField] private GameObject DeathScreenWidget, RespawnScreenWidget, deathFX;
+    [SerializeField] private GameObject DeathScreenWidget, RespawnScreenWidget, deathFX, HUDWidget;
+    
+    // CONTROL STUFF VERY IMPORTANT YUH HUH!
+    private Camera _camera;
+    public Camera Camera => _camera;
+    public ControlMode _controlMode;
+    public ControlMode controlMode
+    {
+        get => _controlMode;
+        set
+        {
+            _controlMode = value;
+            if (_camera != null) _camera.enabled = (value == ControlMode.LocalPlayer);
+        }
+    }
 
     private float moveInput;
     private Vector2 steerInput;
@@ -72,7 +86,10 @@ public class FeKaPawn_Base : FeKaPawn
         OnPawnHurt += () => { OnHurt(); };
         OnPawnHeal += () => { OnHeal(); };
         
-        if (FeKaCurrentStats.controlMode != ControlMode.LocalPlayer) return;
+        
+        _camera = viewPoint.GetComponentInChildren<Camera>();
+        
+        if (controlMode != ControlMode.LocalPlayer) return;
         // Setup inputs
         inputActions = new InputActions().FEKA;
         inputActions.Enable();
@@ -83,10 +100,10 @@ public class FeKaPawn_Base : FeKaPawn
     {
         raceManager ??= GameInstance.Get<GI_RaceManager>();
         
-        if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.preparing) physicsbody.isKinematic = true;
-        if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.racing) physicsbody.isKinematic = false;
+        /*if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.preparing) physicsbody.isKinematic = true;
+        if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.racing) physicsbody.isKinematic = false;*/
         
-        switch (FeKaCurrentStats.controlMode)
+        switch (controlMode)
         {
             case ControlMode.LocalPlayer:
                 LocalPlayerUpdate();
@@ -101,7 +118,7 @@ public class FeKaPawn_Base : FeKaPawn
 
     public void FixedUpdate()
     {
-        switch (FeKaCurrentStats.controlMode)
+        switch (controlMode)
         {
             case ControlMode.LocalPlayer:
                 LocalPlayerFixedUpdate();
@@ -119,6 +136,10 @@ public class FeKaPawn_Base : FeKaPawn
     {
         // Pausing
         UpdatePauseMenu();
+
+
+        widgetManager ??= GameInstance.Get<GI_WidgetManager>();
+        if (widgetManager.GetExistingWidget(HUDWidget.name) == null) widgetManager.AddWidget(HUDWidget);
 
         if (isPaused || isDead)
         {
@@ -433,7 +454,7 @@ public class FeKaPawn_Base : FeKaPawn
 
     private void ShowRespawnScreen()
     {
-        if (FeKaCurrentStats.controlMode != ControlMode.LocalPlayer ) return;
+        if (controlMode != ControlMode.LocalPlayer ) return;
         if (!widgetManager)
         {
             widgetManager = GameInstance.Get<GI_WidgetManager>();
@@ -447,7 +468,7 @@ public class FeKaPawn_Base : FeKaPawn
         Instantiate(deathFX, transform.position, transform.rotation, null);
         if (FeKaCurrentStats.stocks <= 0)
         {
-            if (FeKaCurrentStats.controlMode != ControlMode.LocalPlayer ) return;
+            if (controlMode != ControlMode.LocalPlayer ) return;
             if (!widgetManager)
             {
                 widgetManager = GameInstance.Get<GI_WidgetManager>();
