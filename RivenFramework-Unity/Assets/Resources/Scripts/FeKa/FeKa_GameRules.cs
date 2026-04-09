@@ -37,7 +37,7 @@ public class FeKa_GameRules : MonoBehaviour
     public string currentPhase = "";
     public string currentMapName = "";
     public FeKa_GameStatePacket lastGameState = null;
-
+    public string pendingCharacterChoice = "";
     public event Action<FeKa_GameStatePacket> OnGameStateReceived;
 
 
@@ -89,7 +89,6 @@ public class FeKa_GameRules : MonoBehaviour
 
         if (networkManager == null) return;
 
-        // Add the chat and vote kick widgets while connected, remove them when not
         if (networkManager.isConnected)
         {
             if (widgetManager.GetExistingWidget(netChatWidget.name) == null)
@@ -126,7 +125,6 @@ public class FeKa_GameRules : MonoBehaviour
         string previousPhase = currentPhase;
         currentPhase = gameState.Phase;
 
-        // First STATE after connecting, load the server's current map then show the appropriate screen
         if (!receivedFirstState)
         {
             receivedFirstState = true;
@@ -144,7 +142,28 @@ public class FeKa_GameRules : MonoBehaviour
                 DespawnSpectatorBody();
                 LoadWorldAndThen(gameState.MapName, () => SpawnSpectatorBody());
             }
-            // Game went in-progress, but we missed the Loading phase (joined late)
+            // Loading finished and the game is now in progress
+			// the server has spawned the player's kart so the temporary spectator body can be despawned
+            else if (gameState.Phase == "InProgress" && previousPhase == "Loading")
+            {
+                DespawnSpectatorBody();
+    
+                if (!string.IsNullOrEmpty(pendingCharacterChoice) && pendingCharacterChoice != "spectate")
+                {
+                    NetSpawner.Spawn(pendingCharacterChoice, Vector3.zero, Quaternion.identity, (spawnedObject, networkId) =>
+                    {
+                        var kart = spawnedObject.GetComponent<FeKaPawn_Base>();
+                        if (kart != null)
+                        {
+                            kart.Init();
+                            kart.controlMode = ControlMode.LocalPlayer;
+                            Cursor.lockState = CursorLockMode.Locked;
+                            Cursor.visible = false;
+                        }
+                    });
+                }
+            }
+            // Game went in-progress but we missed the Loading phase (joined late)
             else if (gameState.Phase == "InProgress" && previousPhase == "Intermission")
             {
                 LoadWorldAndThen(gameState.MapName, () => SpawnSpectatorBody());

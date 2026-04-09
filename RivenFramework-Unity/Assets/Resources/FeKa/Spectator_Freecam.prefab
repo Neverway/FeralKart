@@ -111,6 +111,8 @@ MonoBehaviour:
   moveSpeed: 10
   sprintMultiplier: 3
   lookSensitivity: 2
+  HUDWidget: {fileID: 5675289539813747590, guid: 79f5191398d3053b69e950b71411d2cf,
+    type: 3}
 --- !u!1 &3512100624879752858
 GameObject:
   m_ObjectHideFlags: 0

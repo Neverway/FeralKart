@@ -130,5 +130,15 @@ public class NyNetEngine : IGameRulesEngine
             snapshot = new List<ConnectedPlayer>(players);
         GameRules.BroadcastGameState(snapshot);
     }
+    
+    public List<string> GetSpawnIdsByOwner(string ownerEndpoint)
+    {
+        lock (liveSpawnsLock)
+        {
+            return liveSpawns
+                .FindAll(spawn => spawn.OwnerEndpoint == ownerEndpoint)
+                .ConvertAll(spawn => spawn.NetworkObjectId);
+        }
+    }
     #endregion
 }

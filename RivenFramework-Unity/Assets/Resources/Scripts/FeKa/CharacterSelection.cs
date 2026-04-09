@@ -46,7 +46,6 @@ public class CharacterSelection : MonoBehaviour
     /// </summary>
     public void ViewCharacter(string characterID)
     {
-        print($"ViewCharacter {characterID}");
         foreach (var selectionViewpoint in characterSelectionViewpoints)
         {
             if (selectionViewpoint.characterID == characterID)

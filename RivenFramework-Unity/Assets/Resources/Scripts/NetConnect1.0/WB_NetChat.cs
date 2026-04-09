@@ -10,6 +10,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 
@@ -57,21 +58,14 @@ public class WB_NetChat : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Backslash))
+        if (Input.GetKeyDown(KeyCode.Slash))
         {
             if (!isTyping)
             {
                 chatInput.text += "/";
-                chatInput.caretPosition = chatInput.text.Length;
                 chatInput.gameObject.SetActive(true);
                 chatInput.ActivateInputField();
                 isTyping = true;
-            }
-            else if (isTyping)
-            {
-                chatInput.DeactivateInputField();
-                chatInput.gameObject.SetActive(false);
-                isTyping = false;
             }
         }
     }
@@ -89,7 +83,8 @@ public class WB_NetChat : MonoBehaviour
     /*-----[ Internal Functions ]-------------------------------------------------------------------------------------*/
     private void OnChatMessageReceived(string sender, string text)
     {
-        AddMessage($"<b>{sender}:</b> {text}");
+        text = StripTmpRichTags(text);
+        AddMessage($"<b>{sender}</b>: {text}");
     }
  
     private void AddMessage(string formattedLine)
@@ -118,6 +113,15 @@ public class WB_NetChat : MonoBehaviour
  
         // Return focus to the input field so the player can keep typing
         //chatInput.ActivateInputField();
+    }
+    
+    public static string StripTmpRichTags(string str)
+    {
+        // https://discussions.unity.com/t/507622
+        // https://stackoverflow.com/questions/238002/replace-line-breaks-in-a-string-c-sharp
+        return Regex
+            .Replace(str, "<.*?>", string.Empty)
+            .Replace(System.Environment.NewLine, ""); // 2nd is string replace; not regex
     }
 
     #endregion

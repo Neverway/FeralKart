@@ -50,6 +50,7 @@ public class Pawn_Spectator : Pawn
     private Camera _camera;
     public Camera Camera => _camera;
     private GI_WidgetManager widgetManager;
+    [SerializeField] private GameObject HUDWidget;
 
 
     #endregion
@@ -78,8 +79,13 @@ public class Pawn_Spectator : Pawn
  
     public void Update()
     {
-        var nettrans = GetComponent<NetTransform>();
+        
+        
+        
         if (controlMode != ControlMode.LocalPlayer) return;
+        
+        widgetManager ??= GameInstance.Get<GI_WidgetManager>();
+        if (widgetManager.GetExistingWidget(HUDWidget.name) == null) widgetManager.AddWidget(HUDWidget);
  
         UpdatePauseMenu();
         if (isPaused || isDead) { return; }

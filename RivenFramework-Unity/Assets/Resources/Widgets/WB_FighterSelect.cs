@@ -52,8 +52,7 @@ public class WB_FighterSelect : MonoBehaviour
         readyButton.onClick.AddListener(OnClickReady);
         spectateButton.onClick.AddListener(OnClickSpectate);
 
-        if (fekaGameRules != null)
-            fekaGameRules.OnGameStateReceived += OnGameStateReceived;
+        if (fekaGameRules != null) fekaGameRules.OnGameStateReceived += OnGameStateReceived;
 
         // Select the first fighter by default
         if (fighterButtons.Length > 0)
@@ -95,6 +94,7 @@ public class WB_FighterSelect : MonoBehaviour
         if (isReady) return;
         isReady = true;
         readyButton.interactable = false;
+        fekaGameRules.pendingCharacterChoice = selectedCharacterId;
         networkManager.SendReady(selectedCharacterId);
     }
 
@@ -151,6 +151,7 @@ public class WB_FighterSelect : MonoBehaviour
 
     public void SelectCharacter(string characterID)
     {
+        Debug.Log($"Selected character {characterID}");
         selectedCharacterId = characterID;
         characterSelection.ViewCharacter(characterID);
         foreach (var button in fighterButtons)

@@ -90,6 +90,7 @@ public class WB_NetConnect : MonoBehaviour
             case "buttonJoinSelected":
                 networkManager ??= GameInstance.Get<GI_NetworkManager>();
                 widgetManager  ??= FindObjectOfType<GI_WidgetManager>();
+                networkManager.Disconnect(); // For the love of cats, make sure to disconnect from any connected servers before connecting to a new one!!!!
                 string addressToJoin = networkManager.serverEntries[currentlySelectedServerEntry].serverAddress;
 
                 buttonJoinSelected.interactable = false;

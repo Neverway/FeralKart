@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: NPR_FeKa
   m_EditorClassIdentifier: 
   Entries:
-  - Key: FeKaCar_Base
-    Prefab: {fileID: 5336008974593170968, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
-      type: 3}
   - Key: Rocket
     Prefab: {fileID: 6598383830466623576, guid: 219fbfc5676c63d9490c08b53e893c1c,
       type: 3}
   - Key: SpectatorBody
     Prefab: {fileID: 2388545363728601757, guid: e5079463ffef00d739941bf170f5a799,
+      type: 3}
+  - Key: kellory
+    Prefab: {fileID: 5336008974593170968, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
       type: 3}
