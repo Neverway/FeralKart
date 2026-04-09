@@ -162,6 +162,8 @@ public class FeKa_GameRules : MonoBehaviour
                         }
                     });
                 }
+                
+                GameInstance.Get<GI_RaceManager>().StartRace();
             }
             // Game went in-progress but we missed the Loading phase (joined late)
             else if (gameState.Phase == "InProgress" && previousPhase == "Intermission")
@@ -310,8 +312,9 @@ public class FeKa_GameRules : MonoBehaviour
     public void SendFinishPacket(FeKa_FinishPacket finishPacket)
     {
         if (networkManager == null || !networkManager.isConnected) return;
-        networkManager.SendPacket(
-            networkManager.protocolMagic + ":FINISH:" + JsonUtility.ToJson(finishPacket));
+        
+        GameInstance.Get<GI_RaceManager>().StopRace();
+        networkManager.SendPacket(networkManager.protocolMagic + ":FINISH:" + JsonUtility.ToJson(finishPacket));
     }
 
     #endregion

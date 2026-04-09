@@ -18,7 +18,7 @@ public class WB_RaceFinished : MonoBehaviour
         // Pawn reference check
         if (findPossessedPawn)
         {
-            targetFeKaPawn = GameInstance.Get<GI_PawnManager>().localPlayerCharacter.GetComponent<FeKaPawn>();
+            targetFeKaPawn ??= GetLocalPlayer();
         }
         finishedText.enabled = false;
         placementText.enabled = false;
@@ -73,5 +73,16 @@ public class WB_RaceFinished : MonoBehaviour
             placementText.text = ($"{placementNum}th");
             placementText.color = new Color(0.8f, 0.8f, 0.8f, 1);
         }
+    }
+    
+    
+    public FeKaPawn_Base GetLocalPlayer()
+    {
+        foreach (var fekaPawn in FindObjectsOfType<FeKaPawn_Base>())
+        {
+            if (fekaPawn.controlMode == ControlMode.LocalPlayer) return fekaPawn;
+        }
+
+        return null;
     }
 }

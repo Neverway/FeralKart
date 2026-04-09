@@ -89,7 +89,8 @@ public class FeKaItem_RocketLauncher : ItemBehaviour
         foreach (var r in raceManager.racers)
             if (r != pawn) allRacers.Add(r);
 
-        if (pawn.FeKaCurrentStats.controlMode == ControlMode.LocalPlayer && activeTargeting == null)
+        var bpawn = (FeKaPawn_Base)pawn;
+        if (bpawn.controlMode == ControlMode.LocalPlayer && activeTargeting == null)
         {
             var go = Object.Instantiate(targetingUIPrefab);
             activeTargeting = go.GetComponent<UI_RocketTargeting>();
@@ -104,7 +105,8 @@ public class FeKaItem_RocketLauncher : ItemBehaviour
     {
         if (!isHolding) return;
 
-        if (pawn.FeKaCurrentStats.controlMode == ControlMode.LocalPlayer)
+        var bpawn = (FeKaPawn_Base)pawn;
+        if (bpawn.controlMode == ControlMode.LocalPlayer)
         {
             if (activeTargeting != null)
                 lockedTarget = activeTargeting.lockedTarget;
@@ -152,20 +154,21 @@ public class FeKaItem_RocketLauncher : ItemBehaviour
             Object.Destroy(activeTargeting.gameObject);
             activeTargeting = null;
         }
+        
+        var spawnPos = pawn.FeKaCurrentStats.projectileSpawnPoint.position + pawn.transform.forward * 1.5f;
+        var spawnRot = pawn.transform.rotation;
 
         // Fire
-        if (rocketPrefab != null)
+        NetSpawner.Spawn("Rocket", spawnPos, spawnRot, (rocketObject, networkId) =>
         {
-            var spawnPos = pawn.FeKaCurrentStats.projectileSpawnPoint.position + pawn.transform.forward * 1.5f;
-            var rocket = Object.Instantiate(rocketPrefab, spawnPos, pawn.transform.rotation);
 
-            var homing = rocket.GetComponent<HomingRocket>();
+            var homing = rocketObject.GetComponent<HomingRocket>();
             if (homing != null)
             {
                 homing.exemptPawns.Add(pawn);
                 homing.SetTarget(lockedTarget);
             }
-        }
+        });
 
         lockedTarget = null;
         lockTimer = 0f;

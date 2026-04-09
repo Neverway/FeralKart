@@ -17,7 +17,7 @@ public class FeralKartGameRules : IGameRules
 
     /*-----[ Constants ]---------------------------------------------------------------------------------------*/
     private const string FEKA_MAGIC = "FeKa";
-    private const int LOAD_WAIT_MILLISECONDS = 15000;
+    private const int LOAD_WAIT_MILLISECONDS = 2000;
 
     /*-----[ Engine Reference ]--------------------------------------------------------------------------------*/
     private readonly IGameRulesEngine engine;

@@ -49,9 +49,10 @@ public class CheckpointTracker : MonoBehaviour
     /// Indexes the current checkpoint for racers when they pass through the checkpoint they are on during a race
     /// </summary>
     /// <param name="feKaPawn"></param>
-    public void NextCheckpoint(FeKaPawn feKaPawn)
+    public void NextCheckpoint(FeKaPawn_Base feKaPawn)
     {
         feKaPawn.FeKaCurrentStats.currentCheckpoint++;
+        print($"Called NextCheckpoint for {feKaPawn}");
 
         // Loop back around when at the last checkpoint
         if (feKaPawn.FeKaCurrentStats.currentCheckpoint >= raceCheckpoints.Count) feKaPawn.FeKaCurrentStats.currentCheckpoint = 0;
@@ -60,7 +61,12 @@ public class CheckpointTracker : MonoBehaviour
         if (feKaPawn.FeKaCurrentStats.currentCheckpoint == 0) feKaPawn.FeKaCurrentStats.currentLap++;
 
         // For the local player, update the visible checkpoints
-        if (feKaPawn.FeKaCurrentStats.controlMode == ControlMode.LocalPlayer) UpdateVisibilityForLocalPlayer(feKaPawn);
+        if (feKaPawn.controlMode == ControlMode.LocalPlayer)
+        {
+            print($"Target was a player {feKaPawn.controlMode == ControlMode.LocalPlayer}");
+            UpdateVisibilityForLocalPlayer(feKaPawn);
+        }
+        print($"Target was a player {feKaPawn.controlMode == ControlMode.LocalPlayer}");
     }
     
     /// <summary>

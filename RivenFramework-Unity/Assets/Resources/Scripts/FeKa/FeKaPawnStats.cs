@@ -18,7 +18,7 @@ public class FeKaPawnStats : PawnStats
         return MemberwiseClone();
     }
     
-    public ControlMode controlMode;
+    //public ControlMode controlMode;
 
     [Header("FeKa Vehicle Stats")] 
     [Tooltip("How fast the vehicle accelerates")]

@@ -10,9 +10,10 @@ public class RaceCheckpoint : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         FeKaPawn feKaPawn =  other.GetComponentInParent<FeKaPawn>();
+        print($"Object enterered {feKaPawn}");
         if (feKaPawn == null) return;
 
         if (feKaPawn.FeKaCurrentStats.currentCheckpoint == checkpointIndex)
-            FindObjectOfType<CheckpointTracker>().NextCheckpoint(feKaPawn);
+            FindObjectOfType<CheckpointTracker>().NextCheckpoint((FeKaPawn_Base)feKaPawn);
     }
 }
