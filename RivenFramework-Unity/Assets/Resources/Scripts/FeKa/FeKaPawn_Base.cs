@@ -100,8 +100,8 @@ public class FeKaPawn_Base : FeKaPawn
     {
         raceManager ??= GameInstance.Get<GI_RaceManager>();
         
-        /*if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.preparing) physicsbody.isKinematic = true;
-        if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.racing) physicsbody.isKinematic = false;*/
+        if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.preparing) physicsbody.isKinematic = true;
+        if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.racing) physicsbody.isKinematic = false;
         
         switch (controlMode)
         {
@@ -134,6 +134,8 @@ public class FeKaPawn_Base : FeKaPawn
     // PLAYER
     private void LocalPlayerUpdate()
     {
+        GameInstance.Get<GI_PawnManager>().localPlayerCharacter ??= gameObject;
+        
         // Pausing
         UpdatePauseMenu();
 

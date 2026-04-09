@@ -62,10 +62,11 @@ public class WB_NetChat : MonoBehaviour
         {
             if (!isTyping)
             {
-                chatInput.text += "/";
                 chatInput.gameObject.SetActive(true);
                 chatInput.ActivateInputField();
+                chatInput.text += "/";
                 isTyping = true;
+                StartCoroutine(Unhighlight());
             }
         }
     }
@@ -96,6 +97,12 @@ public class WB_NetChat : MonoBehaviour
             messageHistory.RemoveAt(0);
  
         chatHistory.text = string.Join("\n", messageHistory);
+    }
+
+    private IEnumerator Unhighlight()
+    {
+        yield return new WaitForEndOfFrame();
+        chatInput.MoveTextEnd(true);
     }
 
     /*-----[ External Functions ]-------------------------------------------------------------------------------------*/

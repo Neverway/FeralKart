@@ -32,7 +32,7 @@ public class GI_RaceManager : MonoBehaviour
         }
         UpdateStandings();
         CheckRacerStatus();
-        if (timeRemaining > 0)
+        /*if (timeRemaining > 0)
         {
             timeRemaining -= Time.deltaTime;
         }
@@ -40,20 +40,30 @@ public class GI_RaceManager : MonoBehaviour
         {
             timeRemaining = 0;
             StopRace();
-        }
+        }*/
     }
 
     [ContextMenu("Start Race")]
     public void StartRace()
     {
         StopAllCoroutines();
+        countdownCoroutine = StartCoroutine(RaceCountdown());
+    }
+
+    public IEnumerator RaceCountdown()
+    {
+        yield return new WaitForSeconds(1);
         FindObjectOfType<CheckpointTracker>().Init();
+        var widgetManager = GameInstance.Get<GI_WidgetManager>();
+        
+        widgetManager.AddWidget(RaceCountdownWidget);
         
         racers.Clear();
         var checkpointTracker = FindAnyObjectByType<CheckpointTracker>();
         var allPawns =  new List<FeKaPawn_Base>(FindObjectsOfType<FeKaPawn_Base>());
         for (int i = 0; i < allPawns.Count; i++)
         {
+            print("Found pawn");
             allPawns[i].Init();
             
             if (checkpointTracker.raceStartPoints != null && i < checkpointTracker.raceStartPoints.Count)
@@ -64,23 +74,16 @@ public class GI_RaceManager : MonoBehaviour
 
             racers.Add(allPawns[i]);
         }
-
-        countdownCoroutine = StartCoroutine(RaceCountdown());
-    }
-
-    public IEnumerator RaceCountdown()
-    {
-        var widgetManager = GameInstance.Get<GI_WidgetManager>();
-        
-        widgetManager.AddWidget(RaceCountdownWidget);
         
         yield return new WaitForSeconds(3);
         
         // RELEASE ZE HOUNDS!!!
         foreach (var racer in racers)
         {
+            print("Setting racer state!");
             racer.FeKaCurrentStats.racerState = FeKaPawnStats.RacerState.racing;
         }
+        print("Set racers");
         
         timeRemaining = raceDuration;
         startTime = Time.deltaTime;
@@ -90,7 +93,10 @@ public class GI_RaceManager : MonoBehaviour
 
     public void CheckRacerStatus()
     {
-        if (haveAllRacersFinished()) StopRace();
+        if (haveAllRacersFinished())
+        {
+            //StopRace();
+        }
         //if (isOneRacerRemaining) StopRace();
     }
 
@@ -108,7 +114,7 @@ public class GI_RaceManager : MonoBehaviour
             if (racer.FeKaCurrentStats.racerState != FeKaPawnStats.RacerState.finished)
             {
                 // Show the finish screen for the local player
-                if (racer.FeKaCurrentStats.controlMode == ControlMode.LocalPlayer)
+                if (racer.controlMode == ControlMode.LocalPlayer)
                 {
                     if (!GameInstance.Get<GI_WidgetManager>().GetExistingWidget(RaceFinishedWidget.name))
                     {

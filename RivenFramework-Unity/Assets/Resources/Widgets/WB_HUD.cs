@@ -59,6 +59,7 @@ public class WB_HUD : MonoBehaviour
         if (!targetFeKaPawn) return;
         
         // Update all the indicators
+        UpdateOtherCrap();
         UpdateShield();
         UpdateHealth();
         UpdateStocks();
@@ -68,6 +69,10 @@ public class WB_HUD : MonoBehaviour
     private void OnGameStateReceived(FeKa_GameStatePacket gameState)
     {
         timer.text = ($"{gameState.TimeLeft}");
+    }
+
+    private void UpdateOtherCrap()
+    {
         lap.text = ($"Lap {targetFeKaPawn.FeKaCurrentStats.currentLap}/{raceManager.totalLaps}");
         speed.text = ($"{targetFeKaPawn.physicsbody.velocity.magnitude:f2} m/s");
 

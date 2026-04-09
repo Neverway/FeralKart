@@ -39,6 +39,7 @@ public class HomingRocket : MonoBehaviour
     /*-----[ Internal Variables ]-------------------------------------------------------------------------------------*/
     private void Update()
     {
+        if (!GetComponent<NetTransform>().hasAuthority) return;
         _age += Time.deltaTime;
         if (_age >= lifetime)
         {
@@ -71,6 +72,11 @@ public class HomingRocket : MonoBehaviour
             Instantiate(explosionEffect, transform.position, transform.rotation, null);
             Destroy(gameObject);
         }
+    }
+
+    private void OnDestroy()
+    {
+        NetSpawner.Despawn(GetComponent<NetTransform>().networkObjectUId);
     }
 
     /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/

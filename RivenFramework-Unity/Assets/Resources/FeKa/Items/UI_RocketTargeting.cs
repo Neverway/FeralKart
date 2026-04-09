@@ -54,7 +54,7 @@ public class UI_RocketTargeting : MonoBehaviour
     /*-----[ External Functions ]-------------------------------------------------------------------------------------*/
     private void Awake()
     {
-        _cam = GameInstance.Get<GI_PawnManager>().localPlayerCharacter.GetComponent<Pawn>().viewPoint.GetComponent<Camera>();
+        _cam = GetLocalPlayer().viewPoint.GetComponent<Camera>();
         lockReticle.gameObject.SetActive(false);
         searchReticle.gameObject.SetActive(true);
     }
@@ -142,5 +142,14 @@ public class UI_RocketTargeting : MonoBehaviour
     
     
 
+    public FeKaPawn_Base GetLocalPlayer()
+    {
+        foreach (var fekaPawn in FindObjectsOfType<FeKaPawn_Base>())
+        {
+            if (fekaPawn.controlMode == ControlMode.LocalPlayer) return fekaPawn;
+        }
+
+        return null;
+    }
     #endregion
 }
