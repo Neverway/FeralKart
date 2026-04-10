@@ -9,12 +9,23 @@ using UnityEngine.Splines;
 
 public class FeKaPawn_Base : FeKaPawn
 {
+    // Network Variables
+    private NetVariableOwner netVarOwner;
+ 
+    private NetVariable<float> netHealth;
+    private NetVariable<int>   netCurrentLap;
+    private NetVariable<int>   netCurrentCheckpoint;
+    private NetVariable<int>   netRacerState;
+ 
+    private const float NetSyncInterval = 0.1f;
+    private float netSyncTimer = 0f;
+    
     // Pawn Controller stuff
     private FeKaPawnActions action2 = new FeKaPawnActions();
     private InputActions.FEKAActions inputActions;
     private GI_WidgetManager widgetManager;
     private GI_PawnManager pawnManager;
-    [SerializeField] private GameObject DeathScreenWidget, RespawnScreenWidget, deathFX, HUDWidget;
+    [SerializeField] private GameObject DeathScreenWidget, RespawnScreenWidget, deathFX, HUDWidget, Nameplate;
     
     // CONTROL STUFF VERY IMPORTANT YUH HUH!
     private Camera _camera;
@@ -90,8 +101,19 @@ public class FeKaPawn_Base : FeKaPawn
         _camera = viewPoint.GetComponentInChildren<Camera>();
         _camera.gameObject.SetActive(controlMode == ControlMode.LocalPlayer);
 
+        // Setup net variables
+        netVarOwner = GetComponent<NetVariableOwner>();
+        if (netVarOwner != null)
+        {
+            netHealth = netVarOwner.Register<float>("feka_health", 0f, OnNetHealthChanged);
+            netCurrentLap = netVarOwner.Register<int>("feka_lap", 0, OnNetCurrentLapChanged);
+            netCurrentCheckpoint = netVarOwner.Register<int>("feka_checkpoint", 0, OnNetCurrentCheckpointChanged);
+            netRacerState = netVarOwner.Register<int>("feka_racerState", 0, OnNetRacerStateChanged);
+        }
+        
         if (controlMode != ControlMode.LocalPlayer)
         {
+            Nameplate.SetActive(true);
             Destroy(physicsbody);
             return;
         }
@@ -104,14 +126,18 @@ public class FeKaPawn_Base : FeKaPawn
     public void Update()
     {
         raceManager ??= GameInstance.Get<GI_RaceManager>();
-        
-        if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.preparing) physicsbody.isKinematic = true;
-        if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.racing) physicsbody.isKinematic = false;
+
+        if (physicsbody)
+        {
+            if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.preparing) physicsbody.isKinematic = true;
+            if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.racing) physicsbody.isKinematic = false;
+        }
         
         switch (controlMode)
         {
             case ControlMode.LocalPlayer:
                 LocalPlayerUpdate();
+                PushNetVars();
                 break;
             case ControlMode.CPU:
                 CPUUpdate();
@@ -519,7 +545,7 @@ public class FeKaPawn_Base : FeKaPawn
         transform.position = respawnTransform.position;
         transform.rotation = respawnTransform.rotation;
         FeKaCurrentStats.health = FeKaDefaultStats.health;
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        if (physicsbody) physicsbody.velocity = Vector3.zero;
         isDead = false;
     }
     
@@ -576,7 +602,7 @@ public class FeKaPawn_Base : FeKaPawn
         var respawnTransform = WorldSettings.GetPlayerStartPoint().transform;
         transform.position = respawnTransform.position;
         transform.rotation = respawnTransform.rotation;
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        if (physicsbody) physicsbody.velocity = Vector3.zero;
         isDead = false;
         isPaused = false;
 
@@ -786,5 +812,47 @@ public class FeKaPawn_Base : FeKaPawn
 
         rocketLauncher.OnUseReleased(this);
         isCPUFiringRocket = false;
+    }
+    
+    
+    
+    // Net variable sync
+    // Client side
+    private void PushNetVars()
+    {
+        if (netVarOwner == null || FeKaCurrentStats == null) return;
+ 
+        netSyncTimer += Time.deltaTime;
+        if (netSyncTimer < NetSyncInterval) return;
+        netSyncTimer = 0f;
+ 
+        netHealth.Value = FeKaCurrentStats.health;
+        netCurrentLap.Value = FeKaCurrentStats.currentLap;
+        netCurrentCheckpoint.Value = FeKaCurrentStats.currentCheckpoint;
+        netRacerState.Value = (int)FeKaCurrentStats.racerState;
+    }
+    // Network side
+    private void OnNetHealthChanged(float value)
+    {
+        if (controlMode == ControlMode.NetworkPlayer && FeKaCurrentStats != null)
+            FeKaCurrentStats.health = value;
+    }
+ 
+    private void OnNetCurrentLapChanged(int value)
+    {
+        if (controlMode == ControlMode.NetworkPlayer && FeKaCurrentStats != null)
+            FeKaCurrentStats.currentLap = value;
+    }
+ 
+    private void OnNetCurrentCheckpointChanged(int value)
+    {
+        if (controlMode == ControlMode.NetworkPlayer && FeKaCurrentStats != null)
+            FeKaCurrentStats.currentCheckpoint = value;
+    }
+ 
+    private void OnNetRacerStateChanged(int value)
+    {
+        if (controlMode == ControlMode.NetworkPlayer && FeKaCurrentStats != null)
+            FeKaCurrentStats.racerState = (FeKaPawnStats.RacerState)value;
     }
 }

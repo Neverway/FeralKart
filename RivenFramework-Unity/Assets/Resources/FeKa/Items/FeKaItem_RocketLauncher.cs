@@ -160,6 +160,8 @@ public class FeKaItem_RocketLauncher : ItemBehaviour
         var spawnPos = pawn.FeKaCurrentStats.projectileSpawnPoint.position + pawn.transform.forward * 1.5f;
         var spawnRot = pawn.transform.rotation;
 
+        var capturedTarget = lockedTarget;
+
         // Fire
         NetSpawner.Spawn("Rocket", spawnPos, spawnRot, (rocketObject, networkId) =>
         {
@@ -168,7 +170,7 @@ public class FeKaItem_RocketLauncher : ItemBehaviour
             if (homing != null)
             {
                 homing.exemptPawns.Add(pawn);
-                homing.SetTarget(lockedTarget);
+                homing.SetTarget(capturedTarget);
             }
         });
 

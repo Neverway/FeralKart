@@ -25,6 +25,6 @@ MonoBehaviour:
     - rid: 8346923364940251141
       type: {class: FeKaItem_TommyGun, ns: , asm: Assembly-CSharp}
       data:
-        maxAmmo: 300
+        maxAmmo: 100
         bulletPrefab: {fileID: 0}
         fireRate: 0.05
