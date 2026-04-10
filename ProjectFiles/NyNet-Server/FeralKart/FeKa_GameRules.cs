@@ -364,7 +364,7 @@ public class FeralKartGameRules : IGameRules
         raceTimerThread = new Thread(() =>
         {
             // TODO: Make race duration configurable in FeKa_ServerConfig
-            raceTimeLeft = 300;
+            raceTimeLeft = 600;
             try
             {
                 while (raceTimeLeft > 0)

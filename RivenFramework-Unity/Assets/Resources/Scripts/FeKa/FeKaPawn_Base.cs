@@ -13,6 +13,7 @@ public class FeKaPawn_Base : FeKaPawn
     private FeKaPawnActions action2 = new FeKaPawnActions();
     private InputActions.FEKAActions inputActions;
     private GI_WidgetManager widgetManager;
+    private GI_PawnManager pawnManager;
     [SerializeField] private GameObject DeathScreenWidget, RespawnScreenWidget, deathFX, HUDWidget;
     
     // CONTROL STUFF VERY IMPORTANT YUH HUH!
@@ -134,7 +135,8 @@ public class FeKaPawn_Base : FeKaPawn
     // PLAYER
     private void LocalPlayerUpdate()
     {
-        GameInstance.Get<GI_PawnManager>().localPlayerCharacter ??= gameObject;
+        pawnManager ??= GameInstance.Get<GI_PawnManager>();
+        pawnManager.localPlayerCharacter = gameObject;
         
         // Pausing
         UpdatePauseMenu();

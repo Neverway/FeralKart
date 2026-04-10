@@ -482,6 +482,23 @@ public class GI_NetworkManager : MonoBehaviour
         LogToFile("[NotifyWorldUnloading] World unloading, clearing ready state.");
         worldIsReady = false;
     }
+    
+    
+    public void DespawnAllNetworkObjects()
+    {
+        LogToFile($"[DespawnAllNetworkObjects] Destroying {netObjects.Count} networked object(s).");
+        foreach (var netObject in netObjects)
+        {
+            if (netObject.Value != null)
+            {
+                Destroy(netObject.Value);
+            }
+        }
+        netObjects.Clear();
+        netTransforms.Clear();
+        netVarOwners.Clear();
+        pendingSpawnQueue.Clear();
+    }
 
 
     /*-----[ External Functions ]----------------------------------------------------------------------------------*/
