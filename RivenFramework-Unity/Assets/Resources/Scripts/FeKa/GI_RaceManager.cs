@@ -113,6 +113,10 @@ public class GI_RaceManager : MonoBehaviour
             // Mark racers as finished
             if (racer.FeKaCurrentStats.racerState != FeKaPawnStats.RacerState.finished)
             {
+                // Mark the racers as finished
+                racer.FeKaCurrentStats.racerState = FeKaPawnStats.RacerState.finished;
+                racer.FeKaCurrentStats.finishPlacement = GetRacerPlace(racer);
+                racer.FeKaCurrentStats.finishTime = timeRemaining;
                 // Show the finish screen for the local player
                 if (racer.controlMode == ControlMode.LocalPlayer)
                 {
@@ -120,11 +124,20 @@ public class GI_RaceManager : MonoBehaviour
                     {
                         GameInstance.Get<GI_WidgetManager>().AddWidget(RaceFinishedWidget);
                     }
+                    
+                    GameInstance.Get<FeKa_GameRules>().SendFinishPacket(new FeKa_FinishPacket
+                    {
+                        Failed = false,
+                        Placement = racer.FeKaCurrentStats.finishPlacement,
+                        FinishTime = racer.FeKaCurrentStats.finishTime,
+                        HealthRemaining = racer.FeKaCurrentStats.health,
+                        LivesRemaining = racer.FeKaCurrentStats.stocks,
+                        Kills = 0,
+                        DamageTaken = 0,
+                        DamageDealt = 0,
+                        DamageHealed = 0
+                    });
                 }
-                // Mark the racers as finished
-                racer.FeKaCurrentStats.racerState = FeKaPawnStats.RacerState.finished;
-                racer.FeKaCurrentStats.finishPlacement = GetRacerPlace(racer);
-                racer.FeKaCurrentStats.finishTime = timeRemaining;
             }
         }
 

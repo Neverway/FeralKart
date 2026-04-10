@@ -168,6 +168,7 @@ public class FeKa_GameRules : MonoBehaviour
             // Game went in-progress but we missed the Loading phase (joined late)
             else if (gameState.Phase == "InProgress" && previousPhase == "Intermission")
             {
+                networkManager.DespawnAllNetworkObjects();
                 LoadWorldAndThen(gameState.MapName, () => SpawnSpectatorBody());
             }
             // Race ended, return to intermission
@@ -187,9 +188,9 @@ public class FeKa_GameRules : MonoBehaviour
         DespawnSpectatorBody();
         receivedFirstState = false;
         isLoadingWorld = false;
-        ShowConnectionPopupAndReturnToTitle(
-            "Kicked",
-            string.IsNullOrEmpty(reason) ? "You were kicked from the server." : reason);
+        ShowConnectionPopupAndReturnToTitle("Kicked", string.IsNullOrEmpty(reason) ? "You were kicked from the server." : reason);
+        
+        networkManager.DespawnAllNetworkObjects(); // This is probably not needed, but I just wanna be sure everything gets cleaned up on the client
     }
 
     private void HandleDisconnected()
@@ -199,6 +200,8 @@ public class FeKa_GameRules : MonoBehaviour
         receivedFirstState = false;
         isLoadingWorld = false;
         ShowConnectionPopupAndReturnToTitle("Disconnected", "You have been disconnected from the server.");
+        
+        networkManager.DespawnAllNetworkObjects(); // This is probably not needed, but I just wanna be sure everything gets cleaned up on the client
     }
 
     private void ShowConnectionPopupAndReturnToTitle(string title, string message)
@@ -306,8 +309,7 @@ public class FeKa_GameRules : MonoBehaviour
     /*-----[ External Functions ]----------------------------------------------------------------------------------*/
 
     /// <summary>
-    /// Sends the player's race result to the server.
-    /// Call this when the local player finishes or fails the race.
+    /// Sends the player's race result to the server
     /// </summary>
     public void SendFinishPacket(FeKa_FinishPacket finishPacket)
     {

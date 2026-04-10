@@ -75,10 +75,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   delayBeforeWorldChange: 0
-  minimumRequiredLoadTime: 0
+  minimumRequiredLoadTime: 5
   loadingWorldID: _Travel
   streamingWorldID: _Streaming
   isLoading: 0
+  useLoadingScreen: 0
 --- !u!114 &8734900888977172164
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1076,3 +1077,4 @@ MonoBehaviour:
     GameMode: 
     TimeLeft: 0
     PlayerNames: []
+  pendingCharacterChoice: 

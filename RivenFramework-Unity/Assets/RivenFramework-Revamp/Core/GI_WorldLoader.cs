@@ -27,6 +27,8 @@ public class GI_WorldLoader : MonoBehaviour
     public string streamingWorldID = "_Streaming";
     [Tooltip("An exposed value used for referencing if the game is currently in the process of loading the level")]
     public bool isLoading;
+
+    public bool useLoadingScreen;
     public static event Action OnWorldLoaded;
     public static event Action OnEjectStreamedActors;
 
@@ -87,24 +89,30 @@ public class GI_WorldLoader : MonoBehaviour
 
     private IEnumerator LoadWorldCoroutine(string _worldName)
     {
+        
+        // Store what scene is the current one
+        var previousScene = SceneManager.GetActiveScene();
         // WARNING OLD GARBAGE BELOW //
-        // Load the transition level over top everything else
-        //SceneManager.LoadScene(loadingWorldID, LoadSceneMode.Additive);
-        
-        // The following should execute on the loading screen scene
-        //var loadingBarObject = GameObject.FindWithTag("LoadingBar");
-        //if (loadingBarObject) loadingBar = loadingBarObject.GetComponent<Image>();
-        
-        /*AsyncOperation loadAsync = SceneManager.LoadSceneAsync(_worldName, LoadSceneMode.Additive);
-        while (!loadAsync.isDone)
+        if (useLoadingScreen)
         {
-            //print(loadAsync.progress);
-            //if (loadingBar) loadingBar.fillAmount = loadAsync.progress;
-            yield return null;
-        }*/
+            // Load the transition level over top everything else
+            SceneManager.LoadScene(loadingWorldID, LoadSceneMode.Additive);
         
-        //print(unloadAsync.progress);
-        //if (loadingBar) loadingBar.fillAmount = unloadAsync.progress;
+            // The following should execute on the loading screen scene
+            var loadingBarObject = GameObject.FindWithTag("LoadingBar");
+            if (loadingBarObject) loadingBar = loadingBarObject.GetComponent<Image>();
+        
+            /*AsyncOperation loadAsync = SceneManager.LoadSceneAsync(_worldName, LoadSceneMode.Additive);
+            while (!loadAsync.isDone)
+            {
+                //print(loadAsync.progress);
+                //if (loadingBar) loadingBar.fillAmount = loadAsync.progress;
+                yield return null;
+            }*/
+        
+            //print(unloadAsync.progress);
+            //if (loadingBar) loadingBar.fillAmount = unloadAsync.progress;
+        }
         // END OF OLD GARBAGE (Carry on :3) //
         //Debug.Log("awaiting to load world");
         isLoading = true;
@@ -132,9 +140,6 @@ public class GI_WorldLoader : MonoBehaviour
         
         // I tried freezing the theoretical kittens by setting timescale to 0 and then restoring once
         // the theoretical room full of puppies is done loading.
-        
-        // Store what scene is the current one
-        var previousScene = SceneManager.GetActiveScene();
         //print($"Current scene is {previousScene.name}");
 
         var originalTimescale = Time.timeScale;
@@ -143,8 +148,13 @@ public class GI_WorldLoader : MonoBehaviour
         // Load target level
         //print($"Loading next scene {_worldName}...");
         AsyncOperation loadAsync = SceneManager.LoadSceneAsync(_worldName, LoadSceneMode.Additive);
-        while (!loadAsync.isDone) { yield return new WaitForEndOfFrame(); }
+        while (!loadAsync.isDone)
+        {
+            if (loadingBar) loadingBar.fillAmount = loadAsync.progress;
+            yield return new WaitForEndOfFrame();
+        }
         //print($"Loaded next scene");;
+        if (useLoadingScreen) SceneManager.UnloadSceneAsync(SceneManager.GetSceneByName(loadingWorldID));
         
         // Assign the new scene to be the active scene
         //print($"Setting the active scene to {_worldName}. Active scene was {SceneManager.GetActiveScene().name}");
@@ -159,7 +169,11 @@ public class GI_WorldLoader : MonoBehaviour
         // Begin async unload of previous level
         //print($"Unloading previous scene {previousScene.name}...");
         AsyncOperation unloadAsync = SceneManager.UnloadSceneAsync(previousScene);
-        while (!unloadAsync.isDone) { yield return new WaitForEndOfFrame(); }
+        while (!unloadAsync.isDone)
+        {
+            if (loadingBar) loadingBar.fillAmount = loadAsync.progress;
+            yield return new WaitForEndOfFrame();
+        }
         //print($"Unloaded previous scene");
 
         Time.timeScale = originalTimescale;
