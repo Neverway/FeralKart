@@ -379,7 +379,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: Camille
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 9157229160633569653, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0, type: 3}
+    - {fileID: 1651457291806991582, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -480,7 +482,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: Jamiey
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 9157229160633569653, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0, type: 3}
+    - {fileID: 1651457291806991582, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -581,7 +585,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tansy
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 9157229160633569653, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0, type: 3}
+    - {fileID: 1651457291806991582, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -606,6 +612,12 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7999913209725533933}
     m_Modifications:
+    - target: {fileID: 1343451400473495829, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0,
+        type: 3}
+      propertyPath: spriteAngleGroup
+      value: 
+      objectReference: {fileID: 11400000, guid: ff7a8b2427667837d8392bea9e4cb541,
+        type: 2}
     - target: {fileID: 3813933867857461855, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0,
         type: 3}
       propertyPath: volumeTrigger
@@ -676,7 +688,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: Kellory
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 9157229160633569653, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0, type: 3}
+    - {fileID: 1651457291806991582, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -777,7 +791,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: Autumn
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 9157229160633569653, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0, type: 3}
+    - {fileID: 1651457291806991582, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -962,7 +978,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: Fox
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 9157229160633569653, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0, type: 3}
+    - {fileID: 1651457291806991582, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -1058,7 +1076,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: Winters
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 9157229160633569653, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0, type: 3}
+    - {fileID: 1651457291806991582, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

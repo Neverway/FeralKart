@@ -146,10 +146,10 @@ public class FeKa_GameRules : MonoBehaviour
 			// the server has spawned the player's kart so the temporary spectator body can be despawned
             else if (gameState.Phase == "InProgress" && previousPhase == "Loading")
             {
-                DespawnSpectatorBody();
     
                 if (!string.IsNullOrEmpty(pendingCharacterChoice) && pendingCharacterChoice != "spectate")
                 {
+                    DespawnSpectatorBody();
                     NetSpawner.Spawn(pendingCharacterChoice, Vector3.zero, Quaternion.identity, (spawnedObject, networkId) =>
                     {
                         var kart = spawnedObject.GetComponent<FeKaPawn_Base>();
@@ -168,12 +168,12 @@ public class FeKa_GameRules : MonoBehaviour
             // Game went in-progress but we missed the Loading phase (joined late)
             else if (gameState.Phase == "InProgress" && previousPhase == "Intermission")
             {
-                networkManager.DespawnAllNetworkObjects();
                 LoadWorldAndThen(gameState.MapName, () => SpawnSpectatorBody());
             }
             // Race ended, return to intermission
             else if (gameState.Phase == "Intermission" && previousPhase == "InProgress")
             {
+                networkManager.DespawnAllNetworkObjects();
                 DespawnSpectatorBody();
                 StartCoroutine(ShowFighterSelect());
             }

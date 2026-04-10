@@ -7,6 +7,7 @@
 //
 //====================================================================================================================//
 
+using System;
 using System.Collections.Generic;
 using RivenFramework;
 using TMPro;
@@ -67,6 +68,7 @@ public class WB_FighterSelect : MonoBehaviour
         widgetManager.DestroyExistingWidget("WB_HUD");
         widgetManager.DestroyExistingWidget("WB_Title");
         widgetManager.DestroyExistingWidget("WB_Pause");
+        widgetManager.DestroyExistingWidget("WB_NetPlayerlist");
 
         bool midGame = fekaGameRules != null && fekaGameRules.currentPhase == "InProgress";
         readyButton.gameObject.SetActive(!midGame);
@@ -74,7 +76,10 @@ public class WB_FighterSelect : MonoBehaviour
 
         if (fekaGameRules != null && fekaGameRules.lastGameState != null)
             OnGameStateReceived(fekaGameRules.lastGameState);
+    }
 
+    private void Update()
+    {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
