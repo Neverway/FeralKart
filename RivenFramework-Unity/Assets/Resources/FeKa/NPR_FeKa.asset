@@ -20,5 +20,11 @@ MonoBehaviour:
     Prefab: {fileID: 2388545363728601757, guid: e5079463ffef00d739941bf170f5a799,
       type: 3}
   - Key: kellory
+    Prefab: {fileID: 6565911398025998435, guid: 8112b2385aeb3e9ec81c4060b76443d8,
+      type: 3}
+  - Key: fox
+    Prefab: {fileID: 6565911398025998435, guid: 8654eddaa9dad323d87f54f4b9be4701,
+      type: 3}
+  - Key: autumn
     Prefab: {fileID: 5336008974593170968, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
       type: 3}

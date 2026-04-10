@@ -18,7 +18,6 @@ public class FeKaPawn_Base : FeKaPawn
     
     // CONTROL STUFF VERY IMPORTANT YUH HUH!
     private Camera _camera;
-    public Camera Camera => _camera;
     public ControlMode _controlMode;
     public ControlMode controlMode
     {
@@ -26,7 +25,7 @@ public class FeKaPawn_Base : FeKaPawn
         set
         {
             _controlMode = value;
-            if (_camera != null) _camera.enabled = (value == ControlMode.LocalPlayer);
+            if (_camera != null) _camera.gameObject.SetActive(value == ControlMode.LocalPlayer);
         }
     }
 
@@ -77,7 +76,7 @@ public class FeKaPawn_Base : FeKaPawn
     [Tooltip("A reference to the race manager so the CPU can get the list of all racers when steering")]
     private GI_RaceManager raceManager;
     
-    public override void Awake()
+    public void Start()
     {
         base.Awake();
         
@@ -89,8 +88,13 @@ public class FeKaPawn_Base : FeKaPawn
         
         
         _camera = viewPoint.GetComponentInChildren<Camera>();
-        
-        if (controlMode != ControlMode.LocalPlayer) return;
+        _camera.gameObject.SetActive(controlMode == ControlMode.LocalPlayer);
+
+        if (controlMode != ControlMode.LocalPlayer)
+        {
+            Destroy(physicsbody);
+            return;
+        }
         // Setup inputs
         inputActions = new InputActions().FEKA;
         inputActions.Enable();
@@ -174,7 +178,7 @@ public class FeKaPawn_Base : FeKaPawn
         }
 
         // Jumping
-        if (inputActions.HopDedicated.IsPressed() || inputActions.TiltLeft.IsPressed() && inputActions.TiltRight.IsPressed())
+        if (inputActions.HopDedicated.IsPressed() || inputActions.TiltLeft.WasPressedThisFrame() && inputActions.TiltRight.WasPressedThisFrame())
         {
             action2.Jump(this);
         }
@@ -420,6 +424,7 @@ public class FeKaPawn_Base : FeKaPawn
         }
         
         // Pause Game
+        print(inputActions.Acelerate);
         if (inputActions.Pause.WasPressedThisFrame())
         {
             widgetManager.ToggleWidget("WB_Pause");

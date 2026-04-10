@@ -34,8 +34,8 @@ public class NetTransform : MonoBehaviour
     public bool hasAuthority = false;
 
     [Header("Sync Settings")]
-    [Tooltip("How many times per second the owner sends a transform update packet, 20 by default")]
-    public float sendRate = 20f;
+    [Tooltip("How many times per second the owner sends a transform update packet, 40 by default")]
+    public float sendRate = 40f;
     [Tooltip("If enabled, sync this object's position")]
     public bool syncPosition = true;
     [Tooltip("If enabled, sync this object's rotation")]

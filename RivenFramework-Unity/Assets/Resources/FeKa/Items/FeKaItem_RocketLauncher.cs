@@ -108,40 +108,42 @@ public class FeKaItem_RocketLauncher : ItemBehaviour
         var bpawn = (FeKaPawn_Base)pawn;
         if (bpawn.controlMode == ControlMode.LocalPlayer)
         {
-            if (activeTargeting != null)
-                lockedTarget = activeTargeting.lockedTarget;
+            if (activeTargeting != null) lockedTarget = activeTargeting.lockedTarget;
             return;
         }
 
-        raceManager ??= GameInstance.Get<GI_RaceManager>();
-        if (raceManager == null) return;
-
-        FeKaPawn best = null;
-        var bestDot = -1f;
-
-        foreach (var r in raceManager.racers)
+        if (bpawn.controlMode == ControlMode.CPU)
         {
-            if (r == pawn) continue;
+            raceManager ??= GameInstance.Get<GI_RaceManager>();
+            if (raceManager == null) return;
 
-            var toRacer = (r.transform.position - pawn.transform.position).normalized;
-            var dot = Vector3.Dot(pawn.transform.forward, toRacer);
-            if (dot > bestDot)
+            FeKaPawn best = null;
+            var bestDot = -1f;
+
+            foreach (var r in raceManager.racers)
             {
-                bestDot = dot;
-                best = r;
-            }
-        }
+                if (r == pawn) continue;
 
-        if (best != null && bestDot > 0.6f)
-        {
-            lockTimer += Time.deltaTime;
-            if (lockTimer >= lockDelay)
-                lockedTarget = best;
-        }
-        else
-        {
-            lockTimer = 0f;
-            lockedTarget = null;
+                var toRacer = (r.transform.position - pawn.transform.position).normalized;
+                var dot = Vector3.Dot(pawn.transform.forward, toRacer);
+                if (dot > bestDot)
+                {
+                    bestDot = dot;
+                    best = r;
+                }
+            }
+
+            if (best != null && bestDot > 0.6f)
+            {
+                lockTimer += Time.deltaTime;
+                if (lockTimer >= lockDelay)
+                    lockedTarget = best;
+            }
+            else
+            {
+                lockTimer = 0f;
+                lockedTarget = null;
+            }
         }
     }
 

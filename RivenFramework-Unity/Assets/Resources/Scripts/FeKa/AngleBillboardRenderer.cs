@@ -79,12 +79,14 @@ public class AngleBillboardRenderer : MonoBehaviour
 
     private bool Initialized()
     {
-        return activeCamera != null;
+        if (activeCamera == null) return false;
+        if (!activeCamera.isActiveAndEnabled) return false;
+        return true;
     }
 
     private void Initialize()
     {
-        activeCamera = GameInstance.Get<GI_PawnManager>().localPlayerCharacter.GetComponent<Pawn>().viewPoint.GetComponent<Camera>();
+        activeCamera = FindObjectOfType(typeof(Camera), false).GetComponent<Camera>();
     }
 }
 
