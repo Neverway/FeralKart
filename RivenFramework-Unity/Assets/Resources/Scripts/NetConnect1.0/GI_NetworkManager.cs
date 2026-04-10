@@ -63,7 +63,7 @@ public class GI_NetworkManager : MonoBehaviour
 
     // Network object tracking
     private readonly Dictionary<string, NetTransform> netTransforms = new Dictionary<string, NetTransform>();
-    private readonly Dictionary<string, NetVarOwner> netVarOwners = new Dictionary<string, NetVarOwner>();
+    private readonly Dictionary<string, NetVariableOwner> netVarOwners = new Dictionary<string, NetVariableOwner>();
     private readonly Dictionary<string, Action<GameObject, string>> pendingSpawnCallbacks = new Dictionary<string, Action<GameObject, string>>();
     private readonly Dictionary<string, GameObject> netObjects = new Dictionary<string, GameObject>();
     private readonly List<SpawnBroadcastPacket> pendingSpawnQueue = new List<SpawnBroadcastPacket>();
@@ -938,7 +938,7 @@ public class GI_NetworkManager : MonoBehaviour
     }
 
     // Called by NetVarOwner.Start() to register itself so variable sync packets can be routed to it.
-    public void RegisterNetVarOwner(NetVarOwner owner)
+    public void RegisterNetVarOwner(NetVariableOwner owner)
     {
         string id = owner.NetworkObjectId;
         if (string.IsNullOrEmpty(id)) return;
@@ -947,7 +947,7 @@ public class GI_NetworkManager : MonoBehaviour
     }
 
     // Called by NetVarOwner.OnDestroy() to remove itself from the registry.
-    public void UnregisterNetVarOwner(NetVarOwner owner)
+    public void UnregisterNetVarOwner(NetVariableOwner owner)
     {
         netVarOwners.Remove(owner.NetworkObjectId);
         LogToFile($"[UnregisterNetVarOwner] id={owner.NetworkObjectId}");
@@ -979,7 +979,7 @@ public class ServerEntryListWrapper
 public static class NetProtocol
 {
     public const int DefaultPort = 27015;
-    public const float TimeoutSeconds = 3f;
+    public const float TimeoutSeconds = 8f;
 }
 
 // The player's locally stored profile, saved to disk between sessions

@@ -76,7 +76,11 @@ public class HomingRocket : MonoBehaviour
 
     private void OnDestroy()
     {
-        NetSpawner.Despawn(GetComponent<NetTransform>().networkObjectUId);
+        var netTransform = GetComponent<NetTransform>();
+        if (netTransform != null && netTransform.hasAuthority)
+        {
+            NetSpawner.Despawn(GetComponent<NetTransform>().networkObjectUId);
+        }
     }
 
     /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/

@@ -9,7 +9,7 @@ public class ExampleNetVariable : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var owner = GetComponent<NetVarOwner>();
+        var owner = GetComponent<NetVariableOwner>();
         currentHealth = owner.Register<float>("currentHealth", 100f, OnHealthChanged);
     }
 
