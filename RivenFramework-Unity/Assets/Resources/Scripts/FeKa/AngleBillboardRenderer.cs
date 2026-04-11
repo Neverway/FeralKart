@@ -8,6 +8,7 @@ using UnityEngine;
 public class AngleBillboardRenderer : MonoBehaviour
 {
     public Camera activeCamera;
+    public bool doNotOverrideTargetCamera;
     public SpriteRenderer spriteRenderer;
     [SerializeField] public SpriteAngle[] spriteAngles;
     public bool UseSpriteAngleGroup = false;
@@ -25,7 +26,7 @@ public class AngleBillboardRenderer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!Initialized())
+        if (!Initialized() && !doNotOverrideTargetCamera)
         {
             Initialize();
             return;
@@ -86,7 +87,8 @@ public class AngleBillboardRenderer : MonoBehaviour
 
     private void Initialize()
     {
-        activeCamera = FindObjectOfType(typeof(Camera), false).GetComponent<Camera>();
+        var newTargetCamera = FindObjectOfType(typeof(Camera), false);
+        if (newTargetCamera) activeCamera = newTargetCamera.GetComponent<Camera>();
     }
 }
 

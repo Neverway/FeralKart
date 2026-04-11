@@ -2789,6 +2789,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "LookBehind",
+                    "type": "Button",
+                    "id": "0b465354-5838-4dbc-85f7-2a3f96793124",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -3130,6 +3139,28 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Playerlist",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "16683b24-dd3d-46f4-bf91-fea214e96e9c",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LookBehind",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "efc4f85a-40b7-4ffb-a294-8dc5a2dfb673",
+                    "path": "<Gamepad>/leftStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LookBehind",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

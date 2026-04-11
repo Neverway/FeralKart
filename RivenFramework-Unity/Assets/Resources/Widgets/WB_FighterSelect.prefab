@@ -81,6 +81,8 @@ MonoBehaviour:
   playerListRoot: {fileID: 8793075061365464968}
   playerEntry: {fileID: 7266456513610214448, guid: cdd29d22a4bfa967c82f7fea79eb22f9,
     type: 3}
+  widgetsToNotClear:
+  - WB_FighterSelect
 --- !u!1001 &186711034806075227
 PrefabInstance:
   m_ObjectHideFlags: 0

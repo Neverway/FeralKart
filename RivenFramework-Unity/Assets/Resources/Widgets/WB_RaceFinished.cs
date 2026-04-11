@@ -41,8 +41,7 @@ public class WB_RaceFinished : MonoBehaviour
                 StartCoroutine(EnableTextBlock(2));
                 break;
             case 2:
-                timeText.text = ($"{targetFeKaPawn.FeKaCurrentStats.finishTime:f2}");
-                print (targetFeKaPawn.FeKaCurrentStats.finishTime);
+                timeText.text = ($"{GameInstance.Get<GI_RaceManager>().timeRemaining:f2}");
                 timeText.enabled = true;
                 break;
         }
