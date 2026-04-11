@@ -50,6 +50,9 @@ public class GI_WorldLoader : MonoBehaviour
     //=-----------------=
     private void Update()
     {
+        // DO NOT EFF WITH SCENES WHILE LOADING IS IN PROGRESS!!!!
+        if (isLoading) return;
+        
         // Make sure the streaming world is loaded, so we can store actors there if needed
         if (!SceneManager.GetSceneByName(streamingWorldID).isLoaded)
         {
@@ -89,9 +92,10 @@ public class GI_WorldLoader : MonoBehaviour
 
     private IEnumerator LoadWorldCoroutine(string _worldName)
     {
-        
         // Store what scene is the current one
         var previousScene = SceneManager.GetActiveScene();
+        
+        
         // WARNING OLD GARBAGE BELOW //
         if (useLoadingScreen)
         {
@@ -114,9 +118,13 @@ public class GI_WorldLoader : MonoBehaviour
             //if (loadingBar) loadingBar.fillAmount = unloadAsync.progress;
         }
         // END OF OLD GARBAGE (Carry on :3) //
+        
+        
         //Debug.Log("awaiting to load world");
         isLoading = true;
         yield return new WaitForSeconds(delayBeforeWorldChange);
+        
+        
         //Debug.Log("loading world: " + _worldName);
         
         // BEWARE THOSE WHO MAY CODE HERE!
@@ -165,17 +173,31 @@ public class GI_WorldLoader : MonoBehaviour
         // Call the eject event so containers will empty into their current scene (Needs to be done a bit after eject)
         print("Called ejection");
         OnEjectStreamedActors?.Invoke();
+
+        // Wait for start and awake functions to finish before ejecting
+        yield return null;
+        
         
         // Begin async unload of previous level
-        //print($"Unloading previous scene {previousScene.name}...");
-        AsyncOperation unloadAsync = SceneManager.UnloadSceneAsync(previousScene);
-        while (!unloadAsync.isDone)
+        if (!previousScene.isLoaded)
         {
-            if (loadingBar) loadingBar.fillAmount = loadAsync.progress;
-            yield return new WaitForEndOfFrame();
+            Debug.LogWarning($"[WorldLoader] previous scene {previousScene.name} was already unloaded before we tried to unload it, skipping it");
         }
-        //print($"Unloaded previous scene");
+        else
+        {
+            AsyncOperation unloadAsync = SceneManager.UnloadSceneAsync(previousScene);
+            while (!unloadAsync.isDone)
+            {
+                if (loadingBar) loadingBar.fillAmount = loadAsync.progress;
+                yield return new WaitForEndOfFrame();
+            }
 
+            if (previousScene.isLoaded)
+            {
+                Debug.LogWarning($"[WorldLoader] Scene {previousScene.name} is still loaded after unload sequence completed. This is a serious eff-up! Check for lingering cross-scene references or DontDestroyOnLoad objects referencing it?");
+            }
+        }
+        
         Time.timeScale = originalTimescale;
 
         // Finish up by setting any external flags
@@ -203,6 +225,22 @@ public class GI_WorldLoader : MonoBehaviour
         return false;
     }
 
+    public IEnumerator ReloadCurrentWorld(string _worldName)
+    {
+        isLoading = true;
+        yield return new WaitForSeconds(delayBeforeWorldChange);
+        var originalTimescale = Time.timeScale;
+        Time.timeScale = 0;
+        SceneManager.LoadScene(_worldName);
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName(_worldName));
+        EjectStreamedActors();
+        OnEjectStreamedActors?.Invoke();
+        yield return null;
+        Time.timeScale = originalTimescale;
+        isLoading = false;
+        if (OnWorldLoaded is not null) OnWorldLoaded.Invoke();
+    }
+
 
     //=-----------------=
     // External Functions
@@ -213,7 +251,6 @@ public class GI_WorldLoader : MonoBehaviour
     /// <param name="_worldName">The name of the world to load</param>
     public void LoadWorld(string _worldName)
     {
-        if (_worldName == SceneManager.GetActiveScene().name) Debug.LogWarning("Target world is the same as the loaded world, this causes strange issues please dont do this!!!!");
         
         if (isLoading)
         {
@@ -223,6 +260,12 @@ public class GI_WorldLoader : MonoBehaviour
         if (DoesSceneExist(_worldName) is false)
         {
             ForceLoadWorld("_Error");
+            return;
+        }
+        if (_worldName == SceneManager.GetActiveScene().name)
+        {
+            StartCoroutine(ReloadCurrentWorld(_worldName));
+            Debug.LogWarning("Target world is the same as the loaded world, this causes strange issues please dont do this!!!!");
             return;
         }
         StartCoroutine(LoadWorldCoroutine(_worldName));
