@@ -45,9 +45,14 @@ public class NetTransform : MonoBehaviour
 
     [Header("Interpolation")] 
     [Tooltip("How aggressively the remote object catches up to the latest received state, the higher the value, the quicker it catches up, but can also lead to jerkier movement")]
-    public float interpolationSpeed = 15f;
-    [Tooltip("The maximum number of buffered states to be kept for interpolation, older ones are discarded")]
-    public int interpolationBufferSize = 6;
+    public float interpolationSpeed = 60f;
+    [Tooltip("How many degrees per second the remote object rotates toward the target snapshot rotation")]
+    public float interpolationRotationSpeed = 720f;
+    [Tooltip("How far (in units) the remote object must be from a snapshot before it snaps directly to it rather than interpolating. Prevents rubberbanding after a large gap")]
+    public float snapThreshold = 8f;
+    [Tooltip("How much past the latest received snapshot to extrapolate when a packet is late. 1 = extrapolate one full packet interval ahead, 0 = no extrapolation.")]
+    [Range(0f, 1f)]
+    public float extrapolationFactor = 0.5f;
 
 
     /*-----[ External Variables ]-------------------------------------------------------------------------------------*/
@@ -57,10 +62,12 @@ public class NetTransform : MonoBehaviour
     private float sendTimer = 0f;
     private float sendInterval = 0f;
     private GI_NetworkManager networkManager;
-
-    private readonly Queue<TransformSnapshot> snapshots = new Queue<TransformSnapshot>();
-    private TransformSnapshot targetSnapshot;
-    private bool hasTarget = false;
+    
+    private TransformSnapshot fromSnapshot;
+    private TransformSnapshot toSnapshot;
+    private bool hasSnapshots = false;
+    private float timeSinceLastPacket = 0f;
+    private float estimatedPacketInterval = 0.025f; // matches default sendRate=40
 
     private Vector3 lastSentPosition;
     private Quaternion lastSentRotation;
@@ -144,18 +151,42 @@ public class NetTransform : MonoBehaviour
 
     private void RemoteUpdate()
     {
-        if (!hasTarget) return;
-        
-        if (syncPosition) transform.position = Vector3.Lerp(transform.position, targetSnapshot.position, interpolationSpeed * Time.deltaTime);
-        if (syncRotation) transform.rotation = Quaternion.Lerp(transform.rotation, targetSnapshot.rotation, interpolationSpeed * Time.deltaTime);
-        if (syncScale) transform.localScale = Vector3.Lerp(transform.localScale, targetSnapshot.scale, interpolationSpeed * Time.deltaTime);
-
-        // If close to target snapshot values, continue to the next snapshot
-        if (snapshots.Count > 0)
+        if (!hasSnapshots) return;
+ 
+        timeSinceLastPacket += Time.deltaTime;
+ 
+        float t = timeSinceLastPacket / estimatedPacketInterval;
+ 
+        Vector3 targetPos = toSnapshot.position;
+        Quaternion targetRot = toSnapshot.rotation;
+        Vector3 targetScale = toSnapshot.scale;
+ 
+        if (t > 1f && extrapolationFactor > 0f)
         {
-            float positionDequeueThreshold = 0.05f;
-            float positionError = syncPosition ? Vector3.Distance(transform.position, targetSnapshot.position) : 0;
-            if (positionError < positionDequeueThreshold) targetSnapshot = snapshots.Dequeue();
+            float extra = Mathf.Min(t - 1f, extrapolationFactor);
+            targetPos   = toSnapshot.position + (toSnapshot.position - fromSnapshot.position) * extra;
+            targetRot   = toSnapshot.rotation;
+        }
+ 
+        float blend = Mathf.Clamp01(t);
+ 
+        Vector3 blendedPos   = Vector3.Lerp(fromSnapshot.position, targetPos, blend);
+        Quaternion blendedRot = Quaternion.Slerp(fromSnapshot.rotation, targetRot, blend);
+        Vector3 blendedScale  = Vector3.Lerp(fromSnapshot.scale, targetScale, blend);
+ 
+        float posError = syncPosition ? Vector3.Distance(transform.position, blendedPos) : 0f;
+        if (posError > snapThreshold)
+        {
+            if (syncPosition)  transform.position   = blendedPos;
+            if (syncRotation)  transform.rotation   = blendedRot;
+            if (syncScale)     transform.localScale  = blendedScale;
+        }
+        else
+        {
+            float catchUp = Mathf.Clamp01(interpolationSpeed * Time.deltaTime);
+            if (syncPosition)  transform.position   = Vector3.Lerp(transform.position,   blendedPos,   catchUp);
+            if (syncRotation)  transform.rotation   = Quaternion.Slerp(transform.rotation, blendedRot, catchUp);
+            if (syncScale)     transform.localScale  = Vector3.Lerp(transform.localScale,  blendedScale, catchUp);
         }
     }
 
@@ -169,27 +200,32 @@ public class NetTransform : MonoBehaviour
     /*-----[ External Functions ]-------------------------------------------------------------------------------------*/
     public void ReceiveTransformPacket(TransformSyncPacket packet)
     {
-        var snapshot = new TransformSnapshot
+        var incoming = new TransformSnapshot
         {
             position = packet.syncPosition ? new Vector3(packet.px, packet.py, packet.pz) : transform.position,
             rotation = packet.syncRotation ? Quaternion.Euler(packet.rx, packet.ry, packet.rz) : transform.rotation,
-            scale = packet.syncScale ? new Vector3(packet.sx, packet.sy, packet.sz) : transform.localScale
+            scale    = packet.syncScale    ? new Vector3(packet.sx, packet.sy, packet.sz)    : transform.localScale
         };
-
-        while (snapshots.Count >= interpolationBufferSize) snapshots.Dequeue();
-
-        if (!hasTarget)
+ 
+        if (!hasSnapshots)
         {
-            transform.position = snapshot.position;
-            transform.rotation = snapshot.rotation;
-            transform.localScale = snapshot.scale;
-            targetSnapshot = snapshot;
-            hasTarget = true;
+            transform.position   = incoming.position;
+            transform.rotation   = incoming.rotation;
+            transform.localScale = incoming.scale;
+            fromSnapshot = incoming;
+            toSnapshot   = incoming;
+            hasSnapshots = true;
+            timeSinceLastPacket = 0f;
+            return;
         }
-        else
-        {
-            snapshots.Enqueue(snapshot);
-        }
+ 
+        float measuredInterval = timeSinceLastPacket;
+        if (measuredInterval > 0f && measuredInterval < 1f)
+            estimatedPacketInterval = Mathf.Lerp(estimatedPacketInterval, measuredInterval, 0.2f);
+ 
+        fromSnapshot = toSnapshot;
+        toSnapshot   = incoming;
+        timeSinceLastPacket = 0f;
     }
 
     #endregion

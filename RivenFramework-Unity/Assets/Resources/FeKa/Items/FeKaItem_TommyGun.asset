@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: FeKaItem_TommyGun
   m_EditorClassIdentifier: 
   details:
-    itemName: Sweeper
+    itemName: Oxenfree
     icon: {fileID: 21300000, guid: bbc97cfa365d073e4b80bd77cc8c9722, type: 3}
     respawnTime: 3
-    rarity: 3
+    rarity: 4
   itemBehaviour:
     rid: 8346923364940251141
   references:
@@ -26,5 +26,6 @@ MonoBehaviour:
       type: {class: FeKaItem_TommyGun, ns: , asm: Assembly-CSharp}
       data:
         maxAmmo: 100
-        bulletPrefab: {fileID: 0}
+        bulletPrefab: {fileID: 6598383830466623576, guid: 219fbfc5676c63d9490c08b53e893c1c,
+          type: 3}
         fireRate: 0.05
