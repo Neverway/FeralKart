@@ -49,7 +49,7 @@ public class HomingRocket : MonoBehaviour
 
         if (_target != null)
         {
-            var toTarget = (_target.transform.position - transform.position).normalized;
+            var toTarget = ((_target.transform.position+targetAimOffset) - transform.position).normalized;
             var targetRot = Quaternion.LookRotation(toTarget);
 
             transform.rotation = Quaternion.RotateTowards(
