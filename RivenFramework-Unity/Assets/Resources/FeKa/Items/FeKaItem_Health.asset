@@ -25,4 +25,4 @@ MonoBehaviour:
     - rid: 8346923364940251138
       type: {class: FeKaItem_Health, ns: , asm: Assembly-CSharp}
       data:
-        healAmount: 5
+        healAmount: 25

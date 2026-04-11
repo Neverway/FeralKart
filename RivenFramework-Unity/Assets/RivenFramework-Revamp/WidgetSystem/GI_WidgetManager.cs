@@ -214,4 +214,17 @@ public class GI_WidgetManager : MonoBehaviour
         }
         return null;
     }
+
+    public void ClearAllWidgets(List<string> exemptWidgets)
+    {
+        if (Canvas == null) return;
+
+        foreach (Transform child in Canvas.transform)
+        {
+            if (!exemptWidgets.Contains(child.name))
+            {
+                Destroy(child.gameObject);
+            }
+        }
+    }
 }

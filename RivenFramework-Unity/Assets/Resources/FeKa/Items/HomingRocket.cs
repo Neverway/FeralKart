@@ -69,13 +69,13 @@ public class HomingRocket : MonoBehaviour
         {
             pawn.ModifyHealth(-damage);
             pawn.physicsbody.AddForce(Vector3.up * explosionForce, ForceMode.Impulse);
-            Instantiate(explosionEffect, transform.position, transform.rotation, null);
             Destroy(gameObject);
         }
     }
 
     private void OnDestroy()
     {
+        Instantiate(explosionEffect, transform.position, transform.rotation, null);
         var netTransform = GetComponent<NetTransform>();
         if (netTransform != null && netTransform.hasAuthority)
         {

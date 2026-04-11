@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using DG.Tweening;
 using RivenFramework;
 using UnityEngine;
@@ -83,6 +84,7 @@ public class FeKaPawn_Base : FeKaPawn
     private const float itemDistanceWander = 5f;
     private const float racingLineTrackingPercentage = 0.25f;
     private bool isCPUFiringRocket = false;
+    [SerializeField] private CinemachineTransposer cinemachineTransposer;
 
     [Tooltip("A reference to the race manager so the CPU can get the list of all racers when steering")]
     private GI_RaceManager raceManager;
@@ -111,10 +113,19 @@ public class FeKaPawn_Base : FeKaPawn
             netRacerState = netVarOwner.Register<int>("feka_racerState", 0, OnNetRacerStateChanged);
         }
         
+        if (controlMode == ControlMode.NetworkPlayer)
+        {
+            // Remove components that eff up the network transform sync
+            foreach (var wheelCollider in GetComponentsInChildren<WheelCollider>())
+            {
+                wheelCollider.enabled = false;
+            }
+            Destroy(physicsbody);
+            return;
+        }
         if (controlMode != ControlMode.LocalPlayer)
         {
             Nameplate.SetActive(true);
-            Destroy(physicsbody);
             return;
         }
         // Setup inputs
@@ -240,6 +251,18 @@ public class FeKaPawn_Base : FeKaPawn
 
         // Item usage
         UpdateHeldItem();
+        
+        // RearView
+        if (inputActions.LookBehind.IsPressed())
+        {
+            cinemachineTransposer ??= viewPoint.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineTransposer>();
+            cinemachineTransposer.m_FollowOffset.z = 6;
+        }
+        else if (inputActions.LookBehind.WasReleasedThisFrame())
+        {
+            cinemachineTransposer ??= viewPoint.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineTransposer>();
+            cinemachineTransposer.m_FollowOffset.z = -6;
+        }
         
         // CarFX
         action2.WheelEffects(this, isBreaking);
@@ -450,7 +473,6 @@ public class FeKaPawn_Base : FeKaPawn
         }
         
         // Pause Game
-        print(inputActions.Acelerate);
         if (inputActions.Pause.WasPressedThisFrame())
         {
             widgetManager.ToggleWidget("WB_Pause");
@@ -835,7 +857,12 @@ public class FeKaPawn_Base : FeKaPawn
     private void OnNetHealthChanged(float value)
     {
         if (controlMode == ControlMode.NetworkPlayer && FeKaCurrentStats != null)
+        {
+            var healthDifference = FeKaCurrentStats.health - value;
+            ModifyHealth(-healthDifference);
+            // Do an extra little backup check to make sure the health is still in sync
             FeKaCurrentStats.health = value;
+        }
     }
  
     private void OnNetCurrentLapChanged(int value)

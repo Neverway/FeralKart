@@ -80,6 +80,8 @@ public class NetTransform : MonoBehaviour
         public Vector3 scale;
     }
 
+    public NetTransform copyObjectIdentityFrom;
+
 
     #endregion
 
@@ -100,6 +102,12 @@ public class NetTransform : MonoBehaviour
         networkManager = GameInstance.Get<GI_NetworkManager>();
         
         if (networkManager != null) networkManager.RegisterNetTransform(networkObjectUId, this);
+        
+        // We really need to find a better way to update this
+        if (copyObjectIdentityFrom != null)
+        {
+            InvokeRepeating(nameof(UpdateCopiedObjectIdentity), 0.25f, 5f);
+        }
     }
 
     private void OnDestroy()
@@ -149,6 +157,12 @@ public class NetTransform : MonoBehaviour
             float positionError = syncPosition ? Vector3.Distance(transform.position, targetSnapshot.position) : 0;
             if (positionError < positionDequeueThreshold) targetSnapshot = snapshots.Dequeue();
         }
+    }
+
+    private void UpdateCopiedObjectIdentity()
+    {
+        networkObjectUId = copyObjectIdentityFrom.networkObjectUId;
+        hasAuthority = copyObjectIdentityFrom.hasAuthority;
     }
 
 

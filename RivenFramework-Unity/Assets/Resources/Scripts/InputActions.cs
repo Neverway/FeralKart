@@ -2811,6 +2811,15 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LookBehind"",
+                    ""type"": ""Button"",
+                    ""id"": ""0b465354-5838-4dbc-85f7-2a3f96793124"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -3154,6 +3163,28 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Playerlist"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""16683b24-dd3d-46f4-bf91-fea214e96e9c"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LookBehind"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""efc4f85a-40b7-4ffb-a294-8dc5a2dfb673"",
+                    ""path"": ""<Gamepad>/leftStickPress"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LookBehind"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -3269,6 +3300,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_FEKA_FinalStrikeDedicated = m_FEKA.FindAction("Final Strike (Dedicated)", throwIfNotFound: true);
         m_FEKA_Pause = m_FEKA.FindAction("Pause", throwIfNotFound: true);
         m_FEKA_Playerlist = m_FEKA.FindAction("Playerlist", throwIfNotFound: true);
+        m_FEKA_LookBehind = m_FEKA.FindAction("LookBehind", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -4003,6 +4035,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_FEKA_FinalStrikeDedicated;
     private readonly InputAction m_FEKA_Pause;
     private readonly InputAction m_FEKA_Playerlist;
+    private readonly InputAction m_FEKA_LookBehind;
     public struct FEKAActions
     {
         private @InputActions m_Wrapper;
@@ -4020,6 +4053,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         public InputAction @FinalStrikeDedicated => m_Wrapper.m_FEKA_FinalStrikeDedicated;
         public InputAction @Pause => m_Wrapper.m_FEKA_Pause;
         public InputAction @Playerlist => m_Wrapper.m_FEKA_Playerlist;
+        public InputAction @LookBehind => m_Wrapper.m_FEKA_LookBehind;
         public InputActionMap Get() { return m_Wrapper.m_FEKA; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -4068,6 +4102,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @Playerlist.started += instance.OnPlayerlist;
             @Playerlist.performed += instance.OnPlayerlist;
             @Playerlist.canceled += instance.OnPlayerlist;
+            @LookBehind.started += instance.OnLookBehind;
+            @LookBehind.performed += instance.OnLookBehind;
+            @LookBehind.canceled += instance.OnLookBehind;
         }
 
         private void UnregisterCallbacks(IFEKAActions instance)
@@ -4111,6 +4148,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @Playerlist.started -= instance.OnPlayerlist;
             @Playerlist.performed -= instance.OnPlayerlist;
             @Playerlist.canceled -= instance.OnPlayerlist;
+            @LookBehind.started -= instance.OnLookBehind;
+            @LookBehind.performed -= instance.OnLookBehind;
+            @LookBehind.canceled -= instance.OnLookBehind;
         }
 
         public void RemoveCallbacks(IFEKAActions instance)
@@ -4233,5 +4273,6 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         void OnFinalStrikeDedicated(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
         void OnPlayerlist(InputAction.CallbackContext context);
+        void OnLookBehind(InputAction.CallbackContext context);
     }
 }

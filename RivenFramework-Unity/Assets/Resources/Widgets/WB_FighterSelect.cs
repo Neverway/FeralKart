@@ -34,6 +34,7 @@ public class WB_FighterSelect : MonoBehaviour
     public WB_FighterSelect_FighterButton[] fighterButtons;
     public Transform playerListRoot;
     public GameObject playerEntry;
+    public List<string> widgetsToNotClear;
 
 
     #endregion
@@ -65,10 +66,7 @@ public class WB_FighterSelect : MonoBehaviour
         characterSelection.Initialize();
 
         // Destroy any leftover in-game widgets that should not be visible in the lobby
-        widgetManager.DestroyExistingWidget("WB_HUD");
-        widgetManager.DestroyExistingWidget("WB_Title");
-        widgetManager.DestroyExistingWidget("WB_Pause");
-        widgetManager.DestroyExistingWidget("WB_NetPlayerlist");
+        widgetManager.ClearAllWidgets(widgetsToNotClear);
 
         bool midGame = fekaGameRules != null && fekaGameRules.currentPhase == "InProgress";
         readyButton.gameObject.SetActive(!midGame);
