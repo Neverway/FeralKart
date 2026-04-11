@@ -986,7 +986,7 @@ PrefabInstance:
         type: 3}
       propertyPath: spriteAngleGroup
       value: 
-      objectReference: {fileID: 11400000, guid: 551144c712e54cc3bb2b888b9802b817,
+      objectReference: {fileID: 11400000, guid: 2784e9af3070fd9198295148a18368c3,
         type: 2}
     - target: {fileID: 3813933867857461855, guid: 6921c6eb1ba80aac38cf53bd0a29a6b0,
         type: 3}

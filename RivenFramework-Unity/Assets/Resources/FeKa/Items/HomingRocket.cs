@@ -77,7 +77,7 @@ public class HomingRocket : MonoBehaviour
     {
         Instantiate(explosionEffect, transform.position, transform.rotation, null);
         var netTransform = GetComponent<NetTransform>();
-        if (netTransform != null && netTransform.hasAuthority)
+        if (netTransform != null)
         {
             NetSpawner.Despawn(GetComponent<NetTransform>().networkObjectUId);
         }

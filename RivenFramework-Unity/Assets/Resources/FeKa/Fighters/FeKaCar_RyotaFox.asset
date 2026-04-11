@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9da39c759de2a5f6d93d7e6f45553414, type: 3}
+  m_Name: FeKaCar_RyotaFox
+  m_EditorClassIdentifier: 
+  spriteAngles:
+  - sprite: {fileID: 844363902, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    direction: {x: 0, y: 1}
+  - sprite: {fileID: -1054519247, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    direction: {x: -1, y: 1}
+  - sprite: {fileID: -2105890501, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    direction: {x: -1, y: 0}
+  - sprite: {fileID: 1146335524, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    direction: {x: -1, y: -1}
+  - sprite: {fileID: 1940803297, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    direction: {x: 0, y: -1}
+  - sprite: {fileID: -1333981182, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    direction: {x: 1, y: 1}
+  - sprite: {fileID: -411558720, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    direction: {x: 1, y: 0}
+  - sprite: {fileID: 719197072, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    direction: {x: 1, y: -1}

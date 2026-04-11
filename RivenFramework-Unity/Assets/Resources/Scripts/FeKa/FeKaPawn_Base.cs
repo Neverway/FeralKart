@@ -121,7 +121,6 @@ public class FeKaPawn_Base : FeKaPawn
                 wheelCollider.enabled = false;
             }
             Destroy(physicsbody);
-            return;
         }
         if (controlMode != ControlMode.LocalPlayer)
         {

@@ -73,8 +73,20 @@ public class FeKaItem_TommyGun : ItemBehaviour
     {
         // Fire delay
         if (ammo <= 0 || Time.time < nextFireTime) return;
+        
+        var spawnPos = pawn.FeKaCurrentStats.projectileSpawnPoint.position + pawn.transform.forward * 1.5f;
+        var spawnRot = pawn.transform.rotation;
 
-        if (bulletPrefab != null) Object.Instantiate(bulletPrefab, pawn.transform.position + pawn.transform.forward * 1.5f, pawn.transform.rotation);
+        // Fire
+        NetSpawner.Spawn("Rocket", spawnPos, spawnRot, (bulletObject, networkId) =>
+        {
+
+            var homing = bulletObject.GetComponent<HomingRocket>();
+            if (homing != null)
+            {
+                homing.exemptPawns.Add(pawn);
+            }
+        });
         ammo--;
         nextFireTime = Time.time + fireRate;
     }

@@ -5351,7 +5351,9 @@ MonoBehaviour:
   syncRotation: 1
   syncScale: 0
   interpolationSpeed: 15
-  interpolationBufferSize: 6
+  interpolationRotationSpeed: 720
+  snapThreshold: 8
+  extrapolationFactor: 0.5
   copyObjectIdentityFrom: {fileID: 5572679414157354117}
 --- !u!1 &3925236683230816241
 GameObject:
@@ -20830,7 +20832,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7715907118169823433}
   - component: {fileID: 8191868854585722244}
-  - component: {fileID: 2759933562502526448}
   m_Layer: 0
   m_Name: Virtual Camera
   m_TagString: Untagged
@@ -20893,18 +20894,6 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_ComponentOwner: {fileID: 5975933325788677700}
---- !u!114 &2759933562502526448
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9018392291717064548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f4e94480ed13a5808c897eab6ab88be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1692716515510125813
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21417,6 +21406,7 @@ MonoBehaviour:
     type: 3}
   Nameplate: {fileID: 1029260068955435894}
   _controlMode: 2
+  cinemachineTransposer: {fileID: 0}
 --- !u!114 &5572679414157354117
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21436,7 +21426,9 @@ MonoBehaviour:
   syncRotation: 1
   syncScale: 0
   interpolationSpeed: 15
-  interpolationBufferSize: 6
+  interpolationRotationSpeed: 720
+  snapThreshold: 8
+  extrapolationFactor: 0.5
   copyObjectIdentityFrom: {fileID: 0}
 --- !u!114 &4311029332587741033
 MonoBehaviour:
@@ -21739,10 +21731,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1190164353649498770}
-    - targetCorrespondingSourceObject: {fileID: 8932372165829005355, guid: 273f560cf23f789b987aeac1af365c4d,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4629348854533246189}
   m_SourcePrefab: {fileID: 100100000, guid: 273f560cf23f789b987aeac1af365c4d, type: 3}
 --- !u!1 &356049359878728923 stripped
 GameObject:
@@ -21784,18 +21772,6 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &4629348854533246189
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 356049359878728923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f4e94480ed13a5808c897eab6ab88be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!20 &7856696077479404130 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 1301064606120009362, guid: 273f560cf23f789b987aeac1af365c4d,

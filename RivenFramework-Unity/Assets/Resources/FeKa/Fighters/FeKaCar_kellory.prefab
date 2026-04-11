@@ -69,15 +69,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: FeKaCar_kellory
       objectReference: {fileID: 0}
+    - target: {fileID: 5535989559101859683, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 67945440, guid: b57e0fbd177fd1d3ab06f88335486f09,
+        type: 3}
     - target: {fileID: 7715907118169823433, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 3e-45
+      value: -1e-45
       objectReference: {fileID: 0}
     - target: {fileID: 8332517393403533926, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 1e-45
+      value: -1e-45
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

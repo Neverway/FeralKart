@@ -58,11 +58,23 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2397353860445898587, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
+        type: 3}
+      propertyPath: spriteAngleGroup
+      value: 
+      objectReference: {fileID: 11400000, guid: 2784e9af3070fd9198295148a18368c3,
+        type: 2}
     - target: {fileID: 5336008974593170968, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
         type: 3}
       propertyPath: m_Name
-      value: FeKaCar_Base Variant
+      value: FeKaCar_fox
       objectReference: {fileID: 0}
+    - target: {fileID: 5535989559101859683, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 1940803297, guid: 50522b1cb4b9fcffca5b98b3448bf843,
+        type: 3}
     - target: {fileID: 7715907118169823433, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
         type: 3}
       propertyPath: m_LocalRotation.y
@@ -71,7 +83,7 @@ PrefabInstance:
     - target: {fileID: 8332517393403533926, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: -1e-45
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
