@@ -342,12 +342,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkObjectUId: 
   hasAuthority: 0
-  sendRate: 20
+  sendRate: 40
   syncPosition: 1
   syncRotation: 1
   syncScale: 0
   interpolationSpeed: 15
   interpolationBufferSize: 6
+  copyObjectIdentityFrom: {fileID: 0}
 --- !u!1 &8501197779557213971
 GameObject:
   m_ObjectHideFlags: 0
