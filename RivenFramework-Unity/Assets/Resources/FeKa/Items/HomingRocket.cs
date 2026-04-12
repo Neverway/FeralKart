@@ -21,7 +21,7 @@ public class HomingRocket : MonoBehaviour
     public float speed = 28f;
     public float lifetime = 6f;
     public float explosionForce = 10f;
-    public DamageInfo damageInfo = new DamageInfo(70);
+    public DamageInfo damageInfo = new DamageInfo(-70);
     public GameObject explosionEffect;
     public Vector3 targetAimOffset = new Vector3(0f, 0.15f, 0f); 
     
