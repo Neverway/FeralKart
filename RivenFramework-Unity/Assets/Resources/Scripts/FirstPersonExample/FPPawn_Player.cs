@@ -74,12 +74,12 @@ public class FPPawn_Player : FPPawn
         Cursor.visible = false;
     }
 
-    public new void Awake()
+    public override void Awake()
     {
         base.Awake();
         
         // Subscribe to events
-        OnPawnDeath += () => { OnDeath(); };
+        OnPawnDeath += OnDeath;
         
         // Setup inputs
         inputActions = new InputActions().FirstPerson;
@@ -213,7 +213,7 @@ public class FPPawn_Player : FPPawn
     }
 
 
-    private void OnDeath()
+    private void OnDeath(DamageInfo damageInfo)
     {
         // Remove any rifts
         //riftManager = GameInstance.Get<RiftManager>();

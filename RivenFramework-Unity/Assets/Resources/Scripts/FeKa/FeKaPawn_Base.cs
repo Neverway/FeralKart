@@ -95,9 +95,9 @@ public class FeKaPawn_Base : FeKaPawn
         
         
         // Subscribe to events
-        OnPawnDeath += () => { OnDeath(); };
-        OnPawnHurt += () => { OnHurt(); };
-        OnPawnHeal += () => { OnHeal(); };
+        OnPawnDeath += OnDeath;
+        OnPawnHurt += OnHurt;
+        OnPawnHeal += OnHeal;
         
         
         _camera = viewPoint.GetComponentInChildren<Camera>();
@@ -519,8 +519,9 @@ public class FeKaPawn_Base : FeKaPawn
         widgetManager.AddWidget("WB_Respawning");
     }
 
-    private void OnDeath()
+    private void OnDeath(DamageInfo damageInfo)
     {
+        print($"{damageInfo.instigator} used {damageInfo.source} to deal {damageInfo.amount} {damageInfo.type} damage to {gameObject.name} killing them");
         Instantiate(deathFX, transform.position, transform.rotation, null);
         if (FeKaCurrentStats.stocks <= 0)
         {
@@ -539,15 +540,18 @@ public class FeKaPawn_Base : FeKaPawn
         }
     }
 
-    private void OnHurt()
+    private void OnHurt(DamageInfo damageInfo)
     {
         if (FeKaCurrentStats.health <= 0) return;
+     
+        print($"{damageInfo.instigator} used {damageInfo.source} to deal {damageInfo.amount} {damageInfo.type} damage to {gameObject.name}");
         
         FeKaCurrentStats.characterSpriteRenderer.color = Color.red;
         FeKaCurrentStats.characterSpriteRenderer.DOColor(new Color(1, 1, 1, 1), 1);
     }
-    private void OnHeal()
+    private void OnHeal(DamageInfo damageInfo)
     {
+        print($"{damageInfo.instigator} used {damageInfo.source} to heal {damageInfo.amount} {damageInfo.type} damage on {gameObject.name}");
         FeKaCurrentStats.characterSpriteRenderer.color = Color.green;
         FeKaCurrentStats.characterSpriteRenderer.DOColor(new Color(1, 1, 1, 1), 1);
     }

@@ -39,7 +39,7 @@ public class FPPawn : Pawn
     //=-----------------=
     // Mono Functions
     //=-----------------=
-    public void Awake()
+    public virtual void Awake()
     {
         // Get references
         physicsbody = GetComponent<Rigidbody>();
