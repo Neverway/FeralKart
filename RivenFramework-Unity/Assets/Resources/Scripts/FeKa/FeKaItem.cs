@@ -1,8 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using ErryLib.Reflection;
-using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "FeKaItem_", menuName = "FeKa/FeKaItem")]

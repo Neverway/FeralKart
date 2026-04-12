@@ -26,4 +26,11 @@ public class FeKaPawn : Pawn
     {
         return FeKaaction.IsOnGround(this);
     }
+    
+    public void ModifyHealth(float amount, DamageType damageType)
+}
+
+public enum DamageType
+{
+    
 }
