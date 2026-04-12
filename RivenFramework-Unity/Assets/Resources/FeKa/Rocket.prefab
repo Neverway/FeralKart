@@ -301,7 +301,11 @@ MonoBehaviour:
   speed: 35
   lifetime: 6
   explosionForce: 9000
-  damage: 70
+  damageInfo:
+    amount: -70
+    type: 0
+    instigator: {fileID: 0}
+    source: 
   explosionEffect: {fileID: 888699275537371755, guid: 2fd451d6f30a8ec09b2bbedd5cfae416,
     type: 3}
   targetAimOffset: {x: 0, y: 0.4, z: 0}
@@ -347,7 +351,9 @@ MonoBehaviour:
   syncRotation: 1
   syncScale: 0
   interpolationSpeed: 15
-  interpolationBufferSize: 6
+  interpolationRotationSpeed: 720
+  snapThreshold: 8
+  extrapolationFactor: 0.5
   copyObjectIdentityFrom: {fileID: 0}
 --- !u!1 &8501197779557213971
 GameObject:
