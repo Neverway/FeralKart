@@ -85,6 +85,9 @@ public class FeKaItem_TommyGun : ItemBehaviour
             if (homing != null)
             {
                 homing.exemptPawns.Add(pawn);
+                homing.damageInfo.instigator = pawn;
+                homing.damageInfo.type = DamageType.Explosive;
+                homing.damageInfo.source = "Oxenfree";
             }
         });
         ammo--;
