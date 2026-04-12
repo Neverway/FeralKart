@@ -140,11 +140,11 @@ public struct DamageInfo
     [Tooltip("The owner responsible for the damage (like a player or npc, this can be null for things like spike pits)")]
     public Pawn instigator;
     [Tooltip("The actual source of the damage (like an instigator's gun, a spike pit, leave null for things like the void)")]
-    public GameObject source;
+    public string source;
     [Tooltip("The effects to apply to the target when damaged")]
     public List<StatusEffect> statusEffects;
 
-    private DamageInfo(float amount, Pawn instigator, GameObject source, DamageType type, List<StatusEffect> statusEffects = null)
+    private DamageInfo(float amount, Pawn instigator, string source, DamageType type, List<StatusEffect> statusEffects = null)
     {
         this.amount = amount;
         this.instigator = instigator;
