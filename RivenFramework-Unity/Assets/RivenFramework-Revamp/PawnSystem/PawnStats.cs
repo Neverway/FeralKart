@@ -12,6 +12,8 @@ using UnityEngine;
 
 public abstract class PawnStats : ICloneable
 {
+    public List<StatusEffect> statusEffects = new List<StatusEffect>();
+    
     [Header("Health")]
     public float health = 100f;
     public float invulnerabilityTime = 1f;
@@ -30,3 +32,26 @@ public enum ControlMode
     CPU,
     NetworkPlayer
 };
+
+public abstract class StatusEffect
+{
+    public Pawn targetPawn;
+    public void Apply(Pawn _targetPawn)
+    {
+        targetPawn =  _targetPawn;
+        targetPawn.currentStats.statusEffects.Add(this);
+        OnApply();
+    }
+
+    public void Remove()
+    {
+        targetPawn.currentStats.statusEffects.Remove(this);
+        OnRemove();
+        targetPawn =  null;
+    }
+    
+    public abstract void OnApply();
+    public abstract DamageInfo OnModifyHealth(DamageInfo _info);
+    public abstract void OnUpdate();
+    public abstract void OnRemove();
+}

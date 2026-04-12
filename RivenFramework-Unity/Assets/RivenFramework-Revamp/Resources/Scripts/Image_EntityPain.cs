@@ -94,7 +94,7 @@ public class Image_EntityPain : MonoBehaviour
         isInPain = false;
     }
 
-    private void OnHurt()
+    private void OnHurt(DamageInfo damageInfo)
     {
         if (!isInPain)
         {
