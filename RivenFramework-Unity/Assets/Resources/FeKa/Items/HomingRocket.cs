@@ -21,7 +21,7 @@ public class HomingRocket : MonoBehaviour
     public float speed = 28f;
     public float lifetime = 6f;
     public float explosionForce = 10f;
-    public float damage = 70;
+    public DamageInfo damageInfo = new DamageInfo(70);
     public GameObject explosionEffect;
     public Vector3 targetAimOffset = new Vector3(0f, 0.15f, 0f); 
     
@@ -67,7 +67,7 @@ public class HomingRocket : MonoBehaviour
         
         if (pawn != null && !exemptPawns.Contains(pawn))
         {
-            pawn.ModifyHealth(-damage);
+            pawn.ModifyHealth(damageInfo);
             pawn.physicsbody.AddForce(Vector3.up * explosionForce, ForceMode.Impulse);
             Destroy(gameObject);
         }
