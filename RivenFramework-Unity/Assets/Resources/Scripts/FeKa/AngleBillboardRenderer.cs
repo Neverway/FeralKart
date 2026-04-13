@@ -22,6 +22,7 @@ public class AngleBillboardRenderer : MonoBehaviour
     {
         if (UseSpriteAngleGroup) spriteAngles = spriteAngleGroup.spriteAngles;
         spriteRenderer.flipX = true; // I guess my rotations were off, so flip the sprite??
+        emissionRenderer.flipX = true;
     }
 
     // Update is called once per frame
