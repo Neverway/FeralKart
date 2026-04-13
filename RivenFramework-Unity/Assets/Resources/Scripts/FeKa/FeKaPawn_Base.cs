@@ -535,7 +535,7 @@ public class FeKaPawn_Base : FeKaPawn
 
     private void OnDeath(DamageInfo damageInfo)
     {
-        print($"{damageInfo.instigator} used {damageInfo.source} to deal {damageInfo.amount} {damageInfo.type} damage to {gameObject.name} killing them");
+        print($"{damageInfo.instigator} used {damageInfo.source.name} to deal {damageInfo.amount} {damageInfo.type} damage to {gameObject.name} killing them");
         
         // Report death to kill feed
         WB_NetKillFeed killFeed = FindObjectOfType<WB_NetKillFeed>();
