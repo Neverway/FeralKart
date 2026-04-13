@@ -14,13 +14,13 @@ public class FeKaPawn_Base : FeKaPawn
     private NetVariableOwner netVarOwner;
  
     private NetVariable<float> netHealth;
-    private NetVariable<int>   netCurrentLap;
-    private NetVariable<int>   netCurrentCheckpoint;
-    private NetVariable<int>   netRacerState;
+    private NetVariable<int> netCurrentLap;
+    private NetVariable<int> netCurrentCheckpoint;
+    private NetVariable<int> netRacerState;
     // Damage Context
     private NetVariable<string> netLastInstigatorId;
     private NetVariable<string> netLastSourceName;
-    private NetVariable<int>    netLastDamageType;
+    private NetVariable<int> netLastDamageType;
  
     private const float NetSyncInterval = 0.1f;
     private float netSyncTimer = 0f;
@@ -546,31 +546,23 @@ public class FeKaPawn_Base : FeKaPawn
     {
         print($"{damageInfo.instigator} used {damageInfo.source.name} to deal {damageInfo.amount} {damageInfo.type} damage to {gameObject.name} killing them");
         
-        // Report death to kill feed
-        WB_NetKillFeed killFeed = FindObjectOfType<WB_NetKillFeed>();
-        if (killFeed)
+        // Only send the death packet from the owner
+        if (controlMode == ControlMode.LocalPlayer)
         {
-            var killEntry = killFeed.AddKillEntry();
-            
-            print($"{killFeed} | {killEntry}");
-            if (killEntry == null)
+            var nm = GameInstance.Get<GI_NetworkManager>();
+            if (nm != null)
             {
-                Debug.LogError("killEntry is null! Check that WB_NetKillFeed_Entry component is on the prefab root and the prefab is assigned in WB_NetKillFeed.");
-                return;
-            }
-
-            if (killEntry != null)
-            {
-                killEntry.Initialize(
-                    null, 
-                    damageInfo.instigator?.displayName, 
-                    damageInfo.source.icon, 
-                    null, 
-                    (FeKaCurrentStats.stocks <= 0), 
-                    displayName);
+                var killPacket = new KillFeedPacket
+                {
+                    instigatorName = damageInfo.instigator?.displayName,
+                    sourceName = damageInfo.source.name,
+                    recipientName = displayName,
+                    eliminated = FeKaCurrentStats.stocks <= 0
+                };
+                nm.SendPacket(nm.protocolMagic + ":KILLFEED:" + JsonUtility.ToJson(killPacket));
             }
         }
-        
+
         Instantiate(deathFX, transform.position, transform.rotation, null);
         if (FeKaCurrentStats.stocks != 0)
         {
@@ -901,7 +893,6 @@ public class FeKaPawn_Base : FeKaPawn
         if (netSyncTimer < NetSyncInterval) return;
         netSyncTimer = 0f;
  
-        netHealth.Value = FeKaCurrentStats.health;
         netCurrentLap.Value = FeKaCurrentStats.currentLap;
         netCurrentCheckpoint.Value = FeKaCurrentStats.currentCheckpoint;
         netRacerState.Value = (int)FeKaCurrentStats.racerState;
@@ -921,19 +912,21 @@ public class FeKaPawn_Base : FeKaPawn
         var instigatorId = netLastInstigatorId?.Value ?? "";
         if (!string.IsNullOrEmpty(instigatorId))
         {
-            var allOwners = FindObjectsOfType<NetVariableOwner>();
-            foreach (var owner in allOwners)
+            raceManager ??= GameInstance.Get<GI_RaceManager>();
+            if (raceManager != null)
             {
-                if (owner.NetworkObjectId == instigatorId)
+                foreach (var racer in raceManager.racers)
                 {
-                    info.instigator = owner.GetComponent<Pawn>();
-                    break;
+                    var owner = racer.GetComponent<NetVariableOwner>();
+                    if (owner != null && owner.NetworkObjectId == instigatorId)
+                    {
+                        info.instigator = racer;
+                        break;
+                    }
                 }
             }
         }
-
         ModifyHealth(info);
-        FeKaCurrentStats.health = value; // backup sync
     }
  
     private void OnNetCurrentLapChanged(int value)

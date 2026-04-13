@@ -383,6 +383,15 @@ public class GI_NetworkManager : MonoBehaviour
             if (voteKickResultPacket != null) OnVoteKickResultReceived?.Invoke(voteKickResultPacket);
             return;
         }
+        
+        // --- Kill Feed ---
+        if (packet.StartsWith(protocolMagic + ":KILLFEED:"))
+        {
+            var killPacket = JsonUtility.FromJson<KillFeedPacket>(
+                packet.Substring((protocolMagic + ":KILLFEED:").Length));
+            if (killPacket != null) HandleKillFeedBroadcast(killPacket);
+            return;
+        }
 
         // --- Unknown / Game-Specific ---
         // Any packet that does not match a NyNet engine command is forwarded to subscribers.
@@ -483,7 +492,6 @@ public class GI_NetworkManager : MonoBehaviour
         worldIsReady = false;
     }
     
-    
     public void DespawnAllNetworkObjects()
     {
         LogToFile($"[DespawnAllNetworkObjects] Destroying {netObjects.Count} networked object(s).");
@@ -498,6 +506,27 @@ public class GI_NetworkManager : MonoBehaviour
         netTransforms.Clear();
         netVarOwners.Clear();
         pendingSpawnQueue.Clear();
+    }
+    
+    private void HandleKillFeedBroadcast(KillFeedPacket killPacket)
+    {
+       var killFeed = FindObjectOfType<WB_NetKillFeed>();
+       if (killFeed == null) return;
+
+       var killEntry = killFeed.AddKillEntry();
+       if (killEntry == null)
+       {
+           Debug.LogError("killEntry is null! Check that WB_NetKillFeed_Entry component is on the prefab root.");
+           return;
+       }
+
+       killEntry.Initialize(
+               null,
+               killPacket.instigatorName,
+               null,
+               null,
+               killPacket.eliminated,
+               killPacket.recipientName);
     }
 
 
@@ -1045,4 +1074,13 @@ public class VoteKickResultPacket
 {
     public string TargetName;
     public bool Passed;
+}
+
+[Serializable]
+public class KillFeedPacket
+{
+    public string instigatorName;
+    public string sourceName;
+    public string recipientName;
+    public bool eliminated;
 }
