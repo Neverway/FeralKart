@@ -44,6 +44,8 @@ public class FeKaPawn_Base : FeKaPawn
     private float moveInput;
     private Vector2 steerInput;
     private bool isBreaking;
+    public GameObject shadow;
+    public Transform shadowRaycastCheckPos;
     
     // Barrel Roll stuff
     private float lastTiltLeftTapTime = -1f;
@@ -141,6 +143,18 @@ public class FeKaPawn_Base : FeKaPawn
         {
             if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.preparing) physicsbody.isKinematic = true;
             if (FeKaCurrentStats.racerState == FeKaPawnStats.RacerState.racing) physicsbody.isKinematic = false;
+        }
+
+        if (Physics.SphereCast(shadowRaycastCheckPos.position, 0.25f, Vector3.down, out RaycastHit hit, 99f, FeKaCurrentStats.groundMask))
+        {
+            shadow.gameObject.SetActive(true);
+            shadow.transform.position = hit.point;
+            Vector3 pawnsForward = new Vector3(transform.forward.x, 0f, transform.forward.z).normalized;
+            shadow.transform.rotation = Quaternion.LookRotation(Vector3.ProjectOnPlane(pawnsForward, hit.normal).normalized, hit.normal);
+        }
+        else
+        {
+            shadow.gameObject.SetActive(false);
         }
         
         switch (controlMode)
@@ -522,9 +536,41 @@ public class FeKaPawn_Base : FeKaPawn
     private void OnDeath(DamageInfo damageInfo)
     {
         print($"{damageInfo.instigator} used {damageInfo.source} to deal {damageInfo.amount} {damageInfo.type} damage to {gameObject.name} killing them");
-        Instantiate(deathFX, transform.position, transform.rotation, null);
-        if (FeKaCurrentStats.stocks <= 0)
+        
+        // Report death to kill feed
+        WB_NetKillFeed killFeed = FindObjectOfType<WB_NetKillFeed>();
+        if (killFeed)
         {
+            var killEntry = killFeed.AddKillEntry();
+            
+            print($"{killFeed} | {killEntry}");
+            if (killEntry == null)
+            {
+                Debug.LogError("killEntry is null! Check that WB_NetKillFeed_Entry component is on the prefab root and the prefab is assigned in WB_NetKillFeed.");
+                return;
+            }
+
+            if (killEntry != null)
+            {
+                killEntry.Initialize(
+                    null, 
+                    damageInfo.instigator?.displayName, 
+                    damageInfo.source.icon, 
+                    null, 
+                    (FeKaCurrentStats.stocks <= 0), 
+                    displayName);
+            }
+        }
+        
+        Instantiate(deathFX, transform.position, transform.rotation, null);
+        if (FeKaCurrentStats.stocks != 0)
+        {
+            FeKaCurrentStats.stocks -= 1;
+            StartCoroutine(AwaitRespawn());
+        }
+        else
+        {
+            FeKaCurrentStats.characterSpriteRenderer.color = Color.black;
             if (controlMode != ControlMode.LocalPlayer ) return;
             if (!widgetManager)
             {
@@ -532,11 +578,6 @@ public class FeKaPawn_Base : FeKaPawn
                 if (!widgetManager) return;
             }
             widgetManager.AddWidget("WB_DeathScreen");
-        }
-        else
-        {
-            FeKaCurrentStats.stocks -= 1;
-            StartCoroutine(AwaitRespawn());
         }
     }
 

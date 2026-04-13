@@ -58,6 +58,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1875575848915633597, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
+        type: 3}
+      propertyPath: id
+      value: FeKaCar_fox
+      objectReference: {fileID: 0}
+    - target: {fileID: 1875575848915633597, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
+        type: 3}
+      propertyPath: displayName
+      value: Ryota Fox
+      objectReference: {fileID: 0}
     - target: {fileID: 2397353860445898587, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
         type: 3}
       propertyPath: spriteAngleGroup

@@ -95,7 +95,6 @@ public class Pawn : Actor
 
         if (currentStats.health + _info.amount <= 0)
         {
-            if (isDead) return;
             Kill(_info);
         }
 
@@ -116,6 +115,7 @@ public class Pawn : Actor
     
     public void Kill(DamageInfo _info)
     {
+        if (isDead) return;
         // Instantly sets the pawns health to zero, firing its onDeath event
         OnPawnDeath?.Invoke(_info);
         isDead = true;
@@ -140,11 +140,11 @@ public struct DamageInfo
     [Tooltip("The owner responsible for the damage (like a player or npc, this can be null for things like spike pits)")]
     public Pawn instigator;
     [Tooltip("The actual source of the damage (like an instigator's gun, a spike pit, leave null for things like the void)")]
-    public string source;
+    public DamageSource source;
     [Tooltip("The effects to apply to the target when damaged")]
     public List<StatusEffect> statusEffects;
 
-    private DamageInfo(float amount, Pawn instigator, string source, DamageType type, List<StatusEffect> statusEffects = null)
+    private DamageInfo(float amount, Pawn instigator, DamageSource source, DamageType type, List<StatusEffect> statusEffects = null)
     {
         this.amount = amount;
         this.instigator = instigator;
@@ -154,7 +154,15 @@ public struct DamageInfo
         this.statusEffects ??= new List<StatusEffect>();
     }
 
-    public DamageInfo(float amount) : this(amount, null, null, DamageType.Normal, new List<StatusEffect>()) { }
+    public DamageInfo(float amount) : this(amount, null, new DamageSource(), DamageType.Normal, new List<StatusEffect>()) { }
+}
+
+[Serializable]
+public struct DamageSource
+{
+    public Sprite icon;
+    public string name;
+    public GameObject gameObject;
 }
 
 [Serializable]

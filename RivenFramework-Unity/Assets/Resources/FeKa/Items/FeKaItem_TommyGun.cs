@@ -19,6 +19,7 @@ public class FeKaItem_TommyGun : ItemBehaviour
     public int maxAmmo = 300;
     public GameObject bulletPrefab;
     public float fireRate = 0.05f; 
+    public DamageSource damageSource;
 
 
     /*-----[ External Variables ]-------------------------------------------------------------------------------------*/
@@ -87,7 +88,7 @@ public class FeKaItem_TommyGun : ItemBehaviour
                 homing.exemptPawns.Add(pawn);
                 homing.damageInfo.instigator = pawn;
                 homing.damageInfo.type = DamageType.Explosive;
-                homing.damageInfo.source = "Oxenfree";
+                homing.damageInfo.source = damageSource;
             }
         });
         ammo--;

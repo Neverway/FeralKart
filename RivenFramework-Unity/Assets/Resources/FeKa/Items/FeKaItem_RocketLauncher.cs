@@ -20,6 +20,7 @@ public class FeKaItem_RocketLauncher : ItemBehaviour
     public int maxAmmo = 3;
     public GameObject rocketPrefab;
     public GameObject targetingUIPrefab;
+    public DamageSource damageSource;
 
 
     /*-----[ External Variables ]-------------------------------------------------------------------------------------*/
@@ -173,7 +174,7 @@ public class FeKaItem_RocketLauncher : ItemBehaviour
                 homing.SetTarget(capturedTarget);
                 homing.damageInfo.instigator = pawn;
                 homing.damageInfo.type = DamageType.Explosive;
-                homing.damageInfo.source = "Rocket Launcher";
+                homing.damageInfo.source = damageSource;
             }
         });
 

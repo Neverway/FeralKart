@@ -30,3 +30,8 @@ MonoBehaviour:
           type: 3}
         targetingUIPrefab: {fileID: 4434409366504517441, guid: 28c10c8cf385ccdb685652018b31aebe,
           type: 3}
+        damageSource:
+          icon: {fileID: 21300000, guid: 7f4dadc81c8f453a6ae6580f38eb4290, type: 3}
+          name: Rocket Launcher
+          gameObject: {fileID: 0}
+        lockDelay: 0.5
