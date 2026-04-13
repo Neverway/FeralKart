@@ -17,6 +17,10 @@ public class FeKaPawn_Base : FeKaPawn
     private NetVariable<int>   netCurrentLap;
     private NetVariable<int>   netCurrentCheckpoint;
     private NetVariable<int>   netRacerState;
+    // Damage Context
+    private NetVariable<string> netLastInstigatorId;
+    private NetVariable<string> netLastSourceName;
+    private NetVariable<int>    netLastDamageType;
  
     private const float NetSyncInterval = 0.1f;
     private float netSyncTimer = 0f;
@@ -100,6 +104,8 @@ public class FeKaPawn_Base : FeKaPawn
         OnPawnDeath += OnDeath;
         OnPawnHurt += OnHurt;
         OnPawnHeal += OnHeal;
+        OnPawnHurt  += info => PushDamageContext(info);
+        OnPawnDeath += info => PushDamageContext(info);
         
         
         _camera = viewPoint.GetComponentInChildren<Camera>();
@@ -113,6 +119,9 @@ public class FeKaPawn_Base : FeKaPawn
             netCurrentLap = netVarOwner.Register<int>("feka_lap", 0, OnNetCurrentLapChanged);
             netCurrentCheckpoint = netVarOwner.Register<int>("feka_checkpoint", 0, OnNetCurrentCheckpointChanged);
             netRacerState = netVarOwner.Register<int>("feka_racerState", 0, OnNetRacerStateChanged);
+            netLastInstigatorId = netVarOwner.Register<string>("feka_lastInstigatorId", "", null);
+            netLastSourceName = netVarOwner.Register<string>("feka_lastSourceName", "", null);
+            netLastDamageType = netVarOwner.Register<int>("feka_lastDamageType", 0, null);
         }
         
         if (controlMode == ControlMode.NetworkPlayer)
@@ -900,13 +909,31 @@ public class FeKaPawn_Base : FeKaPawn
     // Network side
     private void OnNetHealthChanged(float value)
     {
-        if (controlMode == ControlMode.NetworkPlayer && FeKaCurrentStats != null)
+        if (controlMode != ControlMode.NetworkPlayer || FeKaCurrentStats == null) return;
+
+        var healthDifference = FeKaCurrentStats.health - value;
+        if (Mathf.Approximately(healthDifference, 0f)) return;
+
+        var info = new DamageInfo(-healthDifference);
+        info.type = (DamageType)(netLastDamageType?.Value ?? 0);
+        info.source = new DamageSource { name = netLastSourceName?.Value ?? "" };
+
+        var instigatorId = netLastInstigatorId?.Value ?? "";
+        if (!string.IsNullOrEmpty(instigatorId))
         {
-            var healthDifference = FeKaCurrentStats.health - value;
-            ModifyHealth(-healthDifference);
-            // Do an extra little backup check to make sure the health is still in sync
-            FeKaCurrentStats.health = value;
+            var allOwners = FindObjectsOfType<NetVariableOwner>();
+            foreach (var owner in allOwners)
+            {
+                if (owner.NetworkObjectId == instigatorId)
+                {
+                    info.instigator = owner.GetComponent<Pawn>();
+                    break;
+                }
+            }
         }
+
+        ModifyHealth(info);
+        FeKaCurrentStats.health = value; // backup sync
     }
  
     private void OnNetCurrentLapChanged(int value)
@@ -925,5 +952,14 @@ public class FeKaPawn_Base : FeKaPawn
     {
         if (controlMode == ControlMode.NetworkPlayer && FeKaCurrentStats != null)
             FeKaCurrentStats.racerState = (FeKaPawnStats.RacerState)value;
+    }
+    
+    private void PushDamageContext(DamageInfo info)
+    {
+        if (netVarOwner == null || controlMode != ControlMode.LocalPlayer) return;
+        netLastInstigatorId.Value = info.instigator?.GetComponent<NetVariableOwner>()?.NetworkObjectId ?? "";
+        netLastSourceName.Value   = info.source.name ?? "";
+        netLastDamageType.Value   = (int)info.type;
+        netHealth.Value           = FeKaCurrentStats.health;
     }
 }
