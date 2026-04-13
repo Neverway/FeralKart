@@ -14,18 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spriteAngles:
   - sprite: {fileID: 844363902, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    emission: {fileID: 844363902, guid: bd63d4f709d0da5dab14950cc7c11a7d, type: 3}
     direction: {x: 0, y: 1}
   - sprite: {fileID: -1054519247, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    emission: {fileID: -1054519247, guid: bd63d4f709d0da5dab14950cc7c11a7d, type: 3}
     direction: {x: -1, y: 1}
   - sprite: {fileID: -2105890501, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    emission: {fileID: -2105890501, guid: bd63d4f709d0da5dab14950cc7c11a7d, type: 3}
     direction: {x: -1, y: 0}
   - sprite: {fileID: 1146335524, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    emission: {fileID: 1146335524, guid: bd63d4f709d0da5dab14950cc7c11a7d, type: 3}
     direction: {x: -1, y: -1}
   - sprite: {fileID: 1940803297, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    emission: {fileID: 1940803297, guid: bd63d4f709d0da5dab14950cc7c11a7d, type: 3}
     direction: {x: 0, y: -1}
   - sprite: {fileID: -1333981182, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    emission: {fileID: -1333981182, guid: bd63d4f709d0da5dab14950cc7c11a7d, type: 3}
     direction: {x: 1, y: 1}
   - sprite: {fileID: -411558720, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    emission: {fileID: -411558720, guid: bd63d4f709d0da5dab14950cc7c11a7d, type: 3}
     direction: {x: 1, y: 0}
   - sprite: {fileID: 719197072, guid: 50522b1cb4b9fcffca5b98b3448bf843, type: 3}
+    emission: {fileID: 719197072, guid: bd63d4f709d0da5dab14950cc7c11a7d, type: 3}
     direction: {x: 1, y: -1}

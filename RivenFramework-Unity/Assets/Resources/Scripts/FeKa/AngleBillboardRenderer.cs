@@ -10,6 +10,7 @@ public class AngleBillboardRenderer : MonoBehaviour
     public Camera activeCamera;
     public bool doNotOverrideTargetCamera;
     public SpriteRenderer spriteRenderer;
+    public SpriteRenderer emissionRenderer;
     [SerializeField] public SpriteAngle[] spriteAngles;
     public bool UseSpriteAngleGroup = false;
     public SpriteAngleGroup spriteAngleGroup;
@@ -38,7 +39,8 @@ public class AngleBillboardRenderer : MonoBehaviour
         spriteRenderer.transform.LookAt(activeCamera.transform, transform.up);
     
     
-        spriteRenderer.sprite = GetSpriteFromAngle();
+        spriteRenderer.sprite = GetSpriteFromAngle().sprite;
+        emissionRenderer.sprite = GetSpriteFromAngle().emission;
         
         // Apply Z rotation offset on top of the billboard rotation
         if (overrideRotation) spriteRenderer.transform.Rotate(0f, 0f, zRotationOffset, Space.Self);
@@ -47,7 +49,7 @@ public class AngleBillboardRenderer : MonoBehaviour
     /// <summary>
     /// Figure out the closest sprite in an array of sprite angles to a given angle
     /// </summary>
-    private Sprite GetSpriteFromAngle()
+    private SpriteAngle GetSpriteFromAngle()
     {
         Vector3 worldDir = activeCamera.transform.position - origin.position;
         worldDir.y = 0f;
@@ -75,7 +77,7 @@ public class AngleBillboardRenderer : MonoBehaviour
         if (closestSpriteAngle == -1)
             throw new Exception("This should not have happened... WHAT DID YOU DO?!?!");
 
-        return spriteAngles[closestSpriteAngle].sprite;
+        return spriteAngles[closestSpriteAngle];
     }
 
     private bool Initialized()
@@ -96,5 +98,6 @@ public class AngleBillboardRenderer : MonoBehaviour
 public struct SpriteAngle
 {
     public Sprite sprite;
+    public Sprite emission;
     public Vector2 direction;
 }

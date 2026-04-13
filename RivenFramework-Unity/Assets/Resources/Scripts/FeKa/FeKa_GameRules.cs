@@ -31,6 +31,7 @@ public class FeKa_GameRules : MonoBehaviour
     public GameObject connectionMessageWidget;
     public GameObject netChatWidget;
     public GameObject netVoteKickWidget;
+    public GameObject netKillFeedWidget;
 
 
     /*-----[ External Variables ]---------------------------------------------------------------------------------*/
@@ -96,6 +97,9 @@ public class FeKa_GameRules : MonoBehaviour
 
             if (widgetManager.GetExistingWidget(netVoteKickWidget.name) == null)
                 widgetManager.AddWidget(netVoteKickWidget);
+
+            if (widgetManager.GetExistingWidget(netKillFeedWidget.name) == null)
+                widgetManager.AddWidget(netKillFeedWidget);
         }
         else
         {
@@ -104,6 +108,9 @@ public class FeKa_GameRules : MonoBehaviour
 
             var existingVoteKick = widgetManager.GetExistingWidget(netVoteKickWidget.name);
             if (existingVoteKick != null) Destroy(existingVoteKick);
+            
+            var existingKillFeed = widgetManager.GetExistingWidget(netKillFeedWidget.name);
+            if (existingKillFeed != null) Destroy(existingKillFeed);
         }
     }
 

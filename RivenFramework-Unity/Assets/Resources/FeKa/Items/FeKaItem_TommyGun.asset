@@ -29,3 +29,7 @@ MonoBehaviour:
         bulletPrefab: {fileID: 6598383830466623576, guid: 219fbfc5676c63d9490c08b53e893c1c,
           type: 3}
         fireRate: 0.05
+        damageSource:
+          icon: {fileID: 21300000, guid: bbc97cfa365d073e4b80bd77cc8c9722, type: 3}
+          name: Oxenfree
+          gameObject: {fileID: 0}
