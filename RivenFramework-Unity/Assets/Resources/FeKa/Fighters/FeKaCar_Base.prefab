@@ -10540,16 +10540,16 @@ WheelCollider:
   m_Mass: 25
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
-    m_ExtremumSlip: 0.4
+    m_ExtremumSlip: 0.1
     m_ExtremumValue: 1.9
     m_AsymptoteSlip: 1.67
     m_AsymptoteValue: 0.9
     m_Stiffness: 1
   m_SidewaysFriction:
-    m_ExtremumSlip: 0.4
-    m_ExtremumValue: 0.5
+    m_ExtremumSlip: 0.1
+    m_ExtremumValue: 1.7
     m_AsymptoteSlip: 2
-    m_AsymptoteValue: 0.1
+    m_AsymptoteValue: 0.2
     m_Stiffness: 1
   m_IncludeLayers:
     serializedVersion: 2
@@ -10612,16 +10612,16 @@ WheelCollider:
   m_Mass: 25
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
-    m_ExtremumSlip: 0.4
+    m_ExtremumSlip: 0.1
     m_ExtremumValue: 1.9
     m_AsymptoteSlip: 1.67
     m_AsymptoteValue: 0.9
     m_Stiffness: 1
   m_SidewaysFriction:
-    m_ExtremumSlip: 0.4
-    m_ExtremumValue: 0.5
+    m_ExtremumSlip: 0.1
+    m_ExtremumValue: 1.7
     m_AsymptoteSlip: 2
-    m_AsymptoteValue: 0.1
+    m_AsymptoteValue: 0.2
     m_Stiffness: 1
   m_IncludeLayers:
     serializedVersion: 2
@@ -10769,16 +10769,16 @@ WheelCollider:
   m_Mass: 25
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
-    m_ExtremumSlip: 0.4
+    m_ExtremumSlip: 0.1
     m_ExtremumValue: 1.9
     m_AsymptoteSlip: 1.67
     m_AsymptoteValue: 0.9
     m_Stiffness: 1
   m_SidewaysFriction:
-    m_ExtremumSlip: 0.4
-    m_ExtremumValue: 0.5
+    m_ExtremumSlip: 0.1
+    m_ExtremumValue: 1.7
     m_AsymptoteSlip: 2
-    m_AsymptoteValue: 0.1
+    m_AsymptoteValue: 0.2
     m_Stiffness: 1
   m_IncludeLayers:
     serializedVersion: 2
@@ -11113,16 +11113,16 @@ WheelCollider:
   m_Mass: 25
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
-    m_ExtremumSlip: 0.4
+    m_ExtremumSlip: 0.1
     m_ExtremumValue: 1.9
     m_AsymptoteSlip: 1.67
     m_AsymptoteValue: 0.9
     m_Stiffness: 1
   m_SidewaysFriction:
-    m_ExtremumSlip: 0.4
-    m_ExtremumValue: 0.5
+    m_ExtremumSlip: 0.1
+    m_ExtremumValue: 1.7
     m_AsymptoteSlip: 2
-    m_AsymptoteValue: 0.1
+    m_AsymptoteValue: 0.2
     m_Stiffness: 1
   m_IncludeLayers:
     serializedVersion: 2
@@ -21003,8 +21003,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9018392291717064548}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.048927415, y: 0.37198985, z: 0.02163555, w: 0.9266939}
-  m_LocalPosition: {x: -20.38116, y: 0.8922801, z: 74.42582}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -21484,9 +21484,9 @@ MonoBehaviour:
     maxSpeed: 30
     breakForce: 5000
     coastBreakForce: 700
-    turnSensitivity: 0.3
+    turnSensitivity: 0.1
     highSpeedSteerFraction: 1.25
-    maxSteerAngle: 30
+    maxSteerAngle: 60
     tiltTorque: 300
     targetTiltAngle: 50
     barrelRollDuration: 0.5
@@ -21797,37 +21797,37 @@ PrefabInstance:
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.00001531731
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9.823647
+      value: 0.6666667
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -29.470932
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9999965
+      value: 0.9996852
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.0026736835
+      value: 0.025091238
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.00000025312758
+      value: -0.0000000037241172
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0000000015374757
+      value: 9.347215e-11
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
