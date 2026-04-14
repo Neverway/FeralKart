@@ -60,11 +60,11 @@ public class FeKaPawnStats : PawnStats
     public float shield = 0;
     public float MaxShield = 50;
     public FeKaItem utility;
-    public int utilityUsages = 0;
     public int utilityCharge = 1;
-    public FeKaItem ability;
-    public FeKaItem finalStrike;
     public float checkpointResetHealthPenalty = 10f;
+    public float finalStrikeCharge;
+    public float abilityCharge;
+    public FighterData fighterData;
 
     [Header("FeKa Current Race Stats")] 
     public int currentLap;

@@ -63,7 +63,6 @@ public class GI_RaceManager : MonoBehaviour
         var allPawns =  new List<FeKaPawn_Base>(FindObjectsOfType<FeKaPawn_Base>());
         for (int i = 0; i < allPawns.Count; i++)
         {
-            print("Found pawn");
             allPawns[i].Init();
             
             if (checkpointTracker.raceStartPoints != null && i < checkpointTracker.raceStartPoints.Count)
@@ -80,10 +79,8 @@ public class GI_RaceManager : MonoBehaviour
         // RELEASE ZE HOUNDS!!!
         foreach (var racer in racers)
         {
-            print("Setting racer state!");
             racer.FeKaCurrentStats.racerState = FeKaPawnStats.RacerState.racing;
         }
-        print("Set racers");
         
         timeRemaining = raceDuration;
         startTime = Time.deltaTime;

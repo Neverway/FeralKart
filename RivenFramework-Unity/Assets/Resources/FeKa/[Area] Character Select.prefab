@@ -157,18 +157,25 @@ MonoBehaviour:
   characterSelectionViewpoints:
   - characterID: kellory
     cameraViewpoint: {fileID: 5833042464678594599}
+    fighterData: {fileID: 11400000, guid: 8569f2a052fd37f05b49f2ff465cbd82, type: 2}
   - characterID: fox
     cameraViewpoint: {fileID: 158293222771008664}
+    fighterData: {fileID: 11400000, guid: c666fe95804dd7902a4d9eb35a006221, type: 2}
   - characterID: autumn
     cameraViewpoint: {fileID: 8625525701650492982}
+    fighterData: {fileID: 0}
   - characterID: winters
     cameraViewpoint: {fileID: 2930777266341353207}
+    fighterData: {fileID: 0}
   - characterID: jamiey
     cameraViewpoint: {fileID: 5531755243188896478}
+    fighterData: {fileID: 0}
   - characterID: camille
     cameraViewpoint: {fileID: 5215879314030984247}
+    fighterData: {fileID: 0}
   - characterID: tansy
     cameraViewpoint: {fileID: 5682311133152109586}
+    fighterData: {fileID: 0}
 --- !u!1 &3703025123136394620
 GameObject:
   m_ObjectHideFlags: 0

@@ -56,14 +56,20 @@ public class FeKaItem_RocketLauncher : ItemBehaviour
     /*-----[ External Functions ]-------------------------------------------------------------------------------------*/
     public override ItemBehaviour GetClone()
     {
-        return (ItemBehaviour)this.MemberwiseClone();
+        return new FeKaItem_RocketLauncher
+        {
+            maxAmmo = this.maxAmmo,
+            rocketPrefab = this.rocketPrefab,
+            targetingUIPrefab = this.targetingUIPrefab,
+            damageSource = this.damageSource,
+            lockDelay = this.lockDelay,
+        };
     }
 
     public override bool OnPickup(FeKaPawn pawn)
     {
         var stats = pawn.FeKaCurrentStats;
         if (stats == null) return false;
-        raceManager = GameInstance.Get<GI_RaceManager>();
 
         // Picking up ammo
         if (stats.utility != null && stats.utility.itemBehaviour is FeKaItem_RocketLauncher existingGun)
@@ -81,23 +87,37 @@ public class FeKaItem_RocketLauncher : ItemBehaviour
 
     public override void OnUseHeld(FeKaPawn pawn)
     {
-        if (ammo <= 0) return;
+        if (ammo <= 0)
+        {
+            Debug.Log("Exit case 0");
+            return;
+        }
 
-        raceManager ??= GameInstance.Get<GI_RaceManager>();
-        if (raceManager == null || raceManager.racers == null) return;
+        raceManager = GameInstance.Get<GI_RaceManager>();
+        if (raceManager == null || raceManager.racers == null)
+        {
+            Debug.Log("Exit case 1");
+            return;
+        }
 
         var allRacers = new List<FeKaPawn>();
-        foreach (var r in raceManager.racers)
-            if (r != pawn) allRacers.Add(r);
+        foreach (var r in raceManager.racers) if (r != pawn) allRacers.Add(r);
 
         var bpawn = (FeKaPawn_Base)pawn;
         if (bpawn.controlMode == ControlMode.LocalPlayer && activeTargeting == null)
         {
+            if (targetingUIPrefab == null)
+            {
+                Debug.LogError("[RocketLauncher] targetingUIPrefab is null");
+                return;
+            }
+            
             var go = Object.Instantiate(targetingUIPrefab);
             activeTargeting = go.GetComponent<UI_RocketTargeting>();
             if (activeTargeting == null) { Object.Destroy(go); return; }
             activeTargeting.candidates = allRacers;
         }
+        Debug.Log("Exit case 2");
 
         isHolding = true;
     }
@@ -154,6 +174,8 @@ public class FeKaItem_RocketLauncher : ItemBehaviour
 
         if (activeTargeting != null)
         {
+            
+            Debug.Log("Destroy ui element");
             Object.Destroy(activeTargeting.gameObject);
             activeTargeting = null;
         }
@@ -184,6 +206,10 @@ public class FeKaItem_RocketLauncher : ItemBehaviour
         ammo--;
     }
 
+    public override void Reset()
+    {
+        ammo = maxAmmo;
+    }
 
     #endregion
 }
