@@ -13,6 +13,7 @@ using RivenFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class WB_FighterSelect : MonoBehaviour
 {
@@ -154,11 +155,16 @@ public class WB_FighterSelect : MonoBehaviour
 
     public void SelectCharacter(string characterID)
     {
-        Debug.Log($"Selected character {characterID}");
+        if (string.IsNullOrEmpty(characterID) || characterID == "Random")
+        {
+            var randomSelection = Random.Range(0, 2);
+            fighterButtons[randomSelection].OnButtonClicked();
+            return;
+        }
+        
         selectedCharacterId = characterID;
         characterSelection.ViewCharacter(characterID);
-        foreach (var button in fighterButtons)
-            button.SetVisuallySelected(false);
+        foreach (var button in fighterButtons) button.SetVisuallySelected(false);
     }
 
 

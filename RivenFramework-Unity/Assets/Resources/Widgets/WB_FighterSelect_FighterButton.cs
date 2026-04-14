@@ -7,6 +7,7 @@
 //
 //====================================================================================================================//
 
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -40,9 +41,10 @@ public class WB_FighterSelect_FighterButton : MonoBehaviour
 
     /*-----[ Internal Functions ]----------------------------------------------------------------------------------*/
 
-    private void OnButtonClicked()
+    public void OnButtonClicked()
     {
         fighterSelect.SelectCharacter(characterID);
+        if (string.IsNullOrEmpty(characterID) || characterID == "Random") return;
         SetVisuallySelected(true);
     }
 
