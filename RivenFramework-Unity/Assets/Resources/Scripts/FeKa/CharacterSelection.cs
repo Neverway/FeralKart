@@ -68,6 +68,19 @@ public class CharacterSelection : MonoBehaviour
         viewCamera.transform.rotation = target.cameraViewpoint.rotation;
     }
 
+    public FighterData GetFighterData(string characterID)
+    {
+        foreach (var selectionViewpoint in characterSelectionViewpoints)
+        {
+            if (selectionViewpoint.characterID == characterID)
+            {
+                return selectionViewpoint.fighterData;
+            }
+        }
+
+        return null;
+    }
+
     /// <summary>
     /// Enables the character select's view camera and moves it to a fighter
     /// </summary>
@@ -94,4 +107,5 @@ public struct CharacterSelectionViewpoint
 {
     public string characterID;
     public Transform cameraViewpoint;
+    public FighterData fighterData;
 }

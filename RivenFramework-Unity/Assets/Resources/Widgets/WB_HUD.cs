@@ -27,12 +27,14 @@ public class WB_HUD : MonoBehaviour
     public UI_Ability finalStrike;
     public UI_Ability primary;
     public UI_Ability utility;
+    public Image finalStrikeBloom;
 
     private float previousHealth;
     private float previousShield;
     private List<Image> stockImages = new List<Image>(0);
     private GI_RaceManager raceManager;
     private FeKa_GameRules fekaGameRules;
+    private FighterData fighterData;
 
     private void Start()
     {
@@ -57,6 +59,8 @@ public class WB_HUD : MonoBehaviour
             targetFeKaPawn ??= GetLocalPlayer();
         }
         if (!targetFeKaPawn) return;
+        
+        fighterData ??= targetFeKaPawn.FeKaCurrentStats.fighterData;
         
         // Update all the indicators
         UpdateOtherCrap();
@@ -162,6 +166,33 @@ public class WB_HUD : MonoBehaviour
             utility.bar.color = new Color(0.2f, 0.2f, 0.2f, 1f);
             utility.text.text = "";
             utility.quantity.text = "";
+        }
+
+        if (fighterData)
+        {
+            primary.bar.fillAmount = (targetFeKaPawn.FeKaCurrentStats.abilityCharge / fighterData.ability.details.chargeAmount);
+            primary.icon.sprite = fighterData.ability.details.icon;
+            primary.text.text = fighterData.ability.details.itemName;
+            if (primary.bar.fillAmount < 1) primary.icon.color = new Color(1, 1, 1, 0.1f);
+            else primary.icon.color = new Color(1, 1, 1, 1f);
+
+
+            finalStrike.bar.fillAmount = (targetFeKaPawn.FeKaCurrentStats.finalStrikeCharge / fighterData.finalStrike.details.chargeAmount);
+            finalStrike.icon.sprite = fighterData.finalStrike.details.icon;
+            finalStrike.text.text = fighterData.finalStrike.details.itemName;
+            if (finalStrike.bar.fillAmount < 1)
+            {
+                finalStrike.icon.color = new Color(1, 1, 1, 0.1f);
+                finalStrikeBloom.enabled = false;
+            }
+            else
+            {
+                finalStrike.icon.color = new Color(1, 1, 1,1f);
+                finalStrikeBloom.enabled = true;
+            }
+            
+            characterPortrait.sprite = fighterData.fighterIcon;
+            characterPortrait.color = fighterData.primaryColor;
         }
     }
 

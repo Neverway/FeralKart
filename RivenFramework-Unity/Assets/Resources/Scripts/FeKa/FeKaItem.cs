@@ -13,7 +13,7 @@ public class FeKaItem : ScriptableObject
         return clone;
     }
 
-    public FeKaItemDetails details;
+    [Box]public FeKaItemDetails details;
     [SerializeReference, Polymorphic] public ItemBehaviour itemBehaviour;
     
 
@@ -45,9 +45,20 @@ public class FeKaItem : ScriptableObject
 [Serializable]
 public struct FeKaItemDetails
 {
+    [Tooltip("The name of the item")]
     public string itemName;
+    [Tooltip("The description of the item")]
+    [TextArea]
+    public string itemDescription;
+    [Tooltip("The icon of the item")]
     public Sprite icon;
+    [Tooltip("When this item is in a pickup field, this is how long it takes for the item to respawn")]
     public float respawnTime;
+    [Tooltip("If this item is being used as a character ability or final strike, this is the amount of charge required to get the item")]
+    public float chargeAmount;
+    [Tooltip("If this item is being used as a character ability or final strike, this is the amount that is given to the charge every second")]
+    public float passiveRecharge;
+    [Tooltip("This is just a fancy color for the item")]
     public Rarity rarity;
 }
 
@@ -67,6 +78,8 @@ public abstract class ItemBehaviour
     public virtual int GetCharge() => -1;
 
     public virtual bool IsExhausted() => false;
+    
+    public virtual void Reset() { }
 }
 
 public enum Rarity

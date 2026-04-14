@@ -68,6 +68,18 @@ PrefabInstance:
       propertyPath: displayName
       value: Ryota Fox
       objectReference: {fileID: 0}
+    - target: {fileID: 1875575848915633597, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
+        type: 3}
+      propertyPath: fighterData
+      value: 
+      objectReference: {fileID: 11400000, guid: c666fe95804dd7902a4d9eb35a006221,
+        type: 2}
+    - target: {fileID: 1875575848915633597, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
+        type: 3}
+      propertyPath: FeKaDefaultStats.fighterData
+      value: 
+      objectReference: {fileID: 11400000, guid: c666fe95804dd7902a4d9eb35a006221,
+        type: 2}
     - target: {fileID: 2397353860445898587, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
         type: 3}
       propertyPath: spriteAngleGroup
@@ -87,13 +99,38 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 7715907118169823433, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
         type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7715907118169823433, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
+        type: 3}
       propertyPath: m_LocalRotation.y
-      value: -1e-45
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7715907118169823433, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8332517393403533926, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.99968517
+      objectReference: {fileID: 0}
+    - target: {fileID: 8332517393403533926, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.02509124
       objectReference: {fileID: 0}
     - target: {fileID: 8332517393403533926, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -1e-45
+      value: 0.00000000215012
+      objectReference: {fileID: 0}
+    - target: {fileID: 8332517393403533926, guid: 521d4ae2fa31ee6bc813295ca3e3144a,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -5.3966172e-11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

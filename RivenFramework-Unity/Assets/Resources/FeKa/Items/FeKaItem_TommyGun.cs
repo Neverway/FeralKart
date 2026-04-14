@@ -72,6 +72,7 @@ public class FeKaItem_TommyGun : ItemBehaviour
 
     public override void OnUseHeld(FeKaPawn pawn)
     {
+        Debug.Log($"[TommyGun] OnUseHeld called. ammo={ammo}, time={Time.time}, nextFireTime={nextFireTime}");
         // Fire delay
         if (ammo <= 0 || Time.time < nextFireTime) return;
         
@@ -93,6 +94,12 @@ public class FeKaItem_TommyGun : ItemBehaviour
         });
         ammo--;
         nextFireTime = Time.time + fireRate;
+    }
+
+    public override void Reset()
+    {
+        ammo = maxAmmo;
+        nextFireTime = 0f;
     }
 
 

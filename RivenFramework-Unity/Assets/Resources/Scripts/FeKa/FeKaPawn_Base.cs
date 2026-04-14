@@ -30,6 +30,7 @@ public class FeKaPawn_Base : FeKaPawn
     private InputActions.FEKAActions inputActions;
     private GI_WidgetManager widgetManager;
     private GI_PawnManager pawnManager;
+    private bool abilityReady, finalStrikeReady;
     [SerializeField] private GameObject DeathScreenWidget, RespawnScreenWidget, deathFX, HUDWidget, Nameplate;
     
     // CONTROL STUFF VERY IMPORTANT YUH HUH!
@@ -107,7 +108,6 @@ public class FeKaPawn_Base : FeKaPawn
         OnPawnHurt  += info => PushDamageContext(info);
         OnPawnDeath += info => PushDamageContext(info);
         
-        
         _camera = viewPoint.GetComponentInChildren<Camera>();
         _camera.gameObject.SetActive(controlMode == ControlMode.LocalPlayer);
 
@@ -122,6 +122,25 @@ public class FeKaPawn_Base : FeKaPawn
             netLastInstigatorId = netVarOwner.Register<string>("feka_lastInstigatorId", "", null);
             netLastSourceName = netVarOwner.Register<string>("feka_lastSourceName", "", null);
             netLastDamageType = netVarOwner.Register<int>("feka_lastDamageType", 0, null);
+        }
+        
+        // Setup ability assignments (items need to be cloned like this so the SOs don't act like a little bitch baby)
+        if (FeKaDefaultStats.fighterData != null)
+        {
+            FeKaCurrentStats.fighterData = Instantiate(FeKaCurrentStats.fighterData);
+            if (FeKaDefaultStats.fighterData.ability != null)
+            {
+                FeKaCurrentStats.fighterData.ability = FeKaDefaultStats.fighterData.ability.Clone();
+                FeKaCurrentStats.fighterData.ability.itemBehaviour.OnPickup(this);
+            }
+            if (FeKaDefaultStats.fighterData.finalStrike != null)
+            {
+                FeKaCurrentStats.fighterData.finalStrike = FeKaDefaultStats.fighterData.finalStrike.Clone();
+                FeKaCurrentStats.fighterData.finalStrike.itemBehaviour.OnPickup(this);
+            }
+
+            StartCoroutine(RegenAbilityCharge());
+            StartCoroutine(RegenFinalStrikeCharge());
         }
         
         if (controlMode == ControlMode.NetworkPlayer)
@@ -237,7 +256,7 @@ public class FeKaPawn_Base : FeKaPawn
         }
 
         // Jumping
-        if (inputActions.HopDedicated.IsPressed() || inputActions.TiltLeft.WasPressedThisFrame() && inputActions.TiltRight.WasPressedThisFrame())
+        if (inputActions.HopDedicated.IsPressed())
         {
             action2.Jump(this);
         }
@@ -245,14 +264,14 @@ public class FeKaPawn_Base : FeKaPawn
         // Leaning
         if (action2.IsOnGround(this))
         {
-            if (inputActions.TiltLeft.WasPressedThisFrame())
+            if (inputActions.TiltLeft.WasPressedThisFrame() && !inputActions.TiltRight.IsPressed())
             {
                 if (!isRolling && Time.time - lastTiltLeftTapTime <= doubleTapWindow)
                     StartCoroutine(BarrelRoll(-1));
                 else
                     lastTiltLeftTapTime = Time.time;
             }
-            if (inputActions.TiltRight.WasPressedThisFrame())
+            if (inputActions.TiltRight.WasPressedThisFrame() && !inputActions.TiltLeft.IsPressed())
             {
                 if (!isRolling && Time.time - lastTiltRightTapTime <= doubleTapWindow)
                     StartCoroutine(BarrelRoll(1));
@@ -263,16 +282,16 @@ public class FeKaPawn_Base : FeKaPawn
 
         if (!isRolling)
         {
-            if (inputActions.TiltLeft.IsPressed())
+            if (inputActions.TiltLeft.IsPressed() && !inputActions.TiltRight.IsPressed())
                 action2.Tilt(this, FeKaCurrentStats.targetTiltAngle, FeKaCurrentStats.tiltVisualMesh);
-            else if (inputActions.TiltRight.IsPressed())
+            else if (inputActions.TiltRight.IsPressed() && !inputActions.TiltLeft.IsPressed())
                 action2.Tilt(this, -FeKaCurrentStats.targetTiltAngle, FeKaCurrentStats.tiltVisualMesh);
             else
                 action2.TiltReturnToNeutral(this, FeKaCurrentStats.tiltVisualMesh);
         }
 
         // Item usage
-        UpdateHeldItem();
+        UpdateItems();
         
         // RearView
         if (inputActions.LookBehind.IsPressed())
@@ -308,22 +327,120 @@ public class FeKaPawn_Base : FeKaPawn
         
     }
     
-    private void UpdateHeldItem()
+    private void UpdateItems()
     {
-        var held = FeKaCurrentStats.utility;
-        if (held?.itemBehaviour == null) return;
+        // Utility
+        var item = FeKaCurrentStats.utility;
+        if (item?.itemBehaviour != null)
+        {
+            item.itemBehaviour.OnUpdate(this);
 
-        held.itemBehaviour.OnUpdate(this);
+            if (inputActions.Utility.IsPressed())
+                item.itemBehaviour.OnUseHeld(this);
 
-        if (inputActions.Utility.IsPressed())
-            held.itemBehaviour.OnUseHeld(this);
+            if (inputActions.Utility.WasReleasedThisFrame())
+                item.itemBehaviour.OnUseReleased(this);
 
-        if (inputActions.Utility.WasReleasedThisFrame())
-            held.itemBehaviour.OnUseReleased(this);
+            // Auto-clear exhausted items
+            if (item.itemBehaviour.IsExhausted())
+                FeKaCurrentStats.utility = null;
+        }
 
-        // Auto-clear exhausted items
-        if (held.itemBehaviour.IsExhausted())
-            FeKaCurrentStats.utility = null;
+        // Ability
+        item = FeKaCurrentStats.fighterData.ability;
+        if (item?.itemBehaviour != null)
+        {
+            if (FeKaCurrentStats.abilityCharge >= item.details.chargeAmount)
+            {
+                item.itemBehaviour.OnUpdate(this);
+
+                if (inputActions.Attack.IsPressed())
+                {
+                    item.itemBehaviour.OnUseHeld(this);
+                }
+
+                if (inputActions.Attack.WasReleasedThisFrame())
+                    item.itemBehaviour.OnUseReleased(this);
+
+                if (item.itemBehaviour.IsExhausted() && abilityReady)
+                {
+                    print($"item was exhausted {item.details.chargeAmount}");
+                    FeKaCurrentStats.abilityCharge = 0;
+                    abilityReady = false;
+                }
+            }
+        }
+
+        // Final Strike
+        item = FeKaCurrentStats.fighterData.finalStrike;
+        if (item?.itemBehaviour != null)
+        {
+            if (FeKaCurrentStats.finalStrikeCharge >= item.details.chargeAmount)
+            {
+                item.itemBehaviour.OnUpdate(this);
+
+                if (inputActions.TiltLeft.IsPressed() && inputActions.TiltRight.IsPressed())
+                {
+                    item.itemBehaviour.OnUseHeld(this);
+                }
+
+                if (inputActions.TiltLeft.WasReleasedThisFrame() && !inputActions.TiltRight.IsPressed() ||
+                    !inputActions.TiltLeft.IsPressed() && inputActions.TiltRight.WasReleasedThisFrame())
+                    item.itemBehaviour.OnUseReleased(this);
+
+                if (item.itemBehaviour.IsExhausted() && finalStrikeReady)
+                {
+                    FeKaCurrentStats.finalStrikeCharge = 0;
+                    finalStrikeReady = false;
+                }
+            }
+        }
+    }
+
+    private IEnumerator RegenAbilityCharge()
+    {
+        yield return new WaitForSeconds(1);
+        var item = FeKaCurrentStats.fighterData.ability;
+        
+        if (FeKaCurrentStats.abilityCharge < item.details.chargeAmount)
+        {
+            abilityReady = false;
+            FeKaCurrentStats.abilityCharge += item.details.passiveRecharge;
+        }
+        else
+        {
+            FeKaCurrentStats.abilityCharge = item.details.chargeAmount;
+            if (!abilityReady)
+            {
+                item.itemBehaviour.Reset();
+                abilityReady = true;
+            }
+        }
+
+        StartCoroutine(RegenAbilityCharge());
+    }
+
+    private IEnumerator RegenFinalStrikeCharge()
+    {
+        yield return new WaitForSeconds(1);
+        var item = FeKaCurrentStats.fighterData.finalStrike;
+        
+        if (FeKaCurrentStats.finalStrikeCharge < item.details.chargeAmount)
+        {
+            finalStrikeReady = false;
+            FeKaCurrentStats.finalStrikeCharge += item.details.passiveRecharge;
+        }
+        else
+        {
+            FeKaCurrentStats.finalStrikeCharge = item.details.chargeAmount;
+            if (!finalStrikeReady)
+            {
+                item.itemBehaviour.Reset();
+                finalStrikeReady = true;
+            }
+        }
+        
+        StartCoroutine(RegenFinalStrikeCharge());
     }
     
     // NPC
@@ -571,7 +688,7 @@ public class FeKaPawn_Base : FeKaPawn
         }
         else
         {
-            FeKaCurrentStats.characterSpriteRenderer.color = Color.black;
+            FeKaCurrentStats.characterSpriteRenderer.material.color = Color.black;
             if (controlMode != ControlMode.LocalPlayer ) return;
             if (!widgetManager)
             {
@@ -588,23 +705,23 @@ public class FeKaPawn_Base : FeKaPawn
      
         print($"{damageInfo.instigator} used {damageInfo.source} to deal {damageInfo.amount} {damageInfo.type} damage to {gameObject.name}");
         
-        FeKaCurrentStats.characterSpriteRenderer.color = Color.red;
-        FeKaCurrentStats.characterSpriteRenderer.DOColor(new Color(1, 1, 1, 1), 1);
+        FeKaCurrentStats.characterSpriteRenderer.material.color = Color.red;
+        FeKaCurrentStats.characterSpriteRenderer.material.DOColor(new Color(1, 1, 1, 1), 1);
     }
     private void OnHeal(DamageInfo damageInfo)
     {
         print($"{damageInfo.instigator} used {damageInfo.source} to heal {damageInfo.amount} {damageInfo.type} damage on {gameObject.name}");
-        FeKaCurrentStats.characterSpriteRenderer.color = Color.green;
-        FeKaCurrentStats.characterSpriteRenderer.DOColor(new Color(1, 1, 1, 1), 1);
+        FeKaCurrentStats.characterSpriteRenderer.material.color = Color.green;
+        FeKaCurrentStats.characterSpriteRenderer.material.DOColor(new Color(1, 1, 1, 1), 1);
     }
 
     private IEnumerator AwaitRespawn()
     {
-        FeKaCurrentStats.characterSpriteRenderer.color = Color.black;
+        FeKaCurrentStats.characterSpriteRenderer.material.color = Color.black;
         ShowRespawnScreen();
-        FeKaCurrentStats.characterSpriteRenderer.color = Color.black;
+        FeKaCurrentStats.characterSpriteRenderer.material.color = Color.black;
         yield return new WaitForSeconds(FeKaCurrentStats.respawnTime);
-        FeKaCurrentStats.characterSpriteRenderer.DOColor(new Color(1, 1, 1, 1), 1);
+        FeKaCurrentStats.characterSpriteRenderer.material.DOColor(new Color(1, 1, 1, 1), 1);
         var lastCheckpoint = FeKaCurrentStats.currentCheckpoint - 1;
         if (lastCheckpoint < 0) lastCheckpoint = FindObjectOfType<CheckpointTracker>().raceCheckpoints.Count-1;
         var respawnTransform = FindObjectOfType<CheckpointTracker>().raceCheckpoints[lastCheckpoint].transform;

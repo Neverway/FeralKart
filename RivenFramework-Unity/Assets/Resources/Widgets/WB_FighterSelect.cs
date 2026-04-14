@@ -32,7 +32,11 @@ public class WB_FighterSelect : MonoBehaviour
     private CharacterSelection characterSelection;
     public TMP_Text intermissionText, readyCountText, timerText;
     public Button readyButton, spectateButton;
+    
     public WB_FighterSelect_FighterButton[] fighterButtons;
+    public TMP_Text fighterNameText, fighterSubtitleText, finalStrikeNameText, finalStrikeDescriptionText, abilityNameText, abilityDescriptionText, passiveNameText, passiveDescriptionText;
+    public Image fighterPortraitImage, finalStrikeImage, abilityImage;
+    
     public Transform playerListRoot;
     public GameObject playerEntry;
     public List<string> widgetsToNotClear;
@@ -163,7 +167,24 @@ public class WB_FighterSelect : MonoBehaviour
         }
         
         selectedCharacterId = characterID;
+        
+        // Enable the camera that is looking at the selected character
         characterSelection.ViewCharacter(characterID);
+        
+        // Set the fighter info in the sidebar according to what is set on the character selection
+        var fighterData = characterSelection.GetFighterData(characterID);
+        fighterPortraitImage.sprite = fighterData.fighterIcon;
+        fighterNameText.text = fighterData.fighterName;
+        fighterSubtitleText.text = fighterData.fighterSubtitle;
+        finalStrikeImage.sprite = fighterData.finalStrike.details.icon;
+        finalStrikeNameText.text = fighterData.finalStrike.details.itemName;
+        finalStrikeDescriptionText.text = fighterData.finalStrike.details.itemDescription;
+        abilityImage.sprite = fighterData.ability.details.icon;
+        abilityNameText.text = fighterData.ability.details.itemName;
+        abilityDescriptionText.text = fighterData.ability.details.itemDescription;
+        passiveNameText.text = fighterData.passive.details.itemName;
+        passiveDescriptionText.text = fighterData.passive.details.itemDescription;
+        
         foreach (var button in fighterButtons) button.SetVisuallySelected(false);
     }
 

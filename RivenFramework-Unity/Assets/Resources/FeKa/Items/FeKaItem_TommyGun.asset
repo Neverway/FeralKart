@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   details:
     itemName: Oxenfree
+    itemDescription: Gods quake in their boots at the might of the OXENFREE
     icon: {fileID: 21300000, guid: bbc97cfa365d073e4b80bd77cc8c9722, type: 3}
     respawnTime: 3
+    chargeAmount: 5
+    passiveRecharge: 1
     rarity: 4
   itemBehaviour:
     rid: 8346923364940251141

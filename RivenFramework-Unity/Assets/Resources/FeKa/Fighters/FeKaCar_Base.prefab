@@ -21003,7 +21003,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9018392291717064548}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 8.862214e-16, z: -6.682842e-17, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
@@ -21523,11 +21523,11 @@ MonoBehaviour:
     shield: 0
     MaxShield: 50
     utility: {fileID: 0}
-    utilityUsages: 0
     utilityCharge: 1
-    ability: {fileID: 0}
-    finalStrike: {fileID: 0}
     checkpointResetHealthPenalty: 10
+    finalStrikeCharge: 0
+    abilityCharge: 0
+    fighterData: {fileID: 11400000, guid: 9df2de1f0cd071c6793c6ecdce0c7ac7, type: 2}
     currentLap: 0
     currentCheckpoint: 0
     finishPlacement: 0
@@ -21812,22 +21812,22 @@ PrefabInstance:
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9996852
+      value: 0.99968517
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.025091238
+      value: 0.02509124
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 4.4380964e-16
+      value: -0.00000000215012
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -2.2285493e-17
+      value: 5.3966172e-11
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
