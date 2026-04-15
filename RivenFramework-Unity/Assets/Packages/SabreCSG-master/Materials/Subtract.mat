@@ -28,7 +28,7 @@ Material:
     - _FaceToggle: 1
     - _GridAlpha: 0.1
     - _GridSize: 1
-    - _GridToggle: 1
+    - _GridToggle: 0
     m_Colors:
     - _Color: {r: 1, g: 0.6431373, b: 0, a: 0}
   m_BuildTextureStacks: []
