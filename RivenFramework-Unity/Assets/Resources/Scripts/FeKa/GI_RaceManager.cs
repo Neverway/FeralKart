@@ -6,103 +6,138 @@ using UnityEngine;
 
 public class GI_RaceManager : MonoBehaviour
 {
-    [Header("Other Stuff")]
-    private float startTime;
+    #region========================================( Variables )======================================================//
+    /*-----[ Inspector Variables ]------------------------------------------------------------------------------------*/
     public float raceCountdownDuration = 3;
     public float timeRemaining = 600;
     public float raceDuration = 600;
     public int totalLaps = 3;
-    private bool raceInProgress;
-    public GameObject RaceFinishedWidget, RaceResultsWidget, RaceCountdownWidget;
 
+
+    /*-----[ External Variables ]-------------------------------------------------------------------------------------*/
     public List<FeKaPawn_Base> racers;
     public List<FeKaPawn_Base> racerStandings = new List<FeKaPawn_Base>();
+    [Tooltip("The results of the race that just ended, used for the results screen")]
+    public List<RaceResultEntry> lastRaceResults = new List<RaceResultEntry>();
+
+
+    /*-----[ Internal Variables ]-------------------------------------------------------------------------------------*/
+    private float startTime;
+    private bool raceInProgress;
+    private bool raceEnded = false;
     private Coroutine countdownCoroutine;
-    
     private HashSet<FeKaPawn_Base> placedRacers = new HashSet<FeKaPawn_Base>();
     private HashSet<FeKaPawn_Base> eliminatedRacers = new HashSet<FeKaPawn_Base>();
-    private bool raceEnded = false;
-    public List<RaceResultEntry> lastRaceResults = new List<RaceResultEntry>();
-    
-    public FeKa_GameRules fekaGameRules;
 
+
+    /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/
+    public GameObject RaceFinishedWidget, RaceResultsWidget, RaceCountdownWidget;
+    public FeKa_GameRules fekaGameRules;
+    private CheckpointTracker checkpointTracker;
+
+
+    #endregion
+
+    
+    #region=======================================( Functions )=======================================================//
+    /*-----[ Mono Functions ]-----------------------------------------------------------------------------------------*/
     public void Start()
     {
+        // Subscribe to game state events
         fekaGameRules = FindObjectOfType<FeKa_GameRules>();
-        if (fekaGameRules != null) fekaGameRules.OnGameStateReceived += OnGameStateReceived;
-        
+        if (fekaGameRules != null) 
+            fekaGameRules.OnGameStateReceived += OnGameStateReceived;
         if (fekaGameRules != null && fekaGameRules.lastGameState != null)
             OnGameStateReceived(fekaGameRules.lastGameState);
     }
-
-    public void OnDestroy()
-    {
-        if (fekaGameRules != null)
-            fekaGameRules.OnGameStateReceived -= OnGameStateReceived;
-    }
-
     public void Update()
     {
         if (!raceInProgress) return;
         UpdateStandings();
         CheckRacerStatus();
     }
+    public void OnDestroy()
+    {
+        // Unsubscribe to game state events
+        if (fekaGameRules != null)
+            fekaGameRules.OnGameStateReceived -= OnGameStateReceived;
+    }
 
+
+    /*-----[ Internal Functions ]-------------------------------------------------------------------------------------*/
+    /// <summary>
+    /// Update the race manager timeRemaining to match the gameState TimeLeft
+    /// </summary>
     private void OnGameStateReceived(FeKa_GameStatePacket gameState)
     {
         timeRemaining = gameState.TimeLeft;
     }
-
-    [ContextMenu("Start Race")]
-    public void StartRace()
+    
+    /// <summary>
+    /// Update the race placement of the racers based on their checkpoint and race progress
+    /// </summary>
+    private void UpdateStandings()
     {
-        StopAllCoroutines();
-        countdownCoroutine = StartCoroutine(RaceCountdown());
+        checkpointTracker ??= FindObjectOfType<CheckpointTracker>();
+        if (!checkpointTracker) return;
+        var checkpointCount = checkpointTracker.raceCheckpoints.Count;
+    
+        racerStandings = new List<FeKaPawn_Base>(racers);
+        racerStandings.Sort((a, b) =>
+        {
+            var progressA = GetRaceProgress(a, checkpointCount);
+            var progressB = GetRaceProgress(b, checkpointCount);
+            return progressB.CompareTo(progressA);
+        });
     }
-
-    public IEnumerator RaceCountdown()
+    
+    /// <summary>
+    /// Gets a racers progress in the race based on their checkpoint and distance
+    /// </summary>
+    private float GetRaceProgress(FeKaPawn_Base pawn, int checkpointCount)
     {
-        yield return new WaitForSeconds(1);
-        FindObjectOfType<CheckpointTracker>().Init();
-        var widgetManager = GameInstance.Get<GI_WidgetManager>();
+        checkpointTracker ??= FindObjectOfType<CheckpointTracker>();
+        var baseProgress = pawn.FeKaCurrentStats.currentLap * checkpointCount + pawn.FeKaCurrentStats.currentCheckpoint;
+    
+        var nextIndex = pawn.FeKaCurrentStats.currentCheckpoint;
+        var nextPos = checkpointTracker.raceCheckpoints[nextIndex].transform.position;
+        var distToNext = Vector3.Distance(pawn.transform.position, nextPos);
+        var fraction = 1f - Mathf.Clamp01(distToNext / 100f); // 100 is the max expected checkpoint spacing (This is a crappy way of handling this and I should blow it up)
+    
+        return baseProgress + fraction;
+    }
+    
+    /// <summary>
+    /// Start the race countdown and release the racers
+    /// </summary>
+    private IEnumerator RaceCountdown()
+    {
+        //yield return new WaitForSeconds(1); // Why was I waiting for 1 second here?
         
+        // Show the countdown
+        var widgetManager = GameInstance.Get<GI_WidgetManager>();
         widgetManager.AddWidget(RaceCountdownWidget);
         
-        racers.Clear();
-        placedRacers.Clear();
-        eliminatedRacers.Clear();
-        raceEnded = false;
-        
-        var checkpointTracker = FindAnyObjectByType<CheckpointTracker>();
-        var allPawns =  new List<FeKaPawn_Base>(FindObjectsOfType<FeKaPawn_Base>());
-        for (int i = 0; i < allPawns.Count; i++)
-        {
-            allPawns[i].Init();
-            
-            if (checkpointTracker.raceStartPoints != null && i < checkpointTracker.raceStartPoints.Count)
-            {
-                var startPoint = checkpointTracker.raceStartPoints[i];
-                allPawns[i].transform.SetPositionAndRotation(startPoint.position, startPoint.rotation);
-            }
-
-            racers.Add(allPawns[i]);
-        }
-        
+        // Wait for the countdown to finish
         yield return new WaitForSeconds(3);
         
         // RELEASE ZE HOUNDS!!!
+        // (This will unlock player movement)
         foreach (var racer in racers)
         {
             racer.FeKaCurrentStats.racerState = FeKaPawnStats.RacerState.racing;
         }
         
+        // Set the race flags
         timeRemaining = raceDuration;
-        startTime = Time.deltaTime;
         raceInProgress = true;
         countdownCoroutine = null;
     }
-
-    public void CheckRacerStatus()
+    
+    /// <summary>
+    /// Buggy buggy messy messy garbage code
+    /// </summary>
+    private void CheckRacerStatus()
     {
         foreach (var racer in racers)
         {
@@ -110,11 +145,11 @@ public class GI_RaceManager : MonoBehaviour
 
             if (racer.FeKaCurrentStats.currentLap >= totalLaps)
             {
+                print($"Racer {racer.controlMode} {racer.displayName} completed race");
                 placedRacers.Add(racer);
                 racer.FeKaCurrentStats.racerState = FeKaPawnStats.RacerState.finished;
-                racer.FeKaCurrentStats.finishPlacement = GetRacerPlace(racer);
+                racer.FeKaCurrentStats.finishPlacement = GetRacerPlacement(racer);
                 racer.FeKaCurrentStats.finishTime = timeRemaining;
-                print("Racer completed race");
                 if (racer.controlMode == ControlMode.LocalPlayer)
                     SendFinishAndShowResults(racer, false);
             }
@@ -126,7 +161,7 @@ public class GI_RaceManager : MonoBehaviour
         print(placedRacers.Count +" ==? " +racers.Count);
         if (placedRacers.Count == racers.Count)
         {
-            print("All racers finished");
+            Debug.Log("All racers found to be in placedRacers hashset");
             EndRace();
             return;
         }
@@ -161,22 +196,11 @@ public class GI_RaceManager : MonoBehaviour
         }
     }
 
-    public void StopRace()
+    private void EndRace()
     {
-        /*raceInProgress = false;
-        foreach (FeKaPawn_Base racer in racers)
-            racer.isPaused = true;
+        if (raceEnded) 
+            return;
         
-
-        var widgetManager = GameInstance.Get<GI_WidgetManager>();
-        if (!widgetManager.GetExistingWidget(RaceFinishedWidget.name))
-            widgetManager.AddWidget(RaceFinishedWidget);*/
-        EndRace();
-    }
-
-    public void EndRace()
-    {
-        if (raceEnded) return;
         raceEnded = true;
         raceInProgress = false;
         
@@ -188,9 +212,10 @@ public class GI_RaceManager : MonoBehaviour
         if (localRacer != null && !placedRacers.Contains(localRacer))
             SendFinishAndShowResults(localRacer, true);
     }
-
+    
     private void SendFinishAndShowResults(FeKaPawn_Base racer, bool failed)
     {
+        Debug.Log($"Racer {racer.controlMode} {racer.displayName} sent finish packet");
         var widgetManager = GameInstance.Get<GI_WidgetManager>();
         if (widgetManager != null && !widgetManager.GetExistingWidget(RaceFinishedWidget.name))
             widgetManager.AddWidget(RaceFinishedWidget);
@@ -208,53 +233,84 @@ public class GI_RaceManager : MonoBehaviour
             DamageHealed = racer.FeKaCurrentStats.damageHealed
         });
     }
-    
-    private void UpdateStandings()
+
+
+    /*-----[ External Functions ]-------------------------------------------------------------------------------------*/
+    /// <summary>
+    /// Called by the GameRules interface (when the game-state is set to in-progress)
+    /// </summary>
+    [ContextMenu("Start Race")]
+    public void StartRace()
     {
-        var cpt = FindObjectOfType<CheckpointTracker>();
-        if (!cpt) return;
-        var checkpointCount = cpt.raceCheckpoints.Count;
-    
-        racerStandings = new List<FeKaPawn_Base>(racers);
-        racerStandings.Sort((a, b) =>
+        // Safety stop in case the countdown was running (which it shouldn't be (but this fixes that (if it did happen (which it shouldn't))))
+        StopAllCoroutines();
+        
+        // Initialize the checkpoints
+        FindObjectOfType<CheckpointTracker>().Init();
+        
+        // Reset any lingering race data
+        racers.Clear();
+        placedRacers.Clear();
+        eliminatedRacers.Clear();
+        raceEnded = false;
+        
+        // Populate racers list and position racers at starting points
+        checkpointTracker ??= FindAnyObjectByType<CheckpointTracker>();
+        var allPawns =  new List<FeKaPawn_Base>(FindObjectsOfType<FeKaPawn_Base>());
+        for (int i = 0; i < allPawns.Count; i++)
         {
-            var progressA = GetRaceProgress(a, checkpointCount);
-            var progressB = GetRaceProgress(b, checkpointCount);
-            return progressB.CompareTo(progressA);
-        });
+            allPawns[i].Init();
+            
+            if (checkpointTracker.raceStartPoints != null && i < checkpointTracker.raceStartPoints.Count)
+            {
+                var startPoint = checkpointTracker.raceStartPoints[i];
+                allPawns[i].transform.SetPositionAndRotation(startPoint.position, startPoint.rotation);
+            }
+
+            racers.Add(allPawns[i]);
+        }
+        
+        // Begin the countdown!
+        countdownCoroutine = StartCoroutine(RaceCountdown());
     }
     
-    private float GetRaceProgress(FeKaPawn_Base pawn, int checkpointCount)
-    {
-        var checkpointTracker = FindObjectOfType<CheckpointTracker>();
-        var baseProgress = pawn.FeKaCurrentStats.currentLap * checkpointCount 
-                           + pawn.FeKaCurrentStats.currentCheckpoint;
-    
-        var nextIndex = pawn.FeKaCurrentStats.currentCheckpoint;
-        var nextPos = checkpointTracker.raceCheckpoints[nextIndex].transform.position;
-        var distToNext = Vector3.Distance(pawn.transform.position, nextPos);
-        var fraction = 1f - Mathf.Clamp01(distToNext / 100f); // 100 is the max expected checkpoint spacing (This is a crappy way of handling this and I should blow it up)
-    
-        return baseProgress + fraction;
-    }
-    
-    public int GetRacerPlace(FeKaPawn pawn)
+    /// <summary>
+    /// Get the race placement of a racer participating in the race (Used for displaying info on hud)
+    /// </summary>
+    public int GetRacerPlacement(FeKaPawn pawn)
     {
         return racerStandings.IndexOf((FeKaPawn_Base)pawn) + 1;
     }
 
+    /// <summary>
+    /// Called by the GameRules interface (when a results packet is sent?)
+    /// to show the race results screen... and set the race state flags? (I should really move that)
+    /// </summary>
     public void ShowResultsFromServer(RaceResultsPacket resultsPacket)
     {
+        // Set the race flags
         raceInProgress = false;
         raceEnded = true;
 
+        // Store the race results for the results screen
         lastRaceResults = resultsPacket?.Results ?? new List<RaceResultEntry>();
         
+        // Freeze the players
         foreach (var racer in racers)
             if (racer.physicsbody) racer.physicsbody.isKinematic = true;
         
+        // Show the results screen
         var widgetManager = GameInstance.Get<GI_WidgetManager>();
         if (widgetManager != null && !widgetManager.GetExistingWidget(RaceResultsWidget.name))
             widgetManager.AddWidget(RaceResultsWidget);
     }
+
+
+    #endregion
+    
+
+
+
+
+
 }
