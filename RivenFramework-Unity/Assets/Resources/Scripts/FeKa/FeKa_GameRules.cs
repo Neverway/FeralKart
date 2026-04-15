@@ -184,6 +184,7 @@ public class FeKa_GameRules : MonoBehaviour
                         });
                     }
                     
+                    pendingCharacterChoice = "";
                     GameInstance.Get<GI_RaceManager>().StartRace();
                 }
                 // Game went in-progress but we missed the Loading phase (joined late)
