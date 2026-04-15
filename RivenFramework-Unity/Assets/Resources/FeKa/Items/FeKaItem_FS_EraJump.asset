@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   details:
     itemName: Era Jump
-    itemDescription: Train speeds up, becomes out of phase (invulnerable), and any
-      player that is hit by the train will become swapped with another random player
+    itemDescription: While active gain movement speed, become out of phase (invulnerable),
+      and any player that is hit by the train will swap positions with another random
+      player.
     icon: {fileID: 21300000, guid: 72ede4f83c435f432933744b64698222, type: 3}
     respawnTime: 3
     chargeAmount: 120

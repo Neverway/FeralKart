@@ -21,17 +21,17 @@ MonoBehaviour:
     passiveRecharge: 1
     rarity: 3
   itemBehaviour:
-    rid: 8346923364940251141
+    rid: 1415004741051613186
   references:
     version: 2
     RefIds:
-    - rid: 8346923364940251141
-      type: {class: FeKaItem_TommyGun, ns: , asm: Assembly-CSharp}
+    - rid: 1415004741051613186
+      type: {class: FeKaItem_ScatterShotgun, ns: , asm: Assembly-CSharp}
       data:
         maxAmmo: 5
-        bulletPrefab: {fileID: 6152427140767995075, guid: c00b74b5d21b05510a0c7f9167bf9ce9,
+        bulletPrefab: {fileID: 6598383830466623576, guid: 34063e38f08db74b09f5ee3115c900af,
           type: 3}
-        fireRate: 1
+        fireRate: 0.5
         damageSource:
           icon: {fileID: 21300000, guid: 265af68042994bda6bf5e1f63b7585b1, type: 3}
           name: Scatter Shotgun

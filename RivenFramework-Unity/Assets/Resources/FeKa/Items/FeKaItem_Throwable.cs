@@ -174,7 +174,7 @@ public class FeKaItem_Throwable : ItemBehaviour
             activeTargeting = null;
         }
         
-        var spawnPos = pawn.FeKaCurrentStats.projectileSpawnPoint.position + pawn.transform.forward * 1.5f;
+        var spawnPos = pawn.FeKaCurrentStats.projectileSpawnPoint.position + pawn.FeKaCurrentStats.projectileSpawnPoint.forward * 1.5f;
         var spawnRot = pawn.transform.rotation;
 
         var capturedTarget = lockedTarget;

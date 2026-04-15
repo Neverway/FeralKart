@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class FeKaItem_TommyGun : ItemBehaviour
+public class FeKaItem_ScatterShotgun : ItemBehaviour
 {
     #region========================================( Variables )======================================================//
     /*-----[ Inspector Variables ]------------------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@ public class FeKaItem_TommyGun : ItemBehaviour
     public GameObject bulletPrefab;
     public float fireRate = 0.05f; 
     public DamageSource damageSource;
+    public float bulletSpread = 0.2f;
 
 
     /*-----[ External Variables ]-------------------------------------------------------------------------------------*/
@@ -57,7 +58,7 @@ public class FeKaItem_TommyGun : ItemBehaviour
         if (stats == null) return false;
 
         // Picking up ammo
-        if (stats.utility != null && stats.utility.itemBehaviour is FeKaItem_TommyGun existingGun)
+        if (stats.utility != null && stats.utility.itemBehaviour is FeKaItem_ScatterShotgun existingGun)
         {
             existingGun.ammo = maxAmmo;
             return false;
@@ -76,27 +77,45 @@ public class FeKaItem_TommyGun : ItemBehaviour
         // Fire delay
         if (ammo <= 0 || Time.time < nextFireTime) return;
         
-        var spawnPos = pawn.FeKaCurrentStats.projectileSpawnPoint.position + pawn.FeKaCurrentStats.projectileSpawnPoint.forward * 1.5f;
-        var spawnRot = pawn.transform.rotation;
+        // Top row
+        SpawnBullet(pawn,new Vector3(0.25f,0.25f,0.00f),new Vector3(1.00f,1.00f,0.00f));
+        SpawnBullet(pawn,new Vector3(0.00f,0.25f,0.00f),new Vector3(0.00f,1.00f,0.00f));
+        SpawnBullet(pawn,new Vector3(-0.25f,0.25f,0.00f),new Vector3(-1.00f,1.00f,0.00f));
+
+        // Middle row
+        SpawnBullet(pawn,new Vector3(0.25f,0.00f,0.00f),new Vector3(1.00f,0.00f,0.00f));
+        SpawnBullet(pawn,new Vector3(0.00f,0.00f,0.00f),new Vector3(0.00f,0.00f,0.00f));
+        SpawnBullet(pawn,new Vector3(-0.25f,0.00f,0.00f),new Vector3(-1.00f,0.00f,0.00f));
+
+        // Bottom row
+        SpawnBullet(pawn,new Vector3(0.25f,-0.25f,0.00f),new Vector3(1.00f,-1.00f,0.00f));
+        SpawnBullet(pawn,new Vector3(0.00f,-0.25f,0.00f),new Vector3(0.00f,-1.00f,0.00f));
+        SpawnBullet(pawn,new Vector3(-0.25f,-0.25f,0.00f),new Vector3(-1.00f,-1.00f,0.00f));
+        
+        ammo--;
+        nextFireTime = Time.time + fireRate;
+    }
+
+    private void SpawnBullet(FeKaPawn pawn, Vector3 positionOffset, Vector3 spreadDirection)
+    {
+        var baseForward = pawn.FeKaCurrentStats.projectileSpawnPoint.forward * 1.5f;
+        var spawnPos = pawn.FeKaCurrentStats.projectileSpawnPoint.position + baseForward + positionOffset;
+
+        Vector3 finalDirection = spreadDirection * bulletSpread;
+        var spawnRot = Quaternion.LookRotation(finalDirection);
 
         // Fire
         NetSpawner.Spawn(bulletPrefab.name, spawnPos, spawnRot, (bulletObject, networkId) =>
         {
-
-            var homing = bulletObject.GetComponentsInChildren<HomingRocket>();
-            foreach (var home in homing)
+            var homing = bulletObject.GetComponent<HomingRocket>();
+            if (homing != null)
             {
-                if (home != null)
-                {
-                    home.exemptPawns.Add(pawn);
-                    home.damageInfo.instigator = pawn;
-                    home.damageInfo.type = DamageType.Explosive;
-                    home.damageInfo.source = damageSource;
-                }
+                homing.exemptPawns.Add(pawn);
+                homing.damageInfo.instigator = pawn;
+                homing.damageInfo.type = DamageType.Explosive;
+                homing.damageInfo.source = damageSource;
             }
         });
-        ammo--;
-        nextFireTime = Time.time + fireRate;
     }
 
     public override void Reset()

@@ -314,7 +314,7 @@ MonoBehaviour:
   targetAimOffset: {x: 0, y: 0.4, z: 0}
   turnRate: 90
   exemptPawns: []
-  timeUntilFriendlyFireEnabled: 1.5
+  timeUntilFriendlyFireEnabled: 2
   collisionBehaviour: 1
   collisionRadius: 0.25
   delayBeforeCollisionEnabled: 0

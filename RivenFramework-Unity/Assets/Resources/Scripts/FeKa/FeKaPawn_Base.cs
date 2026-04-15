@@ -298,11 +298,13 @@ public class FeKaPawn_Base : FeKaPawn
         {
             cinemachineTransposer ??= viewPoint.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineTransposer>();
             cinemachineTransposer.m_FollowOffset.z = 6;
+            FeKaCurrentStats.projectileSpawnPoint.localRotation = Quaternion.Euler(new Vector3(0, 180, 0));
         }
         else if (inputActions.LookBehind.WasReleasedThisFrame())
         {
             cinemachineTransposer ??= viewPoint.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineTransposer>();
             cinemachineTransposer.m_FollowOffset.z = -6;
+            FeKaCurrentStats.projectileSpawnPoint.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
         }
         
         // CarFX
