@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text.Json;
 using System.Threading;
+using System.Collections;
+using System.Linq;
 
 public class FeralKartGameRules : IGameRules
 {
@@ -43,6 +45,8 @@ public class FeralKartGameRules : IGameRules
     /*-----[ Lookup Table 3: Race Results Per Player ]---------------------------------------------------------*/
     private readonly Dictionary<ConnectedPlayer, FinishPacket> raceResults = new();
     private readonly object raceResultsLock = new object();
+    private readonly HashSet<ConnectedPlayer> activeRacers = new();
+    private readonly object activeRacersLock = new object();
 
     /*-----[ Threads ]-----------------------------------------------------------------------------------------*/
     private Thread? intermissionThread;
@@ -344,6 +348,8 @@ public class FeralKartGameRules : IGameRules
     private void SpawnAllPlayers()
     {
         var allPlayers = engine.GetConnectedPlayers();
+        lock (activeRacersLock) activeRacers.Clear();
+        
         foreach (var player in allPlayers)
         {
             string choice;
@@ -356,6 +362,11 @@ public class FeralKartGameRules : IGameRules
                 string networkObjectId = engine.RequestSpawnAndGetId("prefab_spectator", 0f, 0f, 0f, 0f, 0f, 0f);
                 lock (playerNetworkObjectsLock)
                     playerNetworkObjects[player] = networkObjectId;
+            }
+            else
+            {
+                lock (activeRacersLock)
+                    activeRacers.Add(player);
             }
         }
     }
@@ -394,15 +405,10 @@ public class FeralKartGameRules : IGameRules
         lock (raceResultsLock)
             raceResults[player] = finishPacket;
 
-        // Check if all non-spectator players have now finished or failed
-        var allPlayers = engine.GetConnectedPlayers();
-        List<ConnectedPlayer> racers;
-        lock (playerChoicesLock)
-            racers = allPlayers.FindAll(p => playerChoices.TryGetValue(p, out var choice) && choice != "spectate");
-
         bool allRacersDone;
+        lock (activeRacersLock)
         lock (raceResultsLock)
-            allRacersDone = racers.Count > 0 && racers.TrueForAll(p => raceResults.ContainsKey(p));
+            allRacersDone = activeRacers.Count > 0 && activeRacers.All(p => raceResults.ContainsKey(p));
 
         if (allRacersDone)
         {
@@ -414,6 +420,7 @@ public class FeralKartGameRules : IGameRules
 
     private void OnRaceEnd()
     {
+        raceTimerThread?.Interrupt();
         // Build the results list sorted by placement, with DNFs at the bottom
         List<KeyValuePair<ConnectedPlayer, FinishPacket>> sortedResults;
         lock (raceResultsLock)

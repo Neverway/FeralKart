@@ -80,16 +80,19 @@ public class FeKaItem_TommyGun : ItemBehaviour
         var spawnRot = pawn.transform.rotation;
 
         // Fire
-        NetSpawner.Spawn("Rocket", spawnPos, spawnRot, (bulletObject, networkId) =>
+        NetSpawner.Spawn(bulletPrefab.name, spawnPos, spawnRot, (bulletObject, networkId) =>
         {
 
-            var homing = bulletObject.GetComponent<HomingRocket>();
-            if (homing != null)
+            var homing = bulletObject.GetComponentsInChildren<HomingRocket>();
+            foreach (var home in homing)
             {
-                homing.exemptPawns.Add(pawn);
-                homing.damageInfo.instigator = pawn;
-                homing.damageInfo.type = DamageType.Explosive;
-                homing.damageInfo.source = damageSource;
+                if (home != null)
+                {
+                    home.exemptPawns.Add(pawn);
+                    home.damageInfo.instigator = pawn;
+                    home.damageInfo.type = DamageType.Explosive;
+                    home.damageInfo.source = damageSource;
+                }
             }
         });
         ammo--;

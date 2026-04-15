@@ -186,7 +186,7 @@ public class FeKaItem_RocketLauncher : ItemBehaviour
         var capturedTarget = lockedTarget;
 
         // Fire
-        NetSpawner.Spawn("Rocket", spawnPos, spawnRot, (rocketObject, networkId) =>
+        NetSpawner.Spawn(rocketPrefab.name, spawnPos, spawnRot, (rocketObject, networkId) =>
         {
 
             var homing = rocketObject.GetComponent<HomingRocket>();

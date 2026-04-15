@@ -72,6 +72,10 @@ public class FeKaPawnStats : PawnStats
     public int finishPlacement;
     public float finishTime;
     public RacerState racerState;
+    public int kills;
+    public float damageTaken;
+    public float damageDealt;
+    public float damageHealed;
     
     public enum RacerState
     {

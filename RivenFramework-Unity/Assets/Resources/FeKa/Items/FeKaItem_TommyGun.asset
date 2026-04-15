@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: FeKaItem_TommyGun
   m_EditorClassIdentifier: 
   details:
-    itemName: Oxenfree
-    itemDescription: Gods quake in their boots at the might of the OXENFREE
+    itemName: Tommy Gun
+    itemDescription: 
     icon: {fileID: 21300000, guid: bbc97cfa365d073e4b80bd77cc8c9722, type: 3}
     respawnTime: 3
-    chargeAmount: 5
+    chargeAmount: 30
     passiveRecharge: 1
-    rarity: 4
+    rarity: 3
   itemBehaviour:
     rid: 8346923364940251141
   references:
@@ -29,10 +29,10 @@ MonoBehaviour:
       type: {class: FeKaItem_TommyGun, ns: , asm: Assembly-CSharp}
       data:
         maxAmmo: 100
-        bulletPrefab: {fileID: 6598383830466623576, guid: 219fbfc5676c63d9490c08b53e893c1c,
+        bulletPrefab: {fileID: 6598383830466623576, guid: a0ce79a9024e6c477b9b7a2a8dcee81c,
           type: 3}
         fireRate: 0.05
         damageSource:
           icon: {fileID: 21300000, guid: bbc97cfa365d073e4b80bd77cc8c9722, type: 3}
-          name: Oxenfree
+          name: Tommy Gun
           gameObject: {fileID: 0}

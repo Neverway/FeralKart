@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7324bb4c1e44b408795ada7e2b4c66f5, type: 3}
+  m_Name: FeKaItem_ScatterShotgun
+  m_EditorClassIdentifier: 
+  details:
+    itemName: Scatter Shotgun
+    itemDescription: 
+    icon: {fileID: 21300000, guid: 265af68042994bda6bf5e1f63b7585b1, type: 3}
+    respawnTime: 3
+    chargeAmount: 30
+    passiveRecharge: 1
+    rarity: 3
+  itemBehaviour:
+    rid: 8346923364940251141
+  references:
+    version: 2
+    RefIds:
+    - rid: 8346923364940251141
+      type: {class: FeKaItem_TommyGun, ns: , asm: Assembly-CSharp}
+      data:
+        maxAmmo: 5
+        bulletPrefab: {fileID: 6152427140767995075, guid: c00b74b5d21b05510a0c7f9167bf9ce9,
+          type: 3}
+        fireRate: 1
+        damageSource:
+          icon: {fileID: 21300000, guid: 265af68042994bda6bf5e1f63b7585b1, type: 3}
+          name: Scatter Shotgun
+          gameObject: {fileID: 0}
