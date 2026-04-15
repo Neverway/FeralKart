@@ -20,7 +20,6 @@ public class FeKaItem_ScatterShotgun : ItemBehaviour
     public GameObject bulletPrefab;
     public float fireRate = 0.05f; 
     public DamageSource damageSource;
-    public float bulletSpread = 0.2f;
 
 
     /*-----[ External Variables ]-------------------------------------------------------------------------------------*/
@@ -77,32 +76,30 @@ public class FeKaItem_ScatterShotgun : ItemBehaviour
         // Fire delay
         if (ammo <= 0 || Time.time < nextFireTime) return;
         
-        // Top row
-        SpawnBullet(pawn,new Vector3(0.25f,0.25f,0.00f),new Vector3(1.00f,1.00f,0.00f));
-        SpawnBullet(pawn,new Vector3(0.00f,0.25f,0.00f),new Vector3(0.00f,1.00f,0.00f));
-        SpawnBullet(pawn,new Vector3(-0.25f,0.25f,0.00f),new Vector3(-1.00f,1.00f,0.00f));
-
-        // Middle row
-        SpawnBullet(pawn,new Vector3(0.25f,0.00f,0.00f),new Vector3(1.00f,0.00f,0.00f));
-        SpawnBullet(pawn,new Vector3(0.00f,0.00f,0.00f),new Vector3(0.00f,0.00f,0.00f));
-        SpawnBullet(pawn,new Vector3(-0.25f,0.00f,0.00f),new Vector3(-1.00f,0.00f,0.00f));
-
-        // Bottom row
-        SpawnBullet(pawn,new Vector3(0.25f,-0.25f,0.00f),new Vector3(1.00f,-1.00f,0.00f));
-        SpawnBullet(pawn,new Vector3(0.00f,-0.25f,0.00f),new Vector3(0.00f,-1.00f,0.00f));
-        SpawnBullet(pawn,new Vector3(-0.25f,-0.25f,0.00f),new Vector3(-1.00f,-1.00f,0.00f));
+        SpawnBullet(pawn, new Vector3(0.25f,0.25f,0), new Vector3(0.25f,0.25f,0));
+        SpawnBullet(pawn, new Vector3(0,0.25f,0), new Vector3(0.25f,0,0));
+        SpawnBullet(pawn, new Vector3(-0.25f,0.25f,0), new Vector3(0.25f,-0.25f,0));
+        
+        SpawnBullet(pawn, new Vector3(0.25f,0,0), new Vector3(0,0.25f,0));
+        SpawnBullet(pawn, new Vector3(0,0,0), new Vector3(0,0,0));
+        SpawnBullet(pawn, new Vector3(-0.25f,0,0), new Vector3(0,-0.25f,0));
+        
+        SpawnBullet(pawn, new Vector3(0.25f,-0.25f,0), new Vector3(-0.25f,0.25f,0));
+        SpawnBullet(pawn, new Vector3(0,-0.25f,0), new Vector3(-0.25f,0,0));
+        SpawnBullet(pawn, new Vector3(-0.25f,-0.25f,0), new Vector3(-0.25f,-0.25f,0));
         
         ammo--;
         nextFireTime = Time.time + fireRate;
     }
 
-    private void SpawnBullet(FeKaPawn pawn, Vector3 positionOffset, Vector3 spreadDirection)
+    private void SpawnBullet(FeKaPawn pawn, Vector3 positionOffset, Vector3 rotationOffset)
     {
-        var baseForward = pawn.FeKaCurrentStats.projectileSpawnPoint.forward * 1.5f;
-        var spawnPos = pawn.FeKaCurrentStats.projectileSpawnPoint.position + baseForward + positionOffset;
-
-        Vector3 finalDirection = spreadDirection * bulletSpread;
-        var spawnRot = Quaternion.LookRotation(finalDirection);
+        var spawnRot = pawn.FeKaCurrentStats.projectileSpawnPoint.rotation * Quaternion.Euler(rotationOffset);
+        
+        positionOffset = spawnRot * positionOffset;
+        var spawnPos = pawn.FeKaCurrentStats.projectileSpawnPoint.position + pawn.FeKaCurrentStats.projectileSpawnPoint.forward * 1.5f + positionOffset;
+        
+        spawnRot = Quaternion.LookRotation(spawnPos - pawn.FeKaCurrentStats.projectileSpawnPoint.position);
 
         // Fire
         NetSpawner.Spawn(bulletPrefab.name, spawnPos, spawnRot, (bulletObject, networkId) =>
