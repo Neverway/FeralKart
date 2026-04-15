@@ -159,7 +159,7 @@ namespace Neverway.Framework.LogicSystem
             if (_other.CompareTag("Pawn"))
             {
                 // Get a reference to the entity component
-                targetEntity = _other.gameObject.GetComponent<Pawn>();
+                targetEntity = _other.gameObject.GetComponentInParent<Pawn>();
                 // Exit if they are not on the effected team
                 if (!IsOnAffectedTeam(targetEntity)) return;
                 // Add the entity to the list if they are not already present
