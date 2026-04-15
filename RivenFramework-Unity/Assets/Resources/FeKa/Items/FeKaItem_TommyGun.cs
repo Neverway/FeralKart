@@ -77,7 +77,7 @@ public class FeKaItem_TommyGun : ItemBehaviour
         if (ammo <= 0 || Time.time < nextFireTime) return;
         
         var spawnPos = pawn.FeKaCurrentStats.projectileSpawnPoint.position + pawn.FeKaCurrentStats.projectileSpawnPoint.forward * 1.5f;
-        var spawnRot = pawn.transform.rotation;
+        var spawnRot = pawn.FeKaCurrentStats.projectileSpawnPoint.rotation;
 
         // Fire
         NetSpawner.Spawn(bulletPrefab.name, spawnPos, spawnRot, (bulletObject, networkId) =>
