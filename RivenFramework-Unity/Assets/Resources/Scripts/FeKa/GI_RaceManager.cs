@@ -131,7 +131,7 @@ public class GI_RaceManager : MonoBehaviour
         }
 
         // All players but one eliminated
-        if (racers.Count > 1)
+        /*if (racers.Count > 1)
         {
             int activeRacers = racers.Count - eliminatedRacers.Count - placedRacers.Count;
             if (activeRacers <= 1)
@@ -139,7 +139,7 @@ public class GI_RaceManager : MonoBehaviour
                 print("All racers finished or were eliminated");
                 EndRace();
             }
-        }
+        }*/
 
         // Just a solo player
         if (racers.Count == 1)
@@ -173,7 +173,7 @@ public class GI_RaceManager : MonoBehaviour
         EndRace();
     }
 
-    private void EndRace()
+    public void EndRace()
     {
         if (raceEnded) return;
         raceEnded = true;
