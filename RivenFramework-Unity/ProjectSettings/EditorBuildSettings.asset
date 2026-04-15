@@ -39,7 +39,7 @@ EditorBuildSettings:
     path: Assets/Resources/Maps/RaceTracks/corgeo_facility.unity
     guid: a59b4f07c556b9c16a5840e4319b5e01
   - enabled: 1
-    path: Assets/Resources/Maps/RaceTracks/fo_mechanyon.unity
+    path: Assets/Resources/Maps/RaceTracks/fo_drill.unity
     guid: 1dd1b6cc40e136d1a86203877c3e64b0
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: f15e32241878d7bdda685b0a87c02c59,

@@ -135,6 +135,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DetailProminence: 0.6
     - _DstBlend: 0
+    - _EmissionDivision: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.95
     - _GlossyReflections: 1
@@ -156,6 +157,7 @@ Material:
     - _Tiling: 1
     - _UVSec: 0
     - _UseSlice: 0
+    - _ZTest: 4
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
@@ -166,5 +168,5 @@ Material:
     - _SliceCenterTwo: {r: -2.81, g: 1.4, b: -22.31, a: 0}
     - _SliceNormalOne: {r: 0.89228106, g: -0.45142555, b: 0.007052481, a: 0}
     - _SliceNormalTwo: {r: -0.887553, g: 0.4395855, b: -0.13789363, a: 0}
-    - _Tiling: {r: 1, g: 1, b: 0, a: 0}
+    - _Tiling: {r: 0.2, g: 0.2, b: 0, a: 0}
   m_BuildTextureStacks: []
