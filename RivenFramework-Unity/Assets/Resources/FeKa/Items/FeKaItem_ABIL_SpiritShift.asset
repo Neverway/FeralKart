@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   details:
     itemName: Spirit Shift
-    itemDescription: Temporarily gain the abilities of a random animal, (eg double
+    itemDescription: Temporarily gain the abilities of a random animal, (e.g. double
       jump, bonus damage, faster movement)
     icon: {fileID: 21300000, guid: 72ede4f83c435f432933744b64698222, type: 3}
     respawnTime: 3

@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   details:
     itemName: Death Line
-    itemDescription: Colors pallet is swapped, a line appears that when following
-      it, the car speeds up, players will have weakpoints exposed that when destroyed
-      takes a life from that player and gives them to the this player
+    itemDescription: While active, a line appears that, when following it, you gain
+      movment speed. During Death Line players will have weakpoints exposed that,
+      when destroyed, steals a stock from that player and gives it to the user.
     icon: {fileID: 21300000, guid: 72ede4f83c435f432933744b64698222, type: 3}
     respawnTime: 3
     chargeAmount: 120
