@@ -247,7 +247,7 @@ public class GI_RaceManager : MonoBehaviour
         lastRaceResults = resultsPacket?.Results ?? new List<RaceResultEntry>();
         
         foreach (var racer in racers)
-            racer.physicsbody.isKinematic = true;
+            if (racer.physicsbody) racer.physicsbody.isKinematic = true;
         
         var widgetManager = GameInstance.Get<GI_WidgetManager>();
         if (widgetManager != null && !widgetManager.GetExistingWidget(RaceResultsWidget.name))
