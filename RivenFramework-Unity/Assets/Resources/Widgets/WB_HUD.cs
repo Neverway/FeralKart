@@ -80,7 +80,7 @@ public class WB_HUD : MonoBehaviour
         lap.text = ($"Lap {targetFeKaPawn.FeKaCurrentStats.currentLap}/{raceManager.totalLaps}");
         speed.text = ($"{targetFeKaPawn.physicsbody.velocity.magnitude:f2} m/s");
 
-        int placementNum = raceManager.GetRacerPlace(targetFeKaPawn);
+        int placementNum = raceManager.GetRacerPlacement(targetFeKaPawn);
         if (placementNum == 1)
         {
             placement.text = ($"1st");
