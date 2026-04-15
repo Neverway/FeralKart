@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5835416268781208394}
   - component: {fileID: 8081963345223454661}
   - component: {fileID: 8837467149876895435}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Explosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,7 +123,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6935971948769726028}
   - component: {fileID: 5010467526722696397}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -261,7 +261,7 @@ GameObject:
   - component: {fileID: 5772744373558033423}
   - component: {fileID: 5354260543670442827}
   - component: {fileID: 8722727200707923212}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Rocket
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -305,12 +305,22 @@ MonoBehaviour:
     amount: -70
     type: 0
     instigator: {fileID: 0}
-    source: 
+    source:
+      icon: {fileID: 0}
+      name: 
+      gameObject: {fileID: 0}
   explosionEffect: {fileID: 888699275537371755, guid: 2fd451d6f30a8ec09b2bbedd5cfae416,
     type: 3}
   targetAimOffset: {x: 0, y: 0.4, z: 0}
   turnRate: 90
   exemptPawns: []
+  timeUntilFriendlyFireEnabled: 1.5
+  collisionBehaviour: 1
+  collisionRadius: 0.25
+  delayBeforeCollisionEnabled: 0
+  collisionMask:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!65 &5354260543670442827
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -367,7 +377,7 @@ GameObject:
   - component: {fileID: 2055505304362550227}
   - component: {fileID: 7086928102218306340}
   - component: {fileID: 4117162805461253550}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -681,7 +681,7 @@ public class FeKaPawn_Base : FeKaPawn
         }
 
         Instantiate(deathFX, transform.position, transform.rotation, null);
-        if (FeKaCurrentStats.stocks != 0)
+        if (FeKaCurrentStats.stocks > 0)
         {
             FeKaCurrentStats.stocks -= 1;
             StartCoroutine(AwaitRespawn());
@@ -705,12 +705,14 @@ public class FeKaPawn_Base : FeKaPawn
      
         print($"{damageInfo.instigator} used {damageInfo.source} to deal {damageInfo.amount} {damageInfo.type} damage to {gameObject.name}");
         
+        FeKaCurrentStats.damageTaken += damageInfo.amount;
         FeKaCurrentStats.characterSpriteRenderer.material.color = Color.red;
         FeKaCurrentStats.characterSpriteRenderer.material.DOColor(new Color(1, 1, 1, 1), 1);
     }
     private void OnHeal(DamageInfo damageInfo)
     {
         print($"{damageInfo.instigator} used {damageInfo.source} to heal {damageInfo.amount} {damageInfo.type} damage on {gameObject.name}");
+        FeKaCurrentStats.damageHealed += damageInfo.amount;
         FeKaCurrentStats.characterSpriteRenderer.material.color = Color.green;
         FeKaCurrentStats.characterSpriteRenderer.material.DOColor(new Color(1, 1, 1, 1), 1);
     }

@@ -15,11 +15,11 @@ MonoBehaviour:
   details:
     itemName: Shield
     itemDescription: Grants 10 defense
-    icon: {fileID: 21300000, guid: 0ac4729f677ddedf980d0466b576ebf8, type: 3}
+    icon: {fileID: 21300000, guid: f194c16dcb12d218289261d388618ad9, type: 3}
     respawnTime: 3
-    chargeAmount: 60
+    chargeAmount: 30
     passiveRecharge: 1
-    rarity: 0
+    rarity: 2
   itemBehaviour:
     rid: 8346923364940251140
   references:

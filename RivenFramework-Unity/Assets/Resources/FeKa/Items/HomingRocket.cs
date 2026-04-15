@@ -32,11 +32,29 @@ public class HomingRocket : MonoBehaviour
 
     private FeKaPawn _target;
     private float _age;
+    
+    [Header("Collision Tests")]
+    public float timeUntilFriendlyFireEnabled;
+    public ObjectCollisionBehaviour collisionBehaviour;
+    public float collisionRadius;
+    public float delayBeforeCollisionEnabled;
+    public LayerMask collisionMask;
+    private bool collisionCheckEnabled;
+    public int maxBounces;
+    public float damageAddOnBounce;
+    private int bounces;
 
     /*-----[ External Variables ]-------------------------------------------------------------------------------------*/
 
 
     /*-----[ Internal Variables ]-------------------------------------------------------------------------------------*/
+    private void Start()
+    {
+        StartCoroutine(FriendlyFireCooldown());
+        StartCoroutine(DelayBeforeCollisionEnabled());
+        bounces = maxBounces;
+    }
+
     private void Update()
     {
         if (!GetComponent<NetTransform>().hasAuthority) return;
@@ -57,9 +75,51 @@ public class HomingRocket : MonoBehaviour
                 targetRot,
                 turnRate * Time.deltaTime);
         }
-
-        transform.position += transform.forward * speed * Time.deltaTime;
     }
+
+    private void FixedUpdate()
+    {
+        if (!GetComponent<NetTransform>().hasAuthority) return;
+        var movement = transform.forward * speed * Time.deltaTime;
+        RaycastHit hit;
+        if (Physics.SphereCast(transform.position, collisionRadius, transform.forward, out hit, movement.magnitude,
+                collisionMask))
+        {
+            if (collisionCheckEnabled)
+            {
+                switch (collisionBehaviour)
+                {
+                    case ObjectCollisionBehaviour.none:
+                        break;
+                    case ObjectCollisionBehaviour.destroy:
+                        Destroy(gameObject);
+                        break;
+                    case ObjectCollisionBehaviour.stick:
+                        gameObject.transform.parent = hit.transform;
+                        break;
+                    case ObjectCollisionBehaviour.bounce:
+                        if (maxBounces > 0)
+                        {
+                            if (bounces <= 0)
+                            {
+                                Destroy(gameObject);
+                                return;
+                            }
+                            bounces--;
+                        }
+                        damageInfo.amount -= damageAddOnBounce;
+                        var reflDirection = Vector3.Reflect(transform.forward, hit.normal);
+                        transform.rotation = Quaternion.LookRotation(reflDirection);
+                        break;
+                }
+            }
+        }
+        else
+        {
+            transform.position += movement;
+        }
+    }
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -84,6 +144,16 @@ public class HomingRocket : MonoBehaviour
     }
 
     /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/
+    private IEnumerator FriendlyFireCooldown()
+    {
+        yield return new WaitForSeconds(timeUntilFriendlyFireEnabled);
+        exemptPawns.Clear();
+    }
+    private IEnumerator DelayBeforeCollisionEnabled()
+    {
+        yield return new WaitForSeconds(delayBeforeCollisionEnabled);
+        collisionCheckEnabled = true;
+    }
 
 
     #endregion

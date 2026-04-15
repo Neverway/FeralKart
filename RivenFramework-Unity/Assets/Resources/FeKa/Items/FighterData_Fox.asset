@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 723b1623d61e42084925dd42097fcf7c, type: 3}
+  m_Name: FighterData_Fox
+  m_EditorClassIdentifier: 
+  fighterName: Ryota Fox
+  fighterSubtitle: Last Sunriser
+  primaryColor: {r: 0.6156863, g: 0.18431373, b: 0.015686275, a: 1}
+  secondaryColor: {r: 0.41960785, g: 0.1254902, b: 0.011764706, a: 1}
+  tertiaryColor: {r: 1, g: 0.7564382, b: 0.33725488, a: 1}
+  fighterIcon: {fileID: 21300000, guid: 0b040e03fdf0537a180f7e3998731443, type: 3}
+  finalStrike: {fileID: 11400000, guid: 49c18f1dc1ea74e8da6f1ee28361b30a, type: 2}
+  ability: {fileID: 11400000, guid: 23aeb317b582b5beb99a38f0b01a0c2b, type: 2}
+  passive: {fileID: 11400000, guid: c33ed859654572a63897dfe77a9bdda6, type: 2}

@@ -17,7 +17,7 @@ MonoBehaviour:
     itemDescription: Lock on and fire away!
     icon: {fileID: 21300000, guid: 7f4dadc81c8f453a6ae6580f38eb4290, type: 3}
     respawnTime: 3
-    chargeAmount: 5
+    chargeAmount: 30
     passiveRecharge: 1
     rarity: 3
   itemBehaviour:

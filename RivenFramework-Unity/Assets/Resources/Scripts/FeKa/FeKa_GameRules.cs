@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using RivenFramework;
 using UnityEngine;
 
@@ -119,74 +120,89 @@ public class FeKa_GameRules : MonoBehaviour
 
     private void OnRawPacketReceived(string packet)
     {
-        string statePrefix = networkManager.protocolMagic + ":STATE:";
-        if (!packet.StartsWith(statePrefix)) return;
-
-        string json = packet.Substring(statePrefix.Length);
-        var gameState = JsonUtility.FromJson<FeKa_GameStatePacket>(json);
-        if (gameState == null) return;
-
-        lastGameState = gameState;
-        currentMapName = gameState.MapName;
-
-        string previousPhase = currentPhase;
-        currentPhase = gameState.Phase;
-
-        if (!receivedFirstState)
+        string resultPrefix = networkManager.protocolMagic + ":RESULTS:";
+        if (packet.StartsWith(resultPrefix))
         {
-            receivedFirstState = true;
-
-            if (gameState.Phase != "InProgress")
-                LoadWorldAndThen(gameState.MapName, () => StartCoroutine(ShowFighterSelect()));
-            else
-                LoadWorldAndThen(gameState.MapName, () => SpawnSpectatorBody());
-        }
-        else
-        {
-            // Server started loading a new map
-            if (gameState.Phase == "Loading" && previousPhase != "Loading")
+            var raceManager = GameInstance.Get<GI_RaceManager>();
+            if (raceManager != null)
             {
-                DespawnSpectatorBody();
-                LoadWorldAndThen(gameState.MapName, () => SpawnSpectatorBody());
+                string json = packet.Substring(resultPrefix.Length);
+                var resultsPacket = JsonUtility.FromJson<RaceResultsPacket>(json);
+                raceManager.ShowResultsFromServer(resultsPacket);
             }
-            // Loading finished and the game is now in progress
-			// the server has spawned the player's kart so the temporary spectator body can be despawned
-            else if (gameState.Phase == "InProgress" && previousPhase == "Loading")
+            return;
+        }
+        
+        string statePrefix = networkManager.protocolMagic + ":STATE:";
+        if (packet.StartsWith(statePrefix))
+        {
+            string json = packet.Substring(statePrefix.Length);
+            var gameState = JsonUtility.FromJson<FeKa_GameStatePacket>(json);
+            if (gameState == null) return;
+
+            lastGameState = gameState;
+            currentMapName = gameState.MapName;
+
+            string previousPhase = currentPhase;
+            currentPhase = gameState.Phase;
+
+            if (!receivedFirstState)
             {
-    
-                if (!string.IsNullOrEmpty(pendingCharacterChoice) && pendingCharacterChoice != "spectate")
+                receivedFirstState = true;
+
+                if (gameState.Phase != "InProgress")
+                    LoadWorldAndThen(gameState.MapName, () => StartCoroutine(ShowFighterSelect()));
+                else
+                    LoadWorldAndThen(gameState.MapName, () => SpawnSpectatorBody());
+            }
+            else
+            {
+                // Server started loading a new map
+                if (gameState.Phase == "Loading" && previousPhase != "Loading")
                 {
                     DespawnSpectatorBody();
-                    NetSpawner.Spawn(pendingCharacterChoice, Vector3.zero, Quaternion.identity, (spawnedObject, networkId) =>
-                    {
-                        var kart = spawnedObject.GetComponent<FeKaPawn_Base>();
-                        if (kart != null)
-                        {
-                            kart.Init();
-                            kart.controlMode = ControlMode.LocalPlayer;
-                            Cursor.lockState = CursorLockMode.Locked;
-                            Cursor.visible = false;
-                        }
-                    });
+                    LoadWorldAndThen(gameState.MapName, () => SpawnSpectatorBody());
                 }
-                
-                GameInstance.Get<GI_RaceManager>().StartRace();
+                // Loading finished and the game is now in progress
+			    // the server has spawned the player's kart so the temporary spectator body can be despawned
+                else if (gameState.Phase == "InProgress" && previousPhase == "Loading")
+                {
+        
+                    if (!string.IsNullOrEmpty(pendingCharacterChoice) && pendingCharacterChoice != "spectate")
+                    {
+                        DespawnSpectatorBody();
+                        NetSpawner.Spawn(pendingCharacterChoice, Vector3.zero, Quaternion.identity, (spawnedObject, networkId) =>
+                        {
+                            var kart = spawnedObject.GetComponent<FeKaPawn_Base>();
+                            if (kart != null)
+                            {
+                                kart.Init();
+                                kart.controlMode = ControlMode.LocalPlayer;
+                                Cursor.lockState = CursorLockMode.Locked;
+                                Cursor.visible = false;
+                            }
+                        });
+                    }
+                    
+                    GameInstance.Get<GI_RaceManager>().StartRace();
+                }
+                // Game went in-progress but we missed the Loading phase (joined late)
+                else if (gameState.Phase == "InProgress" && previousPhase == "Intermission")
+                {
+                    LoadWorldAndThen(gameState.MapName, () => SpawnSpectatorBody());
+                }
+                // Race ended, return to intermission
+                else if (gameState.Phase == "Intermission" && previousPhase == "InProgress")
+                {
+                    networkManager.DespawnAllNetworkObjects();
+                    DespawnSpectatorBody();
+                    StartCoroutine(ShowFighterSelect());
+                }
             }
-            // Game went in-progress but we missed the Loading phase (joined late)
-            else if (gameState.Phase == "InProgress" && previousPhase == "Intermission")
-            {
-                LoadWorldAndThen(gameState.MapName, () => SpawnSpectatorBody());
-            }
-            // Race ended, return to intermission
-            else if (gameState.Phase == "Intermission" && previousPhase == "InProgress")
-            {
-                networkManager.DespawnAllNetworkObjects();
-                DespawnSpectatorBody();
-                StartCoroutine(ShowFighterSelect());
-            }
-        }
 
-        OnGameStateReceived?.Invoke(gameState);
+            OnGameStateReceived?.Invoke(gameState);
+            return;
+        }
     }
 
     private void HandleKicked(string reason)
@@ -322,9 +338,29 @@ public class FeKa_GameRules : MonoBehaviour
     {
         if (networkManager == null || !networkManager.isConnected) return;
         
-        GameInstance.Get<GI_RaceManager>().StopRace();
         networkManager.SendPacket(networkManager.protocolMagic + ":FINISH:" + JsonUtility.ToJson(finishPacket));
     }
 
     #endregion
+}
+
+[Serializable]
+public class RaceResultEntry
+{
+    public string PlayerName;
+    public bool Failed;
+    public int Placement;
+    public float FinishTime;
+    public float HealthRemaining;
+    public int LivesRemaining;
+    public int Kills;
+    public float DamageTaken;
+    public float DamageDealt;
+    public float DamageHealed;
+}
+
+[Serializable]
+public class RaceResultsPacket
+{
+    public List<RaceResultEntry> Results = new();
 }
