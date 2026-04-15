@@ -191,6 +191,10 @@ public class GI_RaceManager : MonoBehaviour
 
     private void SendFinishAndShowResults(FeKaPawn_Base racer, bool failed)
     {
+        var widgetManager = GameInstance.Get<GI_WidgetManager>();
+        if (widgetManager != null && !widgetManager.GetExistingWidget(RaceFinishedWidget.name))
+            widgetManager.AddWidget(RaceFinishedWidget);
+        
         GameInstance.Get<FeKa_GameRules>().SendFinishPacket(new FeKa_FinishPacket
         {
             Failed = failed,
