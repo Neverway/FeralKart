@@ -38,6 +38,12 @@ public class WB_RaceResults : MonoBehaviour
     /*-----[ Mono Functions ]-----------------------------------------------------------------------------------------*/
     private void Start()
     {
+        
+        var widgetManager = GameInstance.Get<GI_WidgetManager>();
+        var finishWidget = widgetManager.GetExistingWidget("WB_RaceFinished");
+        if (finishWidget != null) Destroy(finishWidget);
+            
+        
         var raceManager = GameInstance.Get<GI_RaceManager>();
         if  (raceManager == null) return;
         
