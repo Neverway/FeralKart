@@ -298,7 +298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84fcae1b8934056b69259a16909b7264, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 35
+  speed: 45
   lifetime: 6
   explosionForce: 9000
   damageInfo:
@@ -321,6 +321,8 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 1
+  maxBounces: 0
+  damageAddOnBounce: 0
 --- !u!65 &5354260543670442827
 BoxCollider:
   m_ObjectHideFlags: 0

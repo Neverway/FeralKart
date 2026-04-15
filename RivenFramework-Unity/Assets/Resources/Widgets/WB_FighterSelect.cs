@@ -55,6 +55,7 @@ public class WB_FighterSelect : MonoBehaviour
         fekaGameRules = FindObjectOfType<FeKa_GameRules>();
         widgetManager ??= FindObjectOfType<GI_WidgetManager>();
         characterSelection ??= FindObjectOfType<CharacterSelection>();
+        fekaGameRules.pendingCharacterChoice="";
 
         readyButton.onClick.AddListener(OnClickReady);
         spectateButton.onClick.AddListener(OnClickSpectate);
