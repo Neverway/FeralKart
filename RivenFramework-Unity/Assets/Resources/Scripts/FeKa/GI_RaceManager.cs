@@ -123,6 +123,7 @@ public class GI_RaceManager : MonoBehaviour
                 eliminatedRacers.Add(racer);
         }
 
+        print(placedRacers.Count +" ==? " +racers.Count);
         if (placedRacers.Count == racers.Count)
         {
             print("All racers finished");
@@ -180,7 +181,8 @@ public class GI_RaceManager : MonoBehaviour
         raceInProgress = false;
         
         foreach (var racer in racers)
-            racer.physicsbody.isKinematic = true;
+            if (racer.physicsbody) 
+                racer.physicsbody.isKinematic = true;
         
         var localRacer = racers.Find(racer => racer.controlMode == ControlMode.LocalPlayer);
         if (localRacer != null && !placedRacers.Contains(localRacer))
