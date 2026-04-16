@@ -78,7 +78,7 @@ public class GI_RaceManager : MonoBehaviour
     /// </summary>
     private void UpdateStandings()
     {
-        checkpointTracker ??= FindObjectOfType<CheckpointTracker>();
+        checkpointTracker = FindObjectOfType<CheckpointTracker>();
         if (!checkpointTracker) return;
         var checkpointCount = checkpointTracker.raceCheckpoints.Count;
     
@@ -96,7 +96,7 @@ public class GI_RaceManager : MonoBehaviour
     /// </summary>
     private float GetRaceProgress(FeKaPawn_Base pawn, int checkpointCount)
     {
-        checkpointTracker ??= FindObjectOfType<CheckpointTracker>();
+        checkpointTracker = FindObjectOfType<CheckpointTracker>();
         var baseProgress = pawn.FeKaCurrentStats.currentLap * checkpointCount + pawn.FeKaCurrentStats.currentCheckpoint;
     
         var nextIndex = pawn.FeKaCurrentStats.currentCheckpoint;
@@ -112,11 +112,25 @@ public class GI_RaceManager : MonoBehaviour
     /// </summary>
     private IEnumerator RaceCountdown()
     {
+        
         yield return new WaitForSeconds(1); // Why was I waiting for 1 second here?
         // Apparently not waiting for a second here causes the players to stay frozen?
         
+        // Initialize the checkpoints
+        FindObjectOfType<CheckpointTracker>().Init();
+        
+        // Show the countdown
+        var widgetManager = GameInstance.Get<GI_WidgetManager>();
+        widgetManager.AddWidget(RaceCountdownWidget);
+        
+        // Reset any lingering race data
+        racers.Clear();
+        placedRacers.Clear();
+        eliminatedRacers.Clear();
+        raceEnded = false;
+        
         // Populate racers list and position racers at starting points
-        checkpointTracker ??= FindAnyObjectByType<CheckpointTracker>();
+        checkpointTracker = FindAnyObjectByType<CheckpointTracker>();
         var allPawns =  new List<FeKaPawn_Base>(FindObjectsOfType<FeKaPawn_Base>());
         for (int i = 0; i < allPawns.Count; i++)
         {
@@ -124,16 +138,16 @@ public class GI_RaceManager : MonoBehaviour
             
             if (checkpointTracker.raceStartPoints != null && i < checkpointTracker.raceStartPoints.Count)
             {
+                print($"Assinging pawn {allPawns[i].gameObject.name} at index {i}]");
                 var startPoint = checkpointTracker.raceStartPoints[i];
-                allPawns[i].transform.SetPositionAndRotation(startPoint.position, startPoint.rotation);
+                print(startPoint.position);
+                print(allPawns[i].transform.position);
+                if (allPawns[i] != null)
+                    allPawns[i].transform.SetPositionAndRotation(startPoint.position, startPoint.rotation);
             }
 
             racers.Add(allPawns[i]);
         }
-        
-        // Show the countdown
-        var widgetManager = GameInstance.Get<GI_WidgetManager>();
-        widgetManager.AddWidget(RaceCountdownWidget);
         
         // Wait for the countdown to finish
         yield return new WaitForSeconds(3);
@@ -148,6 +162,7 @@ public class GI_RaceManager : MonoBehaviour
         // Set the race flags
         timeRemaining = raceDuration;
         raceInProgress = true;
+        startTime = Time.deltaTime;
         countdownCoroutine = null;
     }
     
@@ -263,15 +278,6 @@ public class GI_RaceManager : MonoBehaviour
     {
         // Safety stop in case the countdown was running (which it shouldn't be (but this fixes that (if it did happen (which it shouldn't))))
         StopAllCoroutines();
-        
-        // Initialize the checkpoints
-        FindObjectOfType<CheckpointTracker>().Init();
-        
-        // Reset any lingering race data
-        racers.Clear();
-        placedRacers.Clear();
-        eliminatedRacers.Clear();
-        raceEnded = false;
         
         // Begin the countdown!
         countdownCoroutine = StartCoroutine(RaceCountdown());
