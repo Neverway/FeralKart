@@ -362,7 +362,7 @@ MonoBehaviour:
   syncPosition: 1
   syncRotation: 1
   syncScale: 0
-  interpolationSpeed: 15
+  interpolationSpeed: 30
   interpolationRotationSpeed: 720
   snapThreshold: 8
   extrapolationFactor: 0.5

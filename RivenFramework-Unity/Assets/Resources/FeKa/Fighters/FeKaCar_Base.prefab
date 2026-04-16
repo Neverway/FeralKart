@@ -21566,6 +21566,7 @@ MonoBehaviour:
     crouchColliderOffset: {x: 0, y: 0.25, z: 0}
   physicsbody: {fileID: 0}
   interactionPrefab: {fileID: 0}
+  networkPlayerName: 
   DeathScreenWidget: {fileID: 5675289539813747590, guid: f951f1626e8a081628c8e41d018c0094,
     type: 3}
   RespawnScreenWidget: {fileID: 5675289539813747590, guid: 9d3f675cf308c0ab6be40585eac73090,
@@ -21596,10 +21597,10 @@ MonoBehaviour:
   syncPosition: 1
   syncRotation: 1
   syncScale: 0
-  interpolationSpeed: 15
+  interpolationSpeed: 30
   interpolationRotationSpeed: 720
   snapThreshold: 8
-  extrapolationFactor: 0.5
+  extrapolationFactor: 0.295
   copyObjectIdentityFrom: {fileID: 0}
 --- !u!114 &4311029332587741033
 MonoBehaviour:
