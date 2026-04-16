@@ -56,8 +56,9 @@ public class WB_NetKillFeed_Entry : MonoBehaviour
         // Enable used elements
         instigatorEffect.gameObject.SetActive(_instigatorEffectIcon != null);
         instigator.gameObject.SetActive(_instigatorName != null);
-        source.gameObject.SetActive(_sourceIcon != null);
         instigatorMethod.gameObject.SetActive(_instigatorMethodIcon != null);
+        
+        source.sprite = _sourceIcon == null ? defaultDeathIcon : _sourceIcon;
         
         // Set their values
         if (_instigatorEffectIcon != null) instigatorEffect.sprite = _instigatorEffectIcon;

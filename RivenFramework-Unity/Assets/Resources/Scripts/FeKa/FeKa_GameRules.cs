@@ -180,6 +180,8 @@ public class FeKa_GameRules : MonoBehaviour
                                 kart.controlMode = ControlMode.LocalPlayer;
                                 Cursor.lockState = CursorLockMode.Locked;
                                 Cursor.visible = false;
+                                var nm = GameInstance.Get<GI_NetworkManager>();
+                                kart.networkPlayerName = nm?.localProfile.playerName ?? kart.displayName;
                             }
                         });
                     }

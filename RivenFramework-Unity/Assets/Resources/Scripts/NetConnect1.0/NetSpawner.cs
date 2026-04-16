@@ -70,6 +70,7 @@ public class SpawnBroadcastPacket
     public string NetworkObjectId;  // Server-assigned unique ID
     public string PrefabKey;
     public string OwnerEndpoint;    // The endpoint string of the client that requested the spawn
+    public string OwnerName;
     public float  PX, PY, PZ;
     public float  RX, RY, RZ;
 }

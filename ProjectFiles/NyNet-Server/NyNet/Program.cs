@@ -484,12 +484,17 @@ void HandleSpawnRequest(string message, IPEndPoint remote)
     var request = JsonSerializer.Deserialize<SpawnRequestPacket>(json);
     if (request == null) return;
 
+    ConnectedPlayer? requestingPlayer;
+    lock (playersLock)
+        requestingPlayer = FindPlayer(remote);
+    
     var broadcast = new SpawnBroadcastPacket
     {
         NetworkObjectId = Guid.NewGuid().ToString(),
         PrefabKey = request.PrefabKey,
         RequestId = request.RequestId,
         OwnerEndpoint = remote.ToString(),
+        OwnerName = requestingPlayer?.Name ?? "",
         PX = request.PX, PY = request.PY, PZ = request.PZ,
         RX = request.RX, RY = request.RY, RZ = request.RZ
     };
@@ -691,6 +696,18 @@ void ResolveVoteKick()
             BroadcastState();
         }
     }
+}
+
+void HandleKillFeed(string message, IPEndPoint remote)
+{
+    // Validate the sender is actually connected before relaying
+    var senderList = engine.GetConnectedPlayers();
+    bool isKnownSender = senderList.Any(p => p.EndPoint?.ToString() == remote.ToString());
+    if (!isKnownSender) return;
+
+    // Relay to everyone (including sender so their own feed updates)
+    engine.BroadcastToAll(message);
+    return;
 }
 
 
@@ -1129,6 +1146,7 @@ new Thread(() =>
             else if (message.StartsWith(PROTOCOL_MAGIC + ":VARSYNC:")) HandleVarSync(message, remote);
             else if (message.StartsWith(PROTOCOL_MAGIC + ":VOTEKICKREQ:")) HandleVoteKickRequest(message, remote);
             else if (message.StartsWith(PROTOCOL_MAGIC + ":VOTEKICKCAST:")) HandleVoteKickCast(message, remote);
+            else if (message.StartsWith(PROTOCOL_MAGIC + ":KILLFEED:")) HandleKillFeed(message, remote);
             // Any unrecognised prefix is forwarded to GameRules for game-specific packet handling
             else gameRules.OnUnknownPacket(message, remote);
         }

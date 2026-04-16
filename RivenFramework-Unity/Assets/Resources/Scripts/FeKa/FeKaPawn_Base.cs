@@ -668,18 +668,26 @@ public class FeKaPawn_Base : FeKaPawn
         // Only send the death packet from the owner
         if (controlMode == ControlMode.LocalPlayer)
         {
-            var nm = GameInstance.Get<GI_NetworkManager>();
-            if (nm != null)
+        }
+        var nm = GameInstance.Get<GI_NetworkManager>();
+        if (nm != null)
+        {
+            string instigatorName = null;
+            if (damageInfo.instigator is FeKaPawn_Base instigatorPawn)
+                instigatorName = !string.IsNullOrEmpty(instigatorPawn.networkPlayerName) ? instigatorPawn.networkPlayerName : instigatorPawn.displayName;
+            else
+                instigatorName = damageInfo.instigator?.displayName;
+
+            string recipientName = !string.IsNullOrEmpty(networkPlayerName) ? networkPlayerName : nm.localProfile.playerName;
+            
+            var killPacket = new KillFeedPacket
             {
-                var killPacket = new KillFeedPacket
-                {
-                    instigatorName = damageInfo.instigator?.displayName,
-                    sourceName = damageInfo.source.name,
-                    recipientName = displayName,
-                    eliminated = FeKaCurrentStats.stocks <= 0
-                };
-                nm.SendPacket(nm.protocolMagic + ":KILLFEED:" + JsonUtility.ToJson(killPacket));
-            }
+                instigatorName = instigatorName,
+                sourceName = damageInfo.source.name,
+                recipientName = recipientName,
+                eliminated = FeKaCurrentStats.stocks <= 0
+            };
+            nm.SendPacket(nm.protocolMagic + ":KILLFEED:" + JsonUtility.ToJson(killPacket));
         }
 
         Instantiate(deathFX, transform.position, transform.rotation, null);

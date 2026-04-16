@@ -42,6 +42,7 @@ public class WB_NetKillFeed : MonoBehaviour
     /*-----[ External Functions ]-------------------------------------------------------------------------------------*/
     public WB_NetKillFeed_Entry AddKillEntry()
     {
+        print("Printing kill feed packet");
         var netKillFeedEntry = Instantiate(killEntry, entryRoot);
         return netKillFeedEntry.GetComponent<WB_NetKillFeed_Entry>();
     }

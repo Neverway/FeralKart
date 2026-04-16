@@ -654,12 +654,12 @@ PrefabInstance:
     - target: {fileID: 4686513910315184562, guid: c7bccf164f6c03aa18d24b91a5d3de21,
         type: 3}
       propertyPath: damageInfo.type
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4686513910315184562, guid: c7bccf164f6c03aa18d24b91a5d3de21,
         type: 3}
       propertyPath: damageInfo.amount
-      value: -10
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 4686513910315184562, guid: c7bccf164f6c03aa18d24b91a5d3de21,
         type: 3}
@@ -670,7 +670,7 @@ PrefabInstance:
     - target: {fileID: 4686513910315184562, guid: c7bccf164f6c03aa18d24b91a5d3de21,
         type: 3}
       propertyPath: damageInfo.source.name
-      value: Explosion
+      value: Rocket Launcher
       objectReference: {fileID: 0}
     - target: {fileID: 4686513910315184562, guid: c7bccf164f6c03aa18d24b91a5d3de21,
         type: 3}
