@@ -115,6 +115,22 @@ public class GI_RaceManager : MonoBehaviour
         yield return new WaitForSeconds(1); // Why was I waiting for 1 second here?
         // Apparently not waiting for a second here causes the players to stay frozen?
         
+        // Populate racers list and position racers at starting points
+        checkpointTracker ??= FindAnyObjectByType<CheckpointTracker>();
+        var allPawns =  new List<FeKaPawn_Base>(FindObjectsOfType<FeKaPawn_Base>());
+        for (int i = 0; i < allPawns.Count; i++)
+        {
+            allPawns[i].Init();
+            
+            if (checkpointTracker.raceStartPoints != null && i < checkpointTracker.raceStartPoints.Count)
+            {
+                var startPoint = checkpointTracker.raceStartPoints[i];
+                allPawns[i].transform.SetPositionAndRotation(startPoint.position, startPoint.rotation);
+            }
+
+            racers.Add(allPawns[i]);
+        }
+        
         // Show the countdown
         var widgetManager = GameInstance.Get<GI_WidgetManager>();
         widgetManager.AddWidget(RaceCountdownWidget);
@@ -256,22 +272,6 @@ public class GI_RaceManager : MonoBehaviour
         placedRacers.Clear();
         eliminatedRacers.Clear();
         raceEnded = false;
-        
-        // Populate racers list and position racers at starting points
-        checkpointTracker ??= FindAnyObjectByType<CheckpointTracker>();
-        var allPawns =  new List<FeKaPawn_Base>(FindObjectsOfType<FeKaPawn_Base>());
-        for (int i = 0; i < allPawns.Count; i++)
-        {
-            allPawns[i].Init();
-            
-            if (checkpointTracker.raceStartPoints != null && i < checkpointTracker.raceStartPoints.Count)
-            {
-                var startPoint = checkpointTracker.raceStartPoints[i];
-                allPawns[i].transform.SetPositionAndRotation(startPoint.position, startPoint.rotation);
-            }
-
-            racers.Add(allPawns[i]);
-        }
         
         // Begin the countdown!
         countdownCoroutine = StartCoroutine(RaceCountdown());
