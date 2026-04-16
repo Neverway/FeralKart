@@ -200,7 +200,7 @@ PrefabInstance:
     - target: {fileID: 3822030454198327321, guid: 11c300d1e356964dbb7fe0ab14bee5df,
         type: 3}
       propertyPath: forceMode
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3822030454198327321, guid: 11c300d1e356964dbb7fe0ab14bee5df,
         type: 3}
