@@ -126,10 +126,10 @@ TextureImporter:
       name: MidWen_Trash_0
       rect:
         serializedVersion: 2
-        x: 124
-        y: 67
-        width: 9
-        height: 8
+        x: 108
+        y: 2
+        width: 78
+        height: 74
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -139,27 +139,6 @@ TextureImporter:
       bones: []
       spriteID: 362c293bc8e53ae7794c4e1bc7508ade
       internalID: -1460636476
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: MidWen_Trash_1
-      rect:
-        serializedVersion: 2
-        x: 164
-        y: 55
-        width: 12
-        height: 22
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0734c08c3c33f3cafae9c6b3bdff2469
-      internalID: 1797548099
       vertices: []
       indices: 
       edges: []
@@ -202,132 +181,6 @@ TextureImporter:
       bones: []
       spriteID: d72430276edea9640b70a3e3263832b2
       internalID: 2112782277
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: MidWen_Trash_4
-      rect:
-        serializedVersion: 2
-        x: 106
-        y: 35
-        width: 29
-        height: 15
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 1dc3b53418c1f32d1b282dc3a1e2ddb0
-      internalID: -1069007581
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: MidWen_Trash_5
-      rect:
-        serializedVersion: 2
-        x: 140
-        y: 40
-        width: 13
-        height: 23
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 4062af19eabfb0bb4b722631c367d21f
-      internalID: -1691170286
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: MidWen_Trash_6
-      rect:
-        serializedVersion: 2
-        x: 146
-        y: 31
-        width: 10
-        height: 10
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b14a7a1ba0fe5955b8d38c758dd3ecdc
-      internalID: 214891210
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: MidWen_Trash_7
-      rect:
-        serializedVersion: 2
-        x: 165
-        y: 5
-        width: 24
-        height: 38
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 60fd5c14b8582dbbf93d0eda68b1c711
-      internalID: -156871680
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: MidWen_Trash_8
-      rect:
-        serializedVersion: 2
-        x: 108
-        y: 8
-        width: 32
-        height: 19
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 04bce2e73d7eff1589ebc2af03a2d7b0
-      internalID: -641563629
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: MidWen_Trash_9
-      rect:
-        serializedVersion: 2
-        x: 145
-        y: 3
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 4d49103081a2e6da39b9b223ccb15e0d
-      internalID: 339082239
       vertices: []
       indices: 
       edges: []
