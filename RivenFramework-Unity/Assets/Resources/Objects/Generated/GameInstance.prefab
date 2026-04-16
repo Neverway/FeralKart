@@ -1012,14 +1012,16 @@ MonoBehaviour:
   timeRemaining: 6000
   raceDuration: 600
   totalLaps: 3
+  racers: []
+  racerStandings: []
+  lastRaceResults: []
   RaceFinishedWidget: {fileID: 5675289539813747590, guid: ca954bb8fa2756c0ebfe34f164357f40,
     type: 3}
   RaceResultsWidget: {fileID: 5675289539813747590, guid: 8a260b33ed877637980c1a48029469e6,
     type: 3}
   RaceCountdownWidget: {fileID: 5675289539813747590, guid: 876f8e7126a23214b844518ee245e244,
     type: 3}
-  racers: []
-  racerStandings: []
+  fekaGameRules: {fileID: 0}
 --- !u!114 &1081874596842588356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1035,6 +1037,7 @@ MonoBehaviour:
   protocolMagic: FeKa
   prefabRegistry: {fileID: 11400000, guid: e6ee964228879bea4bbc0dcdaeb468cb, type: 2}
   varSyncRate: 10
+  imageRegistry: {fileID: 11400000, guid: 1ce66b77d035f40b3aaf60f343123bda, type: 2}
   localProfile:
     playerName: NetPlayer
     sessionToken: 

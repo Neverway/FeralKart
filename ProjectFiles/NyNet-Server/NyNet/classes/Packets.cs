@@ -22,6 +22,7 @@ public class SpawnBroadcastPacket
     public string PrefabKey { get; set; } = "";
     public string RequestId { get; set; } = "";
     public string OwnerEndpoint { get; set; } = "";
+    public string OwnerName { get; set; } = "";
     public float PX { get; set; }
     public float PY { get; set; }
     public float PZ { get; set; }

@@ -30,8 +30,12 @@ public class GI_NetworkManager : MonoBehaviour
     [Header("Network Object Syncing")]
     [Tooltip("Registry mapping prefab keys to prefabs for spawning over the network")]
     public NetPrefabRegistry prefabRegistry;
+
     [Tooltip("How many times per second variable changes are sent, 10 is default")]
     public float varSyncRate = 10f;
+    
+    [Tooltip("Registry mapping image keys to sprites for displaying built-in images over the network")]
+    public NetImageRegistry imageRegistry;
 
 
     /*-----[ External Variables ]---------------------------------------------------------------------------------*/
@@ -387,6 +391,7 @@ public class GI_NetworkManager : MonoBehaviour
         // --- Kill Feed ---
         if (packet.StartsWith(protocolMagic + ":KILLFEED:"))
         {
+            print("Got kill feed packet");
             var killPacket = JsonUtility.FromJson<KillFeedPacket>(
                 packet.Substring((protocolMagic + ":KILLFEED:").Length));
             if (killPacket != null) HandleKillFeedBroadcast(killPacket);
@@ -444,6 +449,12 @@ public class GI_NetworkManager : MonoBehaviour
 
         netObjects[spawnBroadcastPacket.NetworkObjectId] = spawnedObject;
 
+        if (!string.IsNullOrEmpty(spawnBroadcastPacket.OwnerName))
+        {
+            var pawn = spawnedObject.GetComponent<FeKaPawn_Base>();
+            if (pawn != null)
+                pawn.networkPlayerName = spawnBroadcastPacket.OwnerName;
+        }
         if (netTransform != null && netTransform.hasAuthority
             && pendingSpawnCallbacks.TryGetValue(spawnBroadcastPacket.RequestId, out var spawnCallback))
         {
@@ -510,8 +521,14 @@ public class GI_NetworkManager : MonoBehaviour
     
     private void HandleKillFeedBroadcast(KillFeedPacket killPacket)
     {
+        
+        print("Processed kill feed packet");
        var killFeed = FindObjectOfType<WB_NetKillFeed>();
-       if (killFeed == null) return;
+       if (killFeed == null)
+       {
+           Debug.Log("KillFeed not found");
+           return;
+       }
 
        var killEntry = killFeed.AddKillEntry();
        if (killEntry == null)
@@ -524,7 +541,7 @@ public class GI_NetworkManager : MonoBehaviour
                null,
                killPacket.instigatorName,
                null,
-               null,
+               imageRegistry.GetImage(killPacket.sourceName),
                killPacket.eliminated,
                killPacket.recipientName);
     }
@@ -925,6 +942,7 @@ public class GI_NetworkManager : MonoBehaviour
     public void SendPacket(string message)
     {
         if (gameUdp == null || serverEndpoint == null) return;
+        print($"Packet sent {message}");
         byte[] data = Encoding.UTF8.GetBytes(message);
         try
         {

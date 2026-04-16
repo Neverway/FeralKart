@@ -11,6 +11,7 @@ public class FeKaPawn : Pawn
     
     [HideInInspector] public Rigidbody physicsbody;
     [SerializeField] public GameObject interactionPrefab;
+    public string networkPlayerName = "";
     
     public virtual void Awake()
     {
