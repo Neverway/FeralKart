@@ -1,1 +1,1 @@
-./out/NyNet-Server --port 25565 --icon ./out/icon.png
+./out/linux/NyNet-Server --port 25565 --icon ./out/linux/icon.png

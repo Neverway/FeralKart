@@ -1,1 +1,3 @@
-./out/NyNet-Server --port 25565 --icon ./out/icon.png
+@echo off
+out\windows\NyNet-Server.exe --port 25565 --icon out\windows\icon.png
+pause
