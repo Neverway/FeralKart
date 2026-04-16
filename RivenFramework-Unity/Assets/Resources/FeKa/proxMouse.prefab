@@ -502,7 +502,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosionForce: 10
   damageInfo:
-    amount: -50
+    amount: -30
     type: 1
     instigator: {fileID: 0}
     source:

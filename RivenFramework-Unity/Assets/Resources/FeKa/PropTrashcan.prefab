@@ -493,7 +493,7 @@ MonoBehaviour:
   emitOnDestruction: {fileID: 8550283494981573340, guid: 42a0dbff8b083f10398d6e6e2038f22f,
     type: 3}
   emitDestructionTransform: {fileID: 569022135076774216}
-  impactSound: {fileID: 8300000, guid: e6123e35019f3e5318619c0745bbcedb, type: 3}
+  impactSound: {fileID: 8300000, guid: d4861d96383f17c4abbc5a000f3b80de, type: 3}
   audioSource: {fileID: 2880833383615843545}
 --- !u!82 &2880833383615843545
 AudioSource:
@@ -552,7 +552,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0.776
       inSlope: 0
       outSlope: 0
       tangentMode: 0
