@@ -112,7 +112,8 @@ public class GI_RaceManager : MonoBehaviour
     /// </summary>
     private IEnumerator RaceCountdown()
     {
-        //yield return new WaitForSeconds(1); // Why was I waiting for 1 second here?
+        yield return new WaitForSeconds(1); // Why was I waiting for 1 second here?
+        // Apparently not waiting for a second here causes the players to stay frozen?
         
         // Show the countdown
         var widgetManager = GameInstance.Get<GI_WidgetManager>();
@@ -158,7 +159,6 @@ public class GI_RaceManager : MonoBehaviour
                 eliminatedRacers.Add(racer);
         }
 
-        print(placedRacers.Count +" ==? " +racers.Count);
         if (placedRacers.Count == racers.Count)
         {
             Debug.Log("All racers found to be in placedRacers hashset");
@@ -166,51 +166,54 @@ public class GI_RaceManager : MonoBehaviour
             return;
         }
 
-        // All players but one eliminated
+        // Multiple players
         if (racers.Count > 1)
         {
+            // Either one racer is still standing, or all racers have finished
             int activeRacers = racers.Count - eliminatedRacers.Count - placedRacers.Count;
             if (activeRacers <= 1)
             {
-                print("All racers finished or were eliminated");
                 EndRace();
             }
         }
 
         // Just a solo player
-        if (racers.Count == 1)
+        else if (racers.Count == 1)
         {
+            // Either the solo racer failed, or they finished the race
             int activeRacers = racers.Count - eliminatedRacers.Count - placedRacers.Count;
             if (activeRacers == 0)
             {
-                print("Solo racer placed");
                 EndRace();
             }
         }
         
         // No players
-        if (racers.Count <= 0)
+        else if (racers.Count <= 0)
         {
-            print("No players");
             EndRace();
         }
     }
 
     private void EndRace()
     {
+        // Exit if the race was already over
         if (raceEnded) 
             return;
         
+        // Set the flags
         raceEnded = true;
         raceInProgress = false;
         
+        // Freeze the racers
         foreach (var racer in racers)
             if (racer.physicsbody) 
                 racer.physicsbody.isKinematic = true;
         
-        var localRacer = racers.Find(racer => racer.controlMode == ControlMode.LocalPlayer);
+        // ??? this was a pointless double call
+        /*FeKaPawn_Base localRacer = racers.Find(racer => racer.controlMode == ControlMode.LocalPlayer);
         if (localRacer != null && !placedRacers.Contains(localRacer))
-            SendFinishAndShowResults(localRacer, true);
+            SendFinishAndShowResults(localRacer, true);*/
     }
     
     private void SendFinishAndShowResults(FeKaPawn_Base racer, bool failed)
