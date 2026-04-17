@@ -78,7 +78,7 @@ TrailRenderer:
   m_PreviewTimeScale: 1
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.2
+    widthMultiplier: 0.3
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -165,7 +165,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 3, y: 3, z: 1.5631}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6252967441853911778}
@@ -193,7 +193,7 @@ MonoBehaviour:
     instigator: {fileID: 0}
     source:
       icon: {fileID: 0}
-      name: 
+      name: Scatter Shotgun
       gameObject: {fileID: 0}
   explosionEffect: {fileID: 888699275537371755, guid: 6f412cc43756cdaf6aad185ada023cba,
     type: 3}
@@ -202,13 +202,13 @@ MonoBehaviour:
   exemptPawns: []
   timeUntilFriendlyFireEnabled: 1
   collisionBehaviour: 3
-  collisionRadius: 0.1
+  collisionRadius: 0.15
   delayBeforeCollisionEnabled: 0
   collisionMask:
     serializedVersion: 2
     m_Bits: 1
   maxBounces: 0
-  damageAddOnBounce: 10
+  damageMultiplyOnBounce: 2
 --- !u!65 &5354260543670442827
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -248,7 +248,7 @@ MonoBehaviour:
   syncPosition: 1
   syncRotation: 1
   syncScale: 0
-  interpolationSpeed: 15
+  interpolationSpeed: 30
   interpolationRotationSpeed: 720
   snapThreshold: 8
   extrapolationFactor: 0.5

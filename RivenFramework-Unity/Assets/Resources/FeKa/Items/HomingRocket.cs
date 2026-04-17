@@ -41,7 +41,7 @@ public class HomingRocket : MonoBehaviour
     public LayerMask collisionMask;
     private bool collisionCheckEnabled;
     public int maxBounces;
-    public float damageAddOnBounce;
+    public float damageMultiplyOnBounce;
     private int bounces;
 
     /*-----[ External Variables ]-------------------------------------------------------------------------------------*/
@@ -107,7 +107,7 @@ public class HomingRocket : MonoBehaviour
                             }
                             bounces--;
                         }
-                        damageInfo.amount -= damageAddOnBounce;
+                        damageInfo.amount *= damageMultiplyOnBounce;
                         var reflDirection = Vector3.Reflect(transform.forward, hit.normal);
                         transform.rotation = Quaternion.LookRotation(reflDirection);
                         break;

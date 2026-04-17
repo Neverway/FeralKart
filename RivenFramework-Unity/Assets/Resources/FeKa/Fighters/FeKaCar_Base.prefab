@@ -21597,10 +21597,10 @@ MonoBehaviour:
   syncPosition: 1
   syncRotation: 1
   syncScale: 0
-  interpolationSpeed: 30
+  interpolationSpeed: 40
   interpolationRotationSpeed: 720
   snapThreshold: 8
-  extrapolationFactor: 0.295
+  extrapolationFactor: 0.086
   copyObjectIdentityFrom: {fileID: 0}
 --- !u!114 &4311029332587741033
 MonoBehaviour:
@@ -21675,7 +21675,7 @@ PrefabInstance:
     - target: {fileID: 4116690135669473716, guid: e939f13b17fb3bcb582ebe98d53fc04a,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.3
+      value: -0.3
       objectReference: {fileID: 0}
     - target: {fileID: 4116690135669473716, guid: e939f13b17fb3bcb582ebe98d53fc04a,
         type: 3}

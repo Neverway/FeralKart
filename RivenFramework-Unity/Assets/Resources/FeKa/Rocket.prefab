@@ -303,7 +303,7 @@ MonoBehaviour:
   explosionForce: 9000
   damageInfo:
     amount: -70
-    type: 0
+    type: 1
     instigator: {fileID: 0}
     source:
       icon: {fileID: 0}
@@ -322,7 +322,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   maxBounces: 0
-  damageAddOnBounce: 0
+  damageMultiplyOnBounce: 0
 --- !u!65 &5354260543670442827
 BoxCollider:
   m_ObjectHideFlags: 0

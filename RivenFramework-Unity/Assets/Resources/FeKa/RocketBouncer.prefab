@@ -303,11 +303,11 @@ MonoBehaviour:
   explosionForce: 9000
   damageInfo:
     amount: -70
-    type: 0
+    type: 1
     instigator: {fileID: 0}
     source:
       icon: {fileID: 0}
-      name: 
+      name: Oxenfree
       gameObject: {fileID: 0}
   explosionEffect: {fileID: 888699275537371755, guid: 2fd451d6f30a8ec09b2bbedd5cfae416,
     type: 3}
@@ -322,7 +322,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   maxBounces: 1
-  damageAddOnBounce: 0
+  damageMultiplyOnBounce: 0
 --- !u!65 &5354260543670442827
 BoxCollider:
   m_ObjectHideFlags: 0

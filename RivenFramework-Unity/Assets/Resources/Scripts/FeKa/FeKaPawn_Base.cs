@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Cinemachine;
 using DG.Tweening;
 using RivenFramework;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Splines;
@@ -53,8 +54,8 @@ public class FeKaPawn_Base : FeKaPawn
     public Transform shadowRaycastCheckPos;
     
     // Barrel Roll stuff
-    private float lastTiltLeftTapTime = -1f;
-    private float lastTiltRightTapTime = -1f;
+    private float lastTiltRollLeftTapTime = -1f;
+    private float lastTiltRollRightTapTime = -1f;
     private bool isRolling = false;
     private const float doubleTapWindow = 0.3f;
     
@@ -155,6 +156,7 @@ public class FeKaPawn_Base : FeKaPawn
         if (controlMode != ControlMode.LocalPlayer)
         {
             Nameplate.SetActive(true);
+            Nameplate.GetComponentInChildren<TMP_Text>().text = networkPlayerName;
             return;
         }
         // Setup inputs
@@ -232,7 +234,7 @@ public class FeKaPawn_Base : FeKaPawn
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (inputActions.RespawnAtCheckpoint.WasPressedThisFrame())
         {
             RespawnAtLastCheckpoint();
         }
@@ -256,7 +258,7 @@ public class FeKaPawn_Base : FeKaPawn
         }
 
         // Jumping
-        if (inputActions.HopDedicated.IsPressed())
+        if (inputActions.Hop.IsPressed())
         {
             action2.Jump(this);
         }
@@ -264,27 +266,27 @@ public class FeKaPawn_Base : FeKaPawn
         // Leaning
         if (action2.IsOnGround(this))
         {
-            if (inputActions.TiltLeft.WasPressedThisFrame() && !inputActions.TiltRight.IsPressed())
+            if (inputActions.TiltRollLeft.WasPressedThisFrame() && !inputActions.TiltRollRight.IsPressed())
             {
-                if (!isRolling && Time.time - lastTiltLeftTapTime <= doubleTapWindow)
+                if (!isRolling && Time.time - lastTiltRollLeftTapTime <= doubleTapWindow)
                     StartCoroutine(BarrelRoll(-1));
                 else
-                    lastTiltLeftTapTime = Time.time;
+                    lastTiltRollLeftTapTime = Time.time;
             }
-            if (inputActions.TiltRight.WasPressedThisFrame() && !inputActions.TiltLeft.IsPressed())
+            if (inputActions.TiltRollRight.WasPressedThisFrame() && !inputActions.TiltRollLeft.IsPressed())
             {
-                if (!isRolling && Time.time - lastTiltRightTapTime <= doubleTapWindow)
+                if (!isRolling && Time.time - lastTiltRollRightTapTime <= doubleTapWindow)
                     StartCoroutine(BarrelRoll(1));
                 else
-                    lastTiltRightTapTime = Time.time;
+                    lastTiltRollRightTapTime = Time.time;
             }
         }
 
         if (!isRolling)
         {
-            if (inputActions.TiltLeft.IsPressed() && !inputActions.TiltRight.IsPressed())
+            if (inputActions.TiltRollLeft.IsPressed() && !inputActions.TiltRollRight.IsPressed())
                 action2.Tilt(this, FeKaCurrentStats.targetTiltAngle, FeKaCurrentStats.tiltVisualMesh);
-            else if (inputActions.TiltRight.IsPressed() && !inputActions.TiltLeft.IsPressed())
+            else if (inputActions.TiltRollRight.IsPressed() && !inputActions.TiltRollLeft.IsPressed())
                 action2.Tilt(this, -FeKaCurrentStats.targetTiltAngle, FeKaCurrentStats.tiltVisualMesh);
             else
                 action2.TiltReturnToNeutral(this, FeKaCurrentStats.tiltVisualMesh);
@@ -337,10 +339,10 @@ public class FeKaPawn_Base : FeKaPawn
         {
             item.itemBehaviour.OnUpdate(this);
 
-            if (inputActions.Utility.IsPressed())
+            if (inputActions.UseItem.IsPressed())
                 item.itemBehaviour.OnUseHeld(this);
 
-            if (inputActions.Utility.WasReleasedThisFrame())
+            if (inputActions.UseItem.WasReleasedThisFrame())
                 item.itemBehaviour.OnUseReleased(this);
 
             // Auto-clear exhausted items
@@ -356,12 +358,12 @@ public class FeKaPawn_Base : FeKaPawn
             {
                 item.itemBehaviour.OnUpdate(this);
 
-                if (inputActions.Attack.IsPressed())
+                if (inputActions.UseAbility.IsPressed())
                 {
                     item.itemBehaviour.OnUseHeld(this);
                 }
 
-                if (inputActions.Attack.WasReleasedThisFrame())
+                if (inputActions.UseAbility.WasReleasedThisFrame())
                     item.itemBehaviour.OnUseReleased(this);
 
                 if (item.itemBehaviour.IsExhausted() && abilityReady)
@@ -381,13 +383,13 @@ public class FeKaPawn_Base : FeKaPawn
             {
                 item.itemBehaviour.OnUpdate(this);
 
-                if (inputActions.TiltLeft.IsPressed() && inputActions.TiltRight.IsPressed())
+                if (inputActions.TiltRollLeft.IsPressed() && inputActions.TiltRollRight.IsPressed())
                 {
                     item.itemBehaviour.OnUseHeld(this);
                 }
 
-                if (inputActions.TiltLeft.WasReleasedThisFrame() && !inputActions.TiltRight.IsPressed() ||
-                    !inputActions.TiltLeft.IsPressed() && inputActions.TiltRight.WasReleasedThisFrame())
+                if (inputActions.TiltRollLeft.WasReleasedThisFrame() && !inputActions.TiltRollRight.IsPressed() ||
+                    !inputActions.TiltRollLeft.IsPressed() && inputActions.TiltRollRight.WasReleasedThisFrame())
                     item.itemBehaviour.OnUseReleased(this);
 
                 if (item.itemBehaviour.IsExhausted() && finalStrikeReady)
@@ -668,30 +670,30 @@ public class FeKaPawn_Base : FeKaPawn
         // Only send the death packet from the owner
         if (controlMode == ControlMode.LocalPlayer)
         {
-        }
-        var nm = GameInstance.Get<GI_NetworkManager>();
-        if (nm != null)
-        {
-            string instigatorName = null;
-            if (damageInfo.instigator is FeKaPawn_Base instigatorPawn)
-                instigatorName = !string.IsNullOrEmpty(instigatorPawn.networkPlayerName) ? instigatorPawn.networkPlayerName : instigatorPawn.displayName;
-            else
-                instigatorName = damageInfo.instigator?.displayName;
-
-            string recipientName = !string.IsNullOrEmpty(networkPlayerName) ? networkPlayerName : nm.localProfile.playerName;
-            
-            var killPacket = new KillFeedPacket
+            var nm = GameInstance.Get<GI_NetworkManager>();
+            if (nm != null)
             {
-                instigatorName = instigatorName,
-                sourceName = damageInfo.source.name,
-                recipientName = recipientName,
-                eliminated = FeKaCurrentStats.stocks <= 0
-            };
-            nm.SendPacket(nm.protocolMagic + ":KILLFEED:" + JsonUtility.ToJson(killPacket));
+                string instigatorName = null;
+                if (damageInfo.instigator is FeKaPawn_Base instigatorPawn)
+                    instigatorName = !string.IsNullOrEmpty(instigatorPawn.networkPlayerName) ? instigatorPawn.networkPlayerName : instigatorPawn.displayName;
+                else
+                    instigatorName = damageInfo.instigator?.displayName;
+
+                string recipientName = !string.IsNullOrEmpty(networkPlayerName) ? networkPlayerName : nm.localProfile.playerName;
+            
+                var killPacket = new KillFeedPacket
+                {
+                    instigatorName = instigatorName,
+                    sourceName = damageInfo.source.name,
+                    recipientName = recipientName,
+                    eliminated = FeKaCurrentStats.stocks <= 0
+                };
+                nm.SendPacket(nm.protocolMagic + ":KILLFEED:" + JsonUtility.ToJson(killPacket));
+            }
         }
 
         Instantiate(deathFX, transform.position, transform.rotation, null);
-        if (FeKaCurrentStats.stocks > 0)
+        if (FeKaCurrentStats.stocks > 1)
         {
             FeKaCurrentStats.stocks -= 1;
             StartCoroutine(AwaitRespawn());
@@ -1056,6 +1058,7 @@ public class FeKaPawn_Base : FeKaPawn
             }
         }
         ModifyHealth(info);
+        FeKaCurrentStats.health = value;
     }
  
     private void OnNetCurrentLapChanged(int value)

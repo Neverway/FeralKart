@@ -76,6 +76,7 @@ public class GI_NetworkManager : MonoBehaviour
     /*-----[ Reference Variables ]---------------------------------------------------------------------------------*/
     private GI_WidgetManager widgetManager;
 
+    [SerializeField] public List<ServerEntry> defaultServerEntries = new List<ServerEntry>();
     [SerializeField] public List<ServerEntry> serverEntries = new List<ServerEntry>();
 
     // Events that other scripts can subscribe to
@@ -554,11 +555,28 @@ public class GI_NetworkManager : MonoBehaviour
         if (!File.Exists(configFilePath))
         {
             serverEntries = new List<ServerEntry>();
-            SaveServerConfigFile();
-            return;
         }
-        var wrapper = JsonUtility.FromJson<ServerEntryListWrapper>(File.ReadAllText(configFilePath));
-        serverEntries = wrapper?.servers ?? new List<ServerEntry>();
+        else
+        {
+            var wrapper = JsonUtility.FromJson<ServerEntryListWrapper>(File.ReadAllText(configFilePath));
+            serverEntries = wrapper?.servers ?? new List<ServerEntry>();
+        }
+
+        var mergedList = new List<ServerEntry>();
+
+        foreach (var def in defaultServerEntries)
+        {
+            mergedList.Add(def);
+        }
+
+        foreach (var entry in serverEntries)
+        {
+            bool exists = defaultServerEntries.Exists(defaultServer => defaultServer.serverAddress == entry.serverAddress);
+            
+            if (!exists) mergedList.Add(entry);
+        }
+        
+        serverEntries = mergedList;
     }
 
     public void DeleteServerEntry(int index)

@@ -149,7 +149,7 @@ public class WB_NetConnect : MonoBehaviour
         // (This is all done in networkManager.LoadServerConfigFile)
         networkManager ??= GameInstance.Get<GI_NetworkManager>();
         networkManager.LoadServerConfigFile();
-            
+        
         // List all the servers in the config by creating a new entry
         for (int i = 0; i < networkManager.serverEntries.Count; i++)
         {

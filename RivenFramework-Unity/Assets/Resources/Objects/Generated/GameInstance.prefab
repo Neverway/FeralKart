@@ -75,7 +75,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   delayBeforeWorldChange: 0
-  minimumRequiredLoadTime: 5
+  minimumRequiredLoadTime: 0
   loadingWorldID: _Travel
   streamingWorldID: _Streaming
   isLoading: 0
@@ -1044,13 +1044,10 @@ MonoBehaviour:
   isConnected: 0
   connectedAddress: 
   isOp: 0
-  serverEntries:
-  - serverName: Dummy Test Server
-    serverAddress: 
-  - serverName: Dummy Test Server2
-    serverAddress: 
-  - serverName: Dummy Test Server3
-    serverAddress: 
+  defaultServerEntries:
+  - serverName: Feral Kart Dedicated 01 (NA East)
+    serverAddress: 199.188.80.37:25565
+  serverEntries: []
 --- !u!114 &951813145587847522
 MonoBehaviour:
   m_ObjectHideFlags: 0

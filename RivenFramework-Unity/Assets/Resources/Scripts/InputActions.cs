@@ -2723,7 +2723,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Tilt Left"",
+                    ""name"": ""Tilt Roll Left"",
                     ""type"": ""Button"",
                     ""id"": ""98b91542-dfb0-418b-8a0a-13336d3bffad"",
                     ""expectedControlType"": ""Button"",
@@ -2732,36 +2732,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Tilt Right"",
+                    ""name"": ""Tilt Roll Right"",
                     ""type"": ""Button"",
                     ""id"": ""bcccf280-a7d8-47ef-81ba-bce84bbbaaaf"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Attack"",
-                    ""type"": ""Button"",
-                    ""id"": ""4e47f69e-dd8c-4b4d-ad0e-f79b1bb3b4da"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Utility"",
-                    ""type"": ""Button"",
-                    ""id"": ""fc07b35e-a2e2-4366-bbfc-9e872ac91602"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Throw"",
-                    ""type"": ""Button"",
-                    ""id"": ""ffb811ee-69b0-44ee-a77c-046afe1557ce"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -2777,7 +2750,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Hop (Dedicated)"",
+                    ""name"": ""Hop"",
                     ""type"": ""Button"",
                     ""id"": ""df4de538-878e-43ba-a2e4-f57750f5727b"",
                     ""expectedControlType"": ""Button"",
@@ -2786,18 +2759,45 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Final Strike (Dedicated)"",
+                    ""name"": ""Respawn At Checkpoint"",
                     ""type"": ""Button"",
-                    ""id"": ""752d0716-3996-48b4-8238-1e2fee34477a"",
+                    ""id"": ""ea1af5ce-1eaf-442b-9984-74703c72bd7b"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Pause"",
+                    ""name"": ""Look Behind"",
                     ""type"": ""Button"",
-                    ""id"": ""3f212aad-791b-4c6c-81f9-709bf2749dae"",
+                    ""id"": ""0b465354-5838-4dbc-85f7-2a3f96793124"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Use Item"",
+                    ""type"": ""Button"",
+                    ""id"": ""fc07b35e-a2e2-4366-bbfc-9e872ac91602"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Use Ability"",
+                    ""type"": ""Button"",
+                    ""id"": ""4e47f69e-dd8c-4b4d-ad0e-f79b1bb3b4da"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Throw Item"",
+                    ""type"": ""Button"",
+                    ""id"": ""ffb811ee-69b0-44ee-a77c-046afe1557ce"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -2813,9 +2813,18 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""LookBehind"",
+                    ""name"": ""Pause"",
                     ""type"": ""Button"",
-                    ""id"": ""0b465354-5838-4dbc-85f7-2a3f96793124"",
+                    ""id"": ""3f212aad-791b-4c6c-81f9-709bf2749dae"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Chat"",
+                    ""type"": ""Button"",
+                    ""id"": ""ad46ef27-4462-4667-9fd8-ab78281198f5"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -2823,17 +2832,6 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                 }
             ],
             ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""a0a46ae9-8e4c-4775-8d35-c954b0c21200"",
-                    ""path"": ""<Keyboard>/space"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Hop (Dedicated)"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
                 {
                     ""name"": ""Keyboard&Mouse"",
                     ""id"": ""be36bdf8-75e7-4af3-8ebc-b6828a2b59f2"",
@@ -2995,7 +2993,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Attack"",
+                    ""action"": ""Use Ability"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -3006,29 +3004,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
-                    ""action"": ""Attack"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""f8296f56-a06c-453d-93d5-9b86c61e96a9"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Utility"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""f0f8e8e5-d54d-471d-aa1d-bcd88b35ddd9"",
-                    ""path"": ""<Gamepad>/buttonEast"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""Utility"",
+                    ""action"": ""Use Ability"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -3039,7 +3015,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Tilt Left"",
+                    ""action"": ""Tilt Roll Left"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -3050,7 +3026,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
-                    ""action"": ""Tilt Left"",
+                    ""action"": ""Tilt Roll Left"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -3061,7 +3037,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Tilt Right"",
+                    ""action"": ""Tilt Roll Right"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -3072,7 +3048,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
-                    ""action"": ""Tilt Right"",
+                    ""action"": ""Tilt Roll Right"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -3083,7 +3059,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Throw"",
+                    ""action"": ""Throw Item"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -3094,29 +3070,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
-                    ""action"": ""Throw"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""cc487cbf-410a-4977-b51e-527af6b005d7"",
-                    ""path"": ""<Keyboard>/ctrl"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Handbreak"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""f350a0f5-cc78-456e-9598-78a52cac079e"",
-                    ""path"": ""<Gamepad>/buttonNorth"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""Handbreak"",
+                    ""action"": ""Throw Item"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -3144,6 +3098,94 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""f8296f56-a06c-453d-93d5-9b86c61e96a9"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Use Item"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f0f8e8e5-d54d-471d-aa1d-bcd88b35ddd9"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Use Item"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cc487cbf-410a-4977-b51e-527af6b005d7"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Handbreak"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f350a0f5-cc78-456e-9598-78a52cac079e"",
+                    ""path"": ""<Gamepad>/dpad/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Handbreak"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a0a46ae9-8e4c-4775-8d35-c954b0c21200"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Hop"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8381e328-124e-4d54-8cb1-4c109198ab5e"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hop"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""16683b24-dd3d-46f4-bf91-fea214e96e9c"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look Behind"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""efc4f85a-40b7-4ffb-a294-8dc5a2dfb673"",
+                    ""path"": ""<Gamepad>/leftStickPress"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look Behind"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""b53a5e5d-64c9-41a0-af5f-50f819b0afbd"",
                     ""path"": ""<Keyboard>/tab"",
                     ""interactions"": """",
@@ -3166,23 +3208,45 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""16683b24-dd3d-46f4-bf91-fea214e96e9c"",
-                    ""path"": ""<Keyboard>/shift"",
+                    ""id"": ""7b587621-00d3-4c8e-b76a-2d749313f117"",
+                    ""path"": ""<Keyboard>/enter"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""LookBehind"",
+                    ""action"": ""Chat"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""efc4f85a-40b7-4ffb-a294-8dc5a2dfb673"",
-                    ""path"": ""<Gamepad>/leftStickPress"",
+                    ""id"": ""72a5c6b2-1a5d-49d8-9d6e-475cba9bdf91"",
+                    ""path"": ""<Gamepad>/dpad/left"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""LookBehind"",
+                    ""action"": ""Chat"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""56238a8b-1617-4f29-b0d7-63e27c573689"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Respawn At Checkpoint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9937b3a8-42d9-4eac-a030-9976e1ecaabc"",
+                    ""path"": ""<Gamepad>/dpad/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Respawn At Checkpoint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -3290,17 +3354,18 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_FEKA_Steer = m_FEKA.FindAction("Steer", throwIfNotFound: true);
         m_FEKA_Acelerate = m_FEKA.FindAction("Acelerate", throwIfNotFound: true);
         m_FEKA_Decelerate = m_FEKA.FindAction("Decelerate", throwIfNotFound: true);
-        m_FEKA_TiltLeft = m_FEKA.FindAction("Tilt Left", throwIfNotFound: true);
-        m_FEKA_TiltRight = m_FEKA.FindAction("Tilt Right", throwIfNotFound: true);
-        m_FEKA_Attack = m_FEKA.FindAction("Attack", throwIfNotFound: true);
-        m_FEKA_Utility = m_FEKA.FindAction("Utility", throwIfNotFound: true);
-        m_FEKA_Throw = m_FEKA.FindAction("Throw", throwIfNotFound: true);
+        m_FEKA_TiltRollLeft = m_FEKA.FindAction("Tilt Roll Left", throwIfNotFound: true);
+        m_FEKA_TiltRollRight = m_FEKA.FindAction("Tilt Roll Right", throwIfNotFound: true);
         m_FEKA_Handbreak = m_FEKA.FindAction("Handbreak", throwIfNotFound: true);
-        m_FEKA_HopDedicated = m_FEKA.FindAction("Hop (Dedicated)", throwIfNotFound: true);
-        m_FEKA_FinalStrikeDedicated = m_FEKA.FindAction("Final Strike (Dedicated)", throwIfNotFound: true);
-        m_FEKA_Pause = m_FEKA.FindAction("Pause", throwIfNotFound: true);
+        m_FEKA_Hop = m_FEKA.FindAction("Hop", throwIfNotFound: true);
+        m_FEKA_RespawnAtCheckpoint = m_FEKA.FindAction("Respawn At Checkpoint", throwIfNotFound: true);
+        m_FEKA_LookBehind = m_FEKA.FindAction("Look Behind", throwIfNotFound: true);
+        m_FEKA_UseItem = m_FEKA.FindAction("Use Item", throwIfNotFound: true);
+        m_FEKA_UseAbility = m_FEKA.FindAction("Use Ability", throwIfNotFound: true);
+        m_FEKA_ThrowItem = m_FEKA.FindAction("Throw Item", throwIfNotFound: true);
         m_FEKA_Playerlist = m_FEKA.FindAction("Playerlist", throwIfNotFound: true);
-        m_FEKA_LookBehind = m_FEKA.FindAction("LookBehind", throwIfNotFound: true);
+        m_FEKA_Pause = m_FEKA.FindAction("Pause", throwIfNotFound: true);
+        m_FEKA_Chat = m_FEKA.FindAction("Chat", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -4025,17 +4090,18 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_FEKA_Steer;
     private readonly InputAction m_FEKA_Acelerate;
     private readonly InputAction m_FEKA_Decelerate;
-    private readonly InputAction m_FEKA_TiltLeft;
-    private readonly InputAction m_FEKA_TiltRight;
-    private readonly InputAction m_FEKA_Attack;
-    private readonly InputAction m_FEKA_Utility;
-    private readonly InputAction m_FEKA_Throw;
+    private readonly InputAction m_FEKA_TiltRollLeft;
+    private readonly InputAction m_FEKA_TiltRollRight;
     private readonly InputAction m_FEKA_Handbreak;
-    private readonly InputAction m_FEKA_HopDedicated;
-    private readonly InputAction m_FEKA_FinalStrikeDedicated;
-    private readonly InputAction m_FEKA_Pause;
-    private readonly InputAction m_FEKA_Playerlist;
+    private readonly InputAction m_FEKA_Hop;
+    private readonly InputAction m_FEKA_RespawnAtCheckpoint;
     private readonly InputAction m_FEKA_LookBehind;
+    private readonly InputAction m_FEKA_UseItem;
+    private readonly InputAction m_FEKA_UseAbility;
+    private readonly InputAction m_FEKA_ThrowItem;
+    private readonly InputAction m_FEKA_Playerlist;
+    private readonly InputAction m_FEKA_Pause;
+    private readonly InputAction m_FEKA_Chat;
     public struct FEKAActions
     {
         private @InputActions m_Wrapper;
@@ -4043,17 +4109,18 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         public InputAction @Steer => m_Wrapper.m_FEKA_Steer;
         public InputAction @Acelerate => m_Wrapper.m_FEKA_Acelerate;
         public InputAction @Decelerate => m_Wrapper.m_FEKA_Decelerate;
-        public InputAction @TiltLeft => m_Wrapper.m_FEKA_TiltLeft;
-        public InputAction @TiltRight => m_Wrapper.m_FEKA_TiltRight;
-        public InputAction @Attack => m_Wrapper.m_FEKA_Attack;
-        public InputAction @Utility => m_Wrapper.m_FEKA_Utility;
-        public InputAction @Throw => m_Wrapper.m_FEKA_Throw;
+        public InputAction @TiltRollLeft => m_Wrapper.m_FEKA_TiltRollLeft;
+        public InputAction @TiltRollRight => m_Wrapper.m_FEKA_TiltRollRight;
         public InputAction @Handbreak => m_Wrapper.m_FEKA_Handbreak;
-        public InputAction @HopDedicated => m_Wrapper.m_FEKA_HopDedicated;
-        public InputAction @FinalStrikeDedicated => m_Wrapper.m_FEKA_FinalStrikeDedicated;
-        public InputAction @Pause => m_Wrapper.m_FEKA_Pause;
-        public InputAction @Playerlist => m_Wrapper.m_FEKA_Playerlist;
+        public InputAction @Hop => m_Wrapper.m_FEKA_Hop;
+        public InputAction @RespawnAtCheckpoint => m_Wrapper.m_FEKA_RespawnAtCheckpoint;
         public InputAction @LookBehind => m_Wrapper.m_FEKA_LookBehind;
+        public InputAction @UseItem => m_Wrapper.m_FEKA_UseItem;
+        public InputAction @UseAbility => m_Wrapper.m_FEKA_UseAbility;
+        public InputAction @ThrowItem => m_Wrapper.m_FEKA_ThrowItem;
+        public InputAction @Playerlist => m_Wrapper.m_FEKA_Playerlist;
+        public InputAction @Pause => m_Wrapper.m_FEKA_Pause;
+        public InputAction @Chat => m_Wrapper.m_FEKA_Chat;
         public InputActionMap Get() { return m_Wrapper.m_FEKA; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -4072,39 +4139,42 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @Decelerate.started += instance.OnDecelerate;
             @Decelerate.performed += instance.OnDecelerate;
             @Decelerate.canceled += instance.OnDecelerate;
-            @TiltLeft.started += instance.OnTiltLeft;
-            @TiltLeft.performed += instance.OnTiltLeft;
-            @TiltLeft.canceled += instance.OnTiltLeft;
-            @TiltRight.started += instance.OnTiltRight;
-            @TiltRight.performed += instance.OnTiltRight;
-            @TiltRight.canceled += instance.OnTiltRight;
-            @Attack.started += instance.OnAttack;
-            @Attack.performed += instance.OnAttack;
-            @Attack.canceled += instance.OnAttack;
-            @Utility.started += instance.OnUtility;
-            @Utility.performed += instance.OnUtility;
-            @Utility.canceled += instance.OnUtility;
-            @Throw.started += instance.OnThrow;
-            @Throw.performed += instance.OnThrow;
-            @Throw.canceled += instance.OnThrow;
+            @TiltRollLeft.started += instance.OnTiltRollLeft;
+            @TiltRollLeft.performed += instance.OnTiltRollLeft;
+            @TiltRollLeft.canceled += instance.OnTiltRollLeft;
+            @TiltRollRight.started += instance.OnTiltRollRight;
+            @TiltRollRight.performed += instance.OnTiltRollRight;
+            @TiltRollRight.canceled += instance.OnTiltRollRight;
             @Handbreak.started += instance.OnHandbreak;
             @Handbreak.performed += instance.OnHandbreak;
             @Handbreak.canceled += instance.OnHandbreak;
-            @HopDedicated.started += instance.OnHopDedicated;
-            @HopDedicated.performed += instance.OnHopDedicated;
-            @HopDedicated.canceled += instance.OnHopDedicated;
-            @FinalStrikeDedicated.started += instance.OnFinalStrikeDedicated;
-            @FinalStrikeDedicated.performed += instance.OnFinalStrikeDedicated;
-            @FinalStrikeDedicated.canceled += instance.OnFinalStrikeDedicated;
-            @Pause.started += instance.OnPause;
-            @Pause.performed += instance.OnPause;
-            @Pause.canceled += instance.OnPause;
-            @Playerlist.started += instance.OnPlayerlist;
-            @Playerlist.performed += instance.OnPlayerlist;
-            @Playerlist.canceled += instance.OnPlayerlist;
+            @Hop.started += instance.OnHop;
+            @Hop.performed += instance.OnHop;
+            @Hop.canceled += instance.OnHop;
+            @RespawnAtCheckpoint.started += instance.OnRespawnAtCheckpoint;
+            @RespawnAtCheckpoint.performed += instance.OnRespawnAtCheckpoint;
+            @RespawnAtCheckpoint.canceled += instance.OnRespawnAtCheckpoint;
             @LookBehind.started += instance.OnLookBehind;
             @LookBehind.performed += instance.OnLookBehind;
             @LookBehind.canceled += instance.OnLookBehind;
+            @UseItem.started += instance.OnUseItem;
+            @UseItem.performed += instance.OnUseItem;
+            @UseItem.canceled += instance.OnUseItem;
+            @UseAbility.started += instance.OnUseAbility;
+            @UseAbility.performed += instance.OnUseAbility;
+            @UseAbility.canceled += instance.OnUseAbility;
+            @ThrowItem.started += instance.OnThrowItem;
+            @ThrowItem.performed += instance.OnThrowItem;
+            @ThrowItem.canceled += instance.OnThrowItem;
+            @Playerlist.started += instance.OnPlayerlist;
+            @Playerlist.performed += instance.OnPlayerlist;
+            @Playerlist.canceled += instance.OnPlayerlist;
+            @Pause.started += instance.OnPause;
+            @Pause.performed += instance.OnPause;
+            @Pause.canceled += instance.OnPause;
+            @Chat.started += instance.OnChat;
+            @Chat.performed += instance.OnChat;
+            @Chat.canceled += instance.OnChat;
         }
 
         private void UnregisterCallbacks(IFEKAActions instance)
@@ -4118,39 +4188,42 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @Decelerate.started -= instance.OnDecelerate;
             @Decelerate.performed -= instance.OnDecelerate;
             @Decelerate.canceled -= instance.OnDecelerate;
-            @TiltLeft.started -= instance.OnTiltLeft;
-            @TiltLeft.performed -= instance.OnTiltLeft;
-            @TiltLeft.canceled -= instance.OnTiltLeft;
-            @TiltRight.started -= instance.OnTiltRight;
-            @TiltRight.performed -= instance.OnTiltRight;
-            @TiltRight.canceled -= instance.OnTiltRight;
-            @Attack.started -= instance.OnAttack;
-            @Attack.performed -= instance.OnAttack;
-            @Attack.canceled -= instance.OnAttack;
-            @Utility.started -= instance.OnUtility;
-            @Utility.performed -= instance.OnUtility;
-            @Utility.canceled -= instance.OnUtility;
-            @Throw.started -= instance.OnThrow;
-            @Throw.performed -= instance.OnThrow;
-            @Throw.canceled -= instance.OnThrow;
+            @TiltRollLeft.started -= instance.OnTiltRollLeft;
+            @TiltRollLeft.performed -= instance.OnTiltRollLeft;
+            @TiltRollLeft.canceled -= instance.OnTiltRollLeft;
+            @TiltRollRight.started -= instance.OnTiltRollRight;
+            @TiltRollRight.performed -= instance.OnTiltRollRight;
+            @TiltRollRight.canceled -= instance.OnTiltRollRight;
             @Handbreak.started -= instance.OnHandbreak;
             @Handbreak.performed -= instance.OnHandbreak;
             @Handbreak.canceled -= instance.OnHandbreak;
-            @HopDedicated.started -= instance.OnHopDedicated;
-            @HopDedicated.performed -= instance.OnHopDedicated;
-            @HopDedicated.canceled -= instance.OnHopDedicated;
-            @FinalStrikeDedicated.started -= instance.OnFinalStrikeDedicated;
-            @FinalStrikeDedicated.performed -= instance.OnFinalStrikeDedicated;
-            @FinalStrikeDedicated.canceled -= instance.OnFinalStrikeDedicated;
-            @Pause.started -= instance.OnPause;
-            @Pause.performed -= instance.OnPause;
-            @Pause.canceled -= instance.OnPause;
-            @Playerlist.started -= instance.OnPlayerlist;
-            @Playerlist.performed -= instance.OnPlayerlist;
-            @Playerlist.canceled -= instance.OnPlayerlist;
+            @Hop.started -= instance.OnHop;
+            @Hop.performed -= instance.OnHop;
+            @Hop.canceled -= instance.OnHop;
+            @RespawnAtCheckpoint.started -= instance.OnRespawnAtCheckpoint;
+            @RespawnAtCheckpoint.performed -= instance.OnRespawnAtCheckpoint;
+            @RespawnAtCheckpoint.canceled -= instance.OnRespawnAtCheckpoint;
             @LookBehind.started -= instance.OnLookBehind;
             @LookBehind.performed -= instance.OnLookBehind;
             @LookBehind.canceled -= instance.OnLookBehind;
+            @UseItem.started -= instance.OnUseItem;
+            @UseItem.performed -= instance.OnUseItem;
+            @UseItem.canceled -= instance.OnUseItem;
+            @UseAbility.started -= instance.OnUseAbility;
+            @UseAbility.performed -= instance.OnUseAbility;
+            @UseAbility.canceled -= instance.OnUseAbility;
+            @ThrowItem.started -= instance.OnThrowItem;
+            @ThrowItem.performed -= instance.OnThrowItem;
+            @ThrowItem.canceled -= instance.OnThrowItem;
+            @Playerlist.started -= instance.OnPlayerlist;
+            @Playerlist.performed -= instance.OnPlayerlist;
+            @Playerlist.canceled -= instance.OnPlayerlist;
+            @Pause.started -= instance.OnPause;
+            @Pause.performed -= instance.OnPause;
+            @Pause.canceled -= instance.OnPause;
+            @Chat.started -= instance.OnChat;
+            @Chat.performed -= instance.OnChat;
+            @Chat.canceled -= instance.OnChat;
         }
 
         public void RemoveCallbacks(IFEKAActions instance)
@@ -4263,16 +4336,17 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         void OnSteer(InputAction.CallbackContext context);
         void OnAcelerate(InputAction.CallbackContext context);
         void OnDecelerate(InputAction.CallbackContext context);
-        void OnTiltLeft(InputAction.CallbackContext context);
-        void OnTiltRight(InputAction.CallbackContext context);
-        void OnAttack(InputAction.CallbackContext context);
-        void OnUtility(InputAction.CallbackContext context);
-        void OnThrow(InputAction.CallbackContext context);
+        void OnTiltRollLeft(InputAction.CallbackContext context);
+        void OnTiltRollRight(InputAction.CallbackContext context);
         void OnHandbreak(InputAction.CallbackContext context);
-        void OnHopDedicated(InputAction.CallbackContext context);
-        void OnFinalStrikeDedicated(InputAction.CallbackContext context);
-        void OnPause(InputAction.CallbackContext context);
-        void OnPlayerlist(InputAction.CallbackContext context);
+        void OnHop(InputAction.CallbackContext context);
+        void OnRespawnAtCheckpoint(InputAction.CallbackContext context);
         void OnLookBehind(InputAction.CallbackContext context);
+        void OnUseItem(InputAction.CallbackContext context);
+        void OnUseAbility(InputAction.CallbackContext context);
+        void OnThrowItem(InputAction.CallbackContext context);
+        void OnPlayerlist(InputAction.CallbackContext context);
+        void OnPause(InputAction.CallbackContext context);
+        void OnChat(InputAction.CallbackContext context);
     }
 }

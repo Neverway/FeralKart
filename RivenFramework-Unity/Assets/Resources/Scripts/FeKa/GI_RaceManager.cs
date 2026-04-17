@@ -185,9 +185,13 @@ public class GI_RaceManager : MonoBehaviour
                 if (racer.controlMode == ControlMode.LocalPlayer)
                     SendFinishAndShowResults(racer, false);
             }
-            
-            if (racer.isDead && racer.FeKaCurrentStats.stocks <= 0)
+
+            if (racer.isDead && racer.FeKaCurrentStats.stocks < 1)
+            {
                 eliminatedRacers.Add(racer);
+                if (racer.controlMode == ControlMode.LocalPlayer)
+                    SendFinishAndShowResults(racer, true);
+            }
         }
 
         if (placedRacers.Count == racers.Count)

@@ -2701,7 +2701,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Tilt Left",
+                    "name": "Tilt Roll Left",
                     "type": "Button",
                     "id": "98b91542-dfb0-418b-8a0a-13336d3bffad",
                     "expectedControlType": "Button",
@@ -2710,36 +2710,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Tilt Right",
+                    "name": "Tilt Roll Right",
                     "type": "Button",
                     "id": "bcccf280-a7d8-47ef-81ba-bce84bbbaaaf",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Attack",
-                    "type": "Button",
-                    "id": "4e47f69e-dd8c-4b4d-ad0e-f79b1bb3b4da",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Utility",
-                    "type": "Button",
-                    "id": "fc07b35e-a2e2-4366-bbfc-9e872ac91602",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Throw",
-                    "type": "Button",
-                    "id": "ffb811ee-69b0-44ee-a77c-046afe1557ce",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -2755,7 +2728,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Hop (Dedicated)",
+                    "name": "Hop",
                     "type": "Button",
                     "id": "df4de538-878e-43ba-a2e4-f57750f5727b",
                     "expectedControlType": "Button",
@@ -2764,18 +2737,45 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Final Strike (Dedicated)",
+                    "name": "Respawn At Checkpoint",
                     "type": "Button",
-                    "id": "752d0716-3996-48b4-8238-1e2fee34477a",
+                    "id": "ea1af5ce-1eaf-442b-9984-74703c72bd7b",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Pause",
+                    "name": "Look Behind",
                     "type": "Button",
-                    "id": "3f212aad-791b-4c6c-81f9-709bf2749dae",
+                    "id": "0b465354-5838-4dbc-85f7-2a3f96793124",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Use Item",
+                    "type": "Button",
+                    "id": "fc07b35e-a2e2-4366-bbfc-9e872ac91602",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Use Ability",
+                    "type": "Button",
+                    "id": "4e47f69e-dd8c-4b4d-ad0e-f79b1bb3b4da",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Throw Item",
+                    "type": "Button",
+                    "id": "ffb811ee-69b0-44ee-a77c-046afe1557ce",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -2791,9 +2791,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "LookBehind",
+                    "name": "Pause",
                     "type": "Button",
-                    "id": "0b465354-5838-4dbc-85f7-2a3f96793124",
+                    "id": "3f212aad-791b-4c6c-81f9-709bf2749dae",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Chat",
+                    "type": "Button",
+                    "id": "ad46ef27-4462-4667-9fd8-ab78281198f5",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -2801,17 +2810,6 @@
                 }
             ],
             "bindings": [
-                {
-                    "name": "",
-                    "id": "a0a46ae9-8e4c-4775-8d35-c954b0c21200",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Hop (Dedicated)",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
                 {
                     "name": "Keyboard&Mouse",
                     "id": "be36bdf8-75e7-4af3-8ebc-b6828a2b59f2",
@@ -2973,7 +2971,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Attack",
+                    "action": "Use Ability",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -2984,29 +2982,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Attack",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f8296f56-a06c-453d-93d5-9b86c61e96a9",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Utility",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f0f8e8e5-d54d-471d-aa1d-bcd88b35ddd9",
-                    "path": "<Gamepad>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Utility",
+                    "action": "Use Ability",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -3017,7 +2993,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Tilt Left",
+                    "action": "Tilt Roll Left",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -3028,7 +3004,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Tilt Left",
+                    "action": "Tilt Roll Left",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -3039,7 +3015,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Tilt Right",
+                    "action": "Tilt Roll Right",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -3050,7 +3026,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Tilt Right",
+                    "action": "Tilt Roll Right",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -3061,7 +3037,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Throw",
+                    "action": "Throw Item",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -3072,29 +3048,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Throw",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "cc487cbf-410a-4977-b51e-527af6b005d7",
-                    "path": "<Keyboard>/ctrl",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Handbreak",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f350a0f5-cc78-456e-9598-78a52cac079e",
-                    "path": "<Gamepad>/buttonNorth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Handbreak",
+                    "action": "Throw Item",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -3122,6 +3076,94 @@
                 },
                 {
                     "name": "",
+                    "id": "f8296f56-a06c-453d-93d5-9b86c61e96a9",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Use Item",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f0f8e8e5-d54d-471d-aa1d-bcd88b35ddd9",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Use Item",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cc487cbf-410a-4977-b51e-527af6b005d7",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Handbreak",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f350a0f5-cc78-456e-9598-78a52cac079e",
+                    "path": "<Gamepad>/dpad/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Handbreak",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a0a46ae9-8e4c-4775-8d35-c954b0c21200",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Hop",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8381e328-124e-4d54-8cb1-4c109198ab5e",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hop",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "16683b24-dd3d-46f4-bf91-fea214e96e9c",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look Behind",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "efc4f85a-40b7-4ffb-a294-8dc5a2dfb673",
+                    "path": "<Gamepad>/leftStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look Behind",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "b53a5e5d-64c9-41a0-af5f-50f819b0afbd",
                     "path": "<Keyboard>/tab",
                     "interactions": "",
@@ -3144,23 +3186,45 @@
                 },
                 {
                     "name": "",
-                    "id": "16683b24-dd3d-46f4-bf91-fea214e96e9c",
-                    "path": "<Keyboard>/shift",
+                    "id": "7b587621-00d3-4c8e-b76a-2d749313f117",
+                    "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "LookBehind",
+                    "action": "Chat",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "efc4f85a-40b7-4ffb-a294-8dc5a2dfb673",
-                    "path": "<Gamepad>/leftStickPress",
+                    "id": "72a5c6b2-1a5d-49d8-9d6e-475cba9bdf91",
+                    "path": "<Gamepad>/dpad/left",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "LookBehind",
+                    "action": "Chat",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "56238a8b-1617-4f29-b0d7-63e27c573689",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Respawn At Checkpoint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9937b3a8-42d9-4eac-a030-9976e1ecaabc",
+                    "path": "<Gamepad>/dpad/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Respawn At Checkpoint",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
