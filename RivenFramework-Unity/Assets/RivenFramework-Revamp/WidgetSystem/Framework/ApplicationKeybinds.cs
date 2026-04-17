@@ -163,7 +163,6 @@ public class ApplicationKeybinds : MonoBehaviour
 
         if (!_isComposite)
         {
-            Debug.Log("Not a composite");
             var action = inputActionAsset.FindActionMap(_actionMap).FindAction(_action);
             print($"_AM [{_actionMap}] _A[{_action}] A[{action}]");
             rebindOperation = action.PerformInteractiveRebinding().Start()
@@ -184,13 +183,32 @@ public class ApplicationKeybinds : MonoBehaviour
         }
         else
         {
-            Debug.Log("Composite");
             string input = _action;
             string[] parts = input.Split(' ');
             var parsedAction = parts[0];
+            var parsedPart = string.Join(" ", parts, 1, parts.Length - 1);
             var action = inputActionAsset.FindActionMap(_actionMap).FindAction(parsedAction);
             print($"_AM [{_actionMap}] _A[{_action}] A[{action}] PA[{parsedAction}]");
-            rebindOperation = action.PerformInteractiveRebinding(1).Start()
+
+            int bindingIndex = -1;
+            for (int i = 0; i < action.bindings.Count; i++)
+            {
+                if (action.bindings[i].isPartOfComposite &&
+                    string.Equals(action.bindings[i].name, parsedPart, StringComparison.OrdinalIgnoreCase) &&
+                    action.bindings[i].groups.Contains("Keyboard"))
+                {
+                    bindingIndex = i;
+                    break;
+                }
+            }
+
+            if (bindingIndex == -1)
+            {
+                Debug.LogWarning("No binding found for " + parsedAction);
+                return;
+            }
+            
+            rebindOperation = action.PerformInteractiveRebinding(bindingIndex).Start()
                 .OnCancel(something => { CleanUp(); })
                 .OnComplete(something =>
                 {
@@ -200,9 +218,9 @@ public class ApplicationKeybinds : MonoBehaviour
                     // Save
                     string device = string.Empty;
                     string key = string.Empty;
-                    action.GetBindingDisplayString(1, out device, out key);
+                    action.GetBindingDisplayString(bindingIndex, out device, out key);
                     print("OUTPUT " + "<" + device + ">/" + key);
-                    action.ChangeBinding(1).WithPath($"<{device}>/{key}");
+                    action.ChangeBinding(bindingIndex).WithPath($"<{device}>/{key}");
                     CleanUp();
                 });
         }

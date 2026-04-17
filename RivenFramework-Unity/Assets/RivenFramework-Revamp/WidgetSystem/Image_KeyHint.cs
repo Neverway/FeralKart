@@ -5,6 +5,7 @@
 //
 //=============================================================================
 
+using System;
 using RivenFramework;
 using UnityEngine;
 using UnityEngine.UI;
@@ -70,6 +71,52 @@ public class Image_KeyHint : MonoBehaviour
         // If action is null it's probably because the target action is a composite, so we'll need to parse the direction we want
         if (action == null)
         {
+            
+            string[] parts = targetAction.Split(' ');
+            if (parts.Length < 2)
+            {
+                return;
+            }
+            
+            string actionName = parts[0];
+            string partName = string.Join(" ", parts, 1, parts.Length - 1);
+            
+            var parentAction = applicationKeybinds.inputActionAsset.FindActionMap(targetActionMap).FindAction(actionName);
+            if (parentAction == null)
+            {
+                return;
+            }
+
+            foreach (var binding in parentAction.bindings)
+            {
+                if (!binding.isPartOfComposite)
+                {
+                    continue;
+                }
+
+                if (!string.Equals(binding.name, partName, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+                
+                var controlScheme = binding.groups;
+                string[] splitPath = binding.path.Split('/');
+                var bindingKey = string.Join("/", splitPath, 1, splitPath.Length - 1);
+
+                if (controlScheme == "Keyboard&Mouse" && (targetInputDevice == 1 ||
+                                                          targetInputDevice == 0 &&
+                                                          applicationKeybinds.currentDeviceID == 1))
+                {
+                    hintImage.sprite = applicationKeybinds.GetKeybindImage(1, bindingKey);
+                }
+                if (controlScheme == "Gamepad" && (targetInputDevice == 2 ||
+                                                          targetInputDevice == 0 &&
+                                                          applicationKeybinds.currentDeviceID == 2))
+                {
+                    hintImage.sprite = applicationKeybinds.GetKeybindImage(2, bindingKey);
+                }
+            }
+            
             // FUTURE ME PUT CODE HERE FOR DISPLAYING COMPOSITE BINDINGS!!!
             /*
             foreach (var inputAction in applicationKeybinds.inputActionAsset.FindActionMap(targetActionMap).actions)
@@ -120,7 +167,7 @@ public class Image_KeyHint : MonoBehaviour
             var controlScheme = binding.groups;
 
             string[] splitBinding = binding.path.Split("/");
-            var bindingKey = splitBinding[1];
+            var bindingKey = string.Join("/", splitBinding, 1, splitBinding.Length - 1);
 
             if (controlScheme == "Keyboard&Mouse" && targetInputDevice == 1 || controlScheme == "Keyboard&Mouse" &&
                 targetInputDevice == 0 && applicationKeybinds.currentDeviceID == 1)

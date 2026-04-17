@@ -960,7 +960,6 @@ public class GI_NetworkManager : MonoBehaviour
     public void SendPacket(string message)
     {
         if (gameUdp == null || serverEndpoint == null) return;
-        print($"Packet sent {message}");
         byte[] data = Encoding.UTF8.GetBytes(message);
         try
         {

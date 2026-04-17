@@ -554,6 +554,8 @@ MonoBehaviour:
     keybindSprite: {fileID: 21300000, guid: b571c0032916afc2e8ad7eec55e3c3f5, type: 3}
   - keybindID: escape
     keybindSprite: {fileID: 21300000, guid: f4f8a5bf53891ca2d83d0fd3e1ed5254, type: 3}
+  - keybindID: w
+    keybindSprite: {fileID: 21300000, guid: 75d0ba568e940e4609312ca569a37424, type: 3}
   controllerList:
   - keybindID: buttonNorth
     keybindSprite: {fileID: 21300000, guid: 1c1753620a1d0d642a2b44519d6faa3e, type: 3}
@@ -607,6 +609,22 @@ MonoBehaviour:
     keybindSprite: {fileID: 21300000, guid: c684f127d7412822e947091d5bb6c9b2, type: 3}
   - keybindID: touchpad/y
     keybindSprite: {fileID: 21300000, guid: c684f127d7412822e947091d5bb6c9b2, type: 3}
+  - keybindID: leftStick/up
+    keybindSprite: {fileID: 21300000, guid: aa360d7799e61ad9c8b86c93042f8e4c, type: 3}
+  - keybindID: leftStick/down
+    keybindSprite: {fileID: 21300000, guid: aa360d7799e61ad9c8b86c93042f8e4c, type: 3}
+  - keybindID: leftStick/left
+    keybindSprite: {fileID: 21300000, guid: aa360d7799e61ad9c8b86c93042f8e4c, type: 3}
+  - keybindID: leftStick/right
+    keybindSprite: {fileID: 21300000, guid: aa360d7799e61ad9c8b86c93042f8e4c, type: 3}
+  - keybindID: rightStick/up
+    keybindSprite: {fileID: 21300000, guid: c4294120216fa5929b2184cd8fcdf60f, type: 3}
+  - keybindID: rightStick/down
+    keybindSprite: {fileID: 21300000, guid: c4294120216fa5929b2184cd8fcdf60f, type: 3}
+  - keybindID: rightStick/left
+    keybindSprite: {fileID: 21300000, guid: c4294120216fa5929b2184cd8fcdf60f, type: 3}
+  - keybindID: rightStick/right
+    keybindSprite: {fileID: 21300000, guid: c4294120216fa5929b2184cd8fcdf60f, type: 3}
   currentDeviceID: 1
 --- !u!82 &1249841930750964347
 AudioSource:

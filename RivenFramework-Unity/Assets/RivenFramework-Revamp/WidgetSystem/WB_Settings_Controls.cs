@@ -103,6 +103,7 @@ using UnityEngine;
                                 }
 
                                 partIndex++;
+                                i = partIndex - 1;
                             }
                         }
                         else if (!binding.isPartOfComposite)
