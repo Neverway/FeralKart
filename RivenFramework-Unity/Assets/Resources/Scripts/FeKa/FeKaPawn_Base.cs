@@ -160,7 +160,8 @@ public class FeKaPawn_Base : FeKaPawn
             return;
         }
         // Setup inputs
-        inputActions = new InputActions().FEKA;
+        var appKeybinds = GameInstance.Get<ApplicationKeybinds>();
+        inputActions = appKeybinds.InputActions.FEKA;
         inputActions.Enable();
     }
     

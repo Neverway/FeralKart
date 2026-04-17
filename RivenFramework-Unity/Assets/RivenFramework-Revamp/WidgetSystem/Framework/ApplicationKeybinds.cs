@@ -34,11 +34,41 @@ public class ApplicationKeybinds : MonoBehaviour
     // Reference Variables
     //=-----------------=
     private GI_WidgetManager widgetManager;
+    private InputActions _inputActions;
+
+    public InputActions InputActions
+    {
+        get
+        {
+            if (_inputActions == null)
+            {
+                _inputActions = new InputActions();
+
+                if (PlayerPrefs.HasKey("InputBindingOverrides"))
+                {
+                    _inputActions.asset.LoadBindingOverridesFromJson(
+                        PlayerPrefs.GetString("InputBindingOverrides"));
+                }
+
+                _inputActions.Enable();
+            }
+
+            return _inputActions;
+        }
+    }
 
 
     //=-----------------=
     // Mono Functions
     //=-----------------=
+    private void Awake()
+    {
+        if (PlayerPrefs.HasKey("InputBindingOverrides"))
+        {
+            inputActionAsset.LoadBindingOverridesFromJson(PlayerPrefs.GetString("InputBindingOverrides"));
+        }
+    }
+
     private void Update()
     {
         GetCurrentInputDevice();
@@ -172,12 +202,19 @@ public class ApplicationKeybinds : MonoBehaviour
                     isOperationCompleted = true; // Set flag to true if operation completed successfully
                     StopAllCoroutines();
                     Destroy(widgetManager.GetExistingWidget("WB_Settings_Controls_Rebinding"));
+
+
+                    string overrides = inputActionAsset.SaveBindingOverridesAsJson();
+                    PlayerPrefs.SetString("InputBindingOverrides", overrides);
+                    PlayerPrefs.Save();
+                    
                     // Save
-                    string device = string.Empty;
-                    string key = string.Empty;
-                    action.GetBindingDisplayString(0, out device, out key);
-                    print("OUTPUT " + "<" + device + ">/" + key);
-                    action.ChangeBinding(0).WithPath($"<{device}>/{key}");
+                    //string device = string.Empty;
+                    //string key = string.Empty;
+                    //action.GetBindingDisplayString(0, out device, out key);
+                    //print("OUTPUT " + "<" + device + ">/" + key);
+                    //action.ChangeBinding(0).WithPath($"<{device}>/{key}");
+                    
                     CleanUp();
                 });
         }
