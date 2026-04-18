@@ -91,6 +91,7 @@ public class HomingRocket : MonoBehaviour
                     case ObjectCollisionBehaviour.none:
                         break;
                     case ObjectCollisionBehaviour.destroy:
+                        Debug.Log("Destroyed because of destroy");
                         Destroy(gameObject);
                         break;
                     case ObjectCollisionBehaviour.stick:
@@ -129,17 +130,18 @@ public class HomingRocket : MonoBehaviour
             pawn.ModifyHealth(damageInfo);
             pawn.physicsbody.AddForce(Vector3.up * explosionForce, ForceMode.Impulse);
             Destroy(gameObject);
+            Debug.Log("Destroyed because of hit");
         }
     }
 
     private void OnDestroy()
     {
         Instantiate(explosionEffect, transform.position, transform.rotation, null);
-        var netTransform = GetComponent<NetTransform>();
+        /*var netTransform = GetComponent<NetTransform>();
         if (netTransform != null)
         {
             NetSpawner.Despawn(GetComponent<NetTransform>().networkObjectUId);
-        }
+        }*/
     }
 
     /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/

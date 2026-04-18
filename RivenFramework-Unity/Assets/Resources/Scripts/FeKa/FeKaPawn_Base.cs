@@ -1041,6 +1041,7 @@ public class FeKaPawn_Base : FeKaPawn
         netCurrentCheckpoint.Value = FeKaCurrentStats.currentCheckpoint;
         netRacerState.Value = (int)FeKaCurrentStats.racerState;
     }
+    
     // Network side
     private void OnNetHealthChanged(float value)
     {
