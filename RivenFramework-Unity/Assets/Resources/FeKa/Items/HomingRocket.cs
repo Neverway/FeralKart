@@ -10,6 +10,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using RivenFramework;
 using UnityEngine;
 
 public class HomingRocket : MonoBehaviour
@@ -49,6 +50,7 @@ public class HomingRocket : MonoBehaviour
 
     /*-----[ Internal Variables ]-------------------------------------------------------------------------------------*/
     private NetVariableOwner netVariableOwner;
+    private NetVariable<string> netInstigatorId;
     private NetVariable<string> netDeathState;
     private bool isDying = false;
     private bool suppressOnDestroyDespawn = false;
@@ -65,6 +67,7 @@ public class HomingRocket : MonoBehaviour
     {
         netVariableOwner = GetComponent<NetVariableOwner>();
         netDeathState = netVariableOwner.Register<string>("rocket_death", "", OnNetDeathReceived);
+        netInstigatorId = netVariableOwner.Register<string>("rocket_instigatorId", "", null);
     }
 
     private void Start()
@@ -146,10 +149,26 @@ public class HomingRocket : MonoBehaviour
         
         if (pawn != null && !exemptPawns.Contains(pawn))
         {
+            if (damageInfo.instigator == null && netInstigatorId != null && !string.IsNullOrEmpty(netInstigatorId.Value))
+            {
+                var raceManager = GameInstance.Get<GI_RaceManager>();
+                if (raceManager != null)
+                {
+                    foreach (var racer in raceManager.racers)
+                    {
+                        var owner = racer.GetComponent<NetVariableOwner>();
+                        if (owner != null && owner.NetworkObjectId == netInstigatorId.Value)
+                        {
+                            damageInfo.instigator = racer;
+                            break;
+                        }
+                    }
+                }
+            }
+            
             pawn.ModifyHealth(damageInfo);
             pawn.physicsbody.AddForce(Vector3.up * explosionForce, ForceMode.Impulse);
             TriggerDeath(transform.position);
-            Debug.Log("Destroyed because of hit");
         }
     }
 
@@ -241,6 +260,13 @@ public class HomingRocket : MonoBehaviour
                 NetSpawner.Despawn(netTransform.networkObjectUId);
             }
         }
+    }
+    
+    public void SetInstigator(FeKaPawn instigator)
+    {
+        damageInfo.instigator = instigator;
+        if (netInstigatorId != null)
+            netInstigatorId.Value = instigator?.GetComponent<NetVariableOwner>()?.NetworkObjectId ?? "";
     }
 
 

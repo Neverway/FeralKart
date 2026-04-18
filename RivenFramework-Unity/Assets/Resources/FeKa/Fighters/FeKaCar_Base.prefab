@@ -21496,7 +21496,7 @@ MonoBehaviour:
   physObjectAttachmentPoint: {fileID: 0}
   FeKaDefaultStats:
     health: 100
-    invulnerabilityTime: 1
+    invulnerabilityTime: 0.1
     team: 
     alliedTeams: []
     opposedTeams: []

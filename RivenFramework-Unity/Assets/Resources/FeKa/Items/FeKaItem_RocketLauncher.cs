@@ -194,7 +194,7 @@ public class FeKaItem_RocketLauncher : ItemBehaviour
             {
                 homing.exemptPawns.Add(pawn);
                 homing.SetTarget(capturedTarget);
-                homing.damageInfo.instigator = pawn;
+                homing.SetInstigator(pawn);
                 homing.damageInfo.type = DamageType.Explosive;
                 homing.damageInfo.source = damageSource;
             }

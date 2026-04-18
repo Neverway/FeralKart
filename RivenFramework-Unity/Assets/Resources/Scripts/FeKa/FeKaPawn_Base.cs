@@ -1055,12 +1055,6 @@ public class FeKaPawn_Base : FeKaPawn
         info.source = new DamageSource { name = netLastSourceName?.Value ?? "" };
 
         var instigatorId = netLastInstigatorId?.Value ?? "";
-        Debug.Log($"[OnNetHealthChanged] Looking for instigator id: '{instigatorId}'");
-        foreach (var racer in raceManager.racers)
-        {
-            var owner = racer.GetComponent<NetVariableOwner>();
-            Debug.Log($"  racer: {racer.displayName}, networkId: {owner?.NetworkObjectId}");
-        }
         if (!string.IsNullOrEmpty(instigatorId))
         {
             raceManager ??= GameInstance.Get<GI_RaceManager>();
@@ -1077,8 +1071,13 @@ public class FeKaPawn_Base : FeKaPawn
                 }
             }
         }
-        ModifyHealth(info);
         FeKaCurrentStats.health = value;
+        if (healthDifference > 0)
+            InvokeOnPawnHurt(info);
+        else
+            InvokeOnPawnHeal(info);
+        if (FeKaCurrentStats.health <= 0)
+            InvokeOnPawnDeath(info);
     }
  
     private void OnNetCurrentLapChanged(int value)

@@ -89,7 +89,7 @@ public class FeKaItem_TommyGun : ItemBehaviour
                 if (home != null)
                 {
                     home.exemptPawns.Add(pawn);
-                    home.damageInfo.instigator = pawn;
+                    home.SetInstigator(pawn);
                     home.damageInfo.type = DamageType.Explosive;
                     home.damageInfo.source = damageSource;
                 }

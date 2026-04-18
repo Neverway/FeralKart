@@ -10,6 +10,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using RivenFramework;
 using UnityEngine;
 
 public class Throwable : MonoBehaviour
@@ -38,6 +39,7 @@ public class Throwable : MonoBehaviour
 
 
     /*-----[ Internal Variables ]-------------------------------------------------------------------------------------*/
+    private NetVariable<string> netInstigatorId;
 
 
     /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/
@@ -50,6 +52,9 @@ public class Throwable : MonoBehaviour
     /*-----[ Mono Functions ]-----------------------------------------------------------------------------------------*/
     private void Awake()
     {
+        var netVarOwner = GetComponent<NetVariableOwner>();
+        netInstigatorId = netVarOwner.Register<string>("throwable_instigatorId", "", null);
+
         physicsBody = GetComponent<Rigidbody>();
         physicsBody.AddForce((transform.forward*throwForce.x)+(Vector3.up*throwForce.y),  ForceMode.Impulse);
         StartCoroutine(FriendlyFireCooldown());
@@ -62,6 +67,24 @@ public class Throwable : MonoBehaviour
         
         if (pawn != null && !exemptPawns.Contains(pawn))
         {
+            if (damageInfo.instigator == null && netInstigatorId != null && !string.IsNullOrEmpty(netInstigatorId.Value))
+            {
+                var raceManager = GameInstance.Get<GI_RaceManager>();
+                if (raceManager != null)
+                {
+                    foreach (var racer in raceManager.racers)
+                    {
+                        var owner = racer.GetComponent<NetVariableOwner>();
+                        if (owner != null && owner.NetworkObjectId == netInstigatorId.Value)
+                        {
+                            damageInfo.instigator = racer;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            
             pawn.ModifyHealth(damageInfo);
             pawn.physicsbody.AddForce(Vector3.up * explosionForce, ForceMode.Impulse);
             Destroy(gameObject);
@@ -119,6 +142,13 @@ public class Throwable : MonoBehaviour
     public void SetTarget(FeKaPawn target)
     {
         _target = target;
+    }
+    
+    public void SetInstigator(FeKaPawn instigator)
+    {
+        damageInfo.instigator = instigator;
+        if (netInstigatorId != null)
+            netInstigatorId.Value = instigator?.GetComponent<NetVariableOwner>()?.NetworkObjectId ?? "";
     }
 
 

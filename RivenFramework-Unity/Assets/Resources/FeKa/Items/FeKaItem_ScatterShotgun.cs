@@ -108,7 +108,7 @@ public class FeKaItem_ScatterShotgun : ItemBehaviour
             if (homing != null)
             {
                 homing.exemptPawns.Add(pawn);
-                homing.damageInfo.instigator = pawn;
+                homing.SetInstigator(pawn);
                 homing.damageInfo.type = DamageType.Explosive;
                 homing.damageInfo.source = damageSource;
             }

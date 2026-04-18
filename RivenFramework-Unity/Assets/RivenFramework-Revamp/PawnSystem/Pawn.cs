@@ -44,6 +44,7 @@ public class Pawn : Actor
     public event Action<DamageInfo> OnPawnHurt;
     public event Action<DamageInfo> OnPawnHeal;
     public event Action<DamageInfo> OnPawnDeath;
+    
 
     //=-----------------=
     // Mono Functions
@@ -128,6 +129,10 @@ public class Pawn : Actor
     {
         Kill(new DamageInfo());
     }
+    
+    protected void InvokeOnPawnHurt(DamageInfo info) => OnPawnHurt?.Invoke(info);
+    protected void InvokeOnPawnDeath(DamageInfo info) => OnPawnDeath?.Invoke(info);
+    protected void InvokeOnPawnHeal(DamageInfo info) => OnPawnHeal?.Invoke(info);
 }
 
 [Serializable]
