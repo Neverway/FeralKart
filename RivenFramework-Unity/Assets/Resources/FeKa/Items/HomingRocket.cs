@@ -48,8 +48,24 @@ public class HomingRocket : MonoBehaviour
 
 
     /*-----[ Internal Variables ]-------------------------------------------------------------------------------------*/
+    private NetVariableOwner netVariableOwner;
+    private NetVariable<string> netDeathState;
+    private bool isDying = false;
+    private bool suppressOnDestroyDespawn = false;
+
+    /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/
+
+
+    #endregion
+
+
+    #region=======================================( Functions )=======================================================//
+    /*-----[ Mono Functions ]-----------------------------------------------------------------------------------------*/
     private void Start()
     {
+        netVariableOwner = GetComponent<NetVariableOwner>();
+        netDeathState = netVariableOwner.Register<string>("rocket_death", "", OnNetDeathReceived);
+        
         StartCoroutine(FriendlyFireCooldown());
         StartCoroutine(DelayBeforeCollisionEnabled());
         bounces = maxBounces;
@@ -92,7 +108,7 @@ public class HomingRocket : MonoBehaviour
                         break;
                     case ObjectCollisionBehaviour.destroy:
                         Debug.Log("Destroyed because of destroy");
-                        Destroy(gameObject);
+                        TriggerDeath(hit.point);
                         break;
                     case ObjectCollisionBehaviour.stick:
                         gameObject.transform.parent = hit.transform;
@@ -102,7 +118,7 @@ public class HomingRocket : MonoBehaviour
                         {
                             if (bounces <= 0)
                             {
-                                Destroy(gameObject);
+                                TriggerDeath(hit.point);
                                 return;
                             }
                             bounces--;
@@ -129,42 +145,95 @@ public class HomingRocket : MonoBehaviour
         {
             pawn.ModifyHealth(damageInfo);
             pawn.physicsbody.AddForce(Vector3.up * explosionForce, ForceMode.Impulse);
-            Destroy(gameObject);
+            TriggerDeath(transform.position);
             Debug.Log("Destroyed because of hit");
         }
     }
 
-    private void OnDestroy()
-    {
-        Instantiate(explosionEffect, transform.position, transform.rotation, null);
-        /*var netTransform = GetComponent<NetTransform>();
-        if (netTransform != null)
-        {
-            NetSpawner.Despawn(GetComponent<NetTransform>().networkObjectUId);
-        }*/
-    }
 
-    /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/
+    /*-----[ Internal Functions ]-------------------------------------------------------------------------------------*/
+    
     private IEnumerator FriendlyFireCooldown()
     {
         yield return new WaitForSeconds(timeUntilFriendlyFireEnabled);
         exemptPawns.Clear();
     }
+    
     private IEnumerator DelayBeforeCollisionEnabled()
     {
         yield return new WaitForSeconds(delayBeforeCollisionEnabled);
         collisionCheckEnabled = true;
     }
 
+    private void TriggerDeath(Vector3 position)
+    {
+        if (isDying) return;
+        isDying = true;
 
-    #endregion
+        if (GetComponent<NetTransform>().hasAuthority)
+        {
+            netDeathState.Value = $"{position.x},{position.y},{position.z}";
+            StartCoroutine(DestroyAfterSync());
+        }
+        else
+        {
+            PlayDeathAt(transform.position);
+        }
+    }
+    
+    private IEnumerator DestroyAfterSync()
+    {
+        // Give the clients two frames of buffering
+        yield return null;
+        yield return null;
+        Destroy(gameObject);
+    }
+    
+    private void OnNetDeathReceived(string value)
+    {
+        if (string.IsNullOrEmpty(value)) return;
+        if (isDying) return;
+        isDying = true;
 
+        var parts = value.Split(',');
+        if (parts.Length == 3 &&
+            float.TryParse(parts[0], out float x) &&
+            float.TryParse(parts[1], out float y) &&
+            float.TryParse(parts[2], out float z))
+        {
+            PlayDeathAt(new Vector3(x, y, z));
+        }
+        else
+        {
+            PlayDeathAt(transform.position);
+        }
+    }
 
-    #region=======================================( Functions )=======================================================//
-    /*-----[ Mono Functions ]-----------------------------------------------------------------------------------------*/
+    private void PlayDeathAt(Vector3 position)
+    {
+        Instantiate(explosionEffect, position, transform.rotation, null);
 
+        if (GetComponent<NetTransform>().hasAuthority)
+        {
+            NetSpawner.Despawn(GetComponent<NetTransform>().networkObjectUId);
+        }
 
-    /*-----[ Internal Functions ]-------------------------------------------------------------------------------------*/
+        suppressOnDestroyDespawn = true;
+        Destroy(gameObject);
+    }
+    
+    private void OnDestroy()
+    {
+        if (!suppressOnDestroyDespawn)
+        {
+            Instantiate(explosionEffect, transform.position, transform.rotation, null);
+            var netTransform = GetComponent<NetTransform>();
+            if (netTransform != null && netTransform.hasAuthority)
+            {
+                NetSpawner.Despawn(netTransform.networkObjectUId);
+            }
+        }
+    }
 
 
     /*-----[ External Functions ]-------------------------------------------------------------------------------------*/
