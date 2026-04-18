@@ -95,7 +95,7 @@ PrefabInstance:
     - target: {fileID: 2276721478425129573, guid: 0691e5206c095094690805245502b274,
         type: 3}
       propertyPath: m_Name
-      value: PropLamp 1
+      value: PropTrashFloor
       objectReference: {fileID: 0}
     - target: {fileID: 2276721478425129573, guid: 0691e5206c095094690805245502b274,
         type: 3}
@@ -176,7 +176,11 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 622983636371593207}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2276721478425129573, guid: 0691e5206c095094690805245502b274,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6374804163227350576}
   m_SourcePrefab: {fileID: 100100000, guid: 0691e5206c095094690805245502b274, type: 3}
 --- !u!4 &418486364785134735 stripped
 Transform:
@@ -184,3 +188,22 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6555744266737402123}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4999598885390775150 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2276721478425129573, guid: 0691e5206c095094690805245502b274,
+    type: 3}
+  m_PrefabInstance: {fileID: 6555744266737402123}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6374804163227350576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4999598885390775150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a84db83a6cdc9d489b2365b7c8a5f0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  height: 0.25

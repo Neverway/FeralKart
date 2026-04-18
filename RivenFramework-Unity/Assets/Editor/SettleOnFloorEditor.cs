@@ -20,11 +20,16 @@ public class SettleOnFloorEditor : Editor
 
         DrawDefaultInspector ();
 
-        SettleOnFloor setPropHeight = (SettleOnFloor)target;
 
         if (GUILayout.Button ("Set Height"))
         {
-            setPropHeight.SetHeightWithRaycast ();
+            foreach (Object selectedObject in targets)
+            {
+                SettleOnFloor settleOnFloor = (SettleOnFloor)selectedObject;
+                Undo.RecordObject(settleOnFloor.transform, "Set Height");
+                settleOnFloor.SetHeightWithRaycast();
+                EditorUtility.SetDirty(settleOnFloor);
+            }
         }
     }
 }
