@@ -82,8 +82,7 @@ public class HomingRocket : MonoBehaviour
         if (!GetComponent<NetTransform>().hasAuthority) return;
         var movement = transform.forward * speed * Time.deltaTime;
         RaycastHit hit;
-        if (Physics.SphereCast(transform.position, collisionRadius, transform.forward, out hit, movement.magnitude,
-                collisionMask))
+        if (Physics.SphereCast(transform.position, collisionRadius, transform.forward, out hit, movement.magnitude, collisionMask))
         {
             if (collisionCheckEnabled)
             {
