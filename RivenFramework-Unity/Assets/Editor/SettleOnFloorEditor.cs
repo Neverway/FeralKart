@@ -8,10 +8,10 @@
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(SetPropHeight))]
+[CustomEditor(typeof(SettleOnFloor))]
 [CanEditMultipleObjects]
 
-public class SetPropHeightEditor : Editor
+public class SettleOnFloorEditor : Editor
 {
 
     public override void OnInspectorGUI ()
@@ -20,7 +20,7 @@ public class SetPropHeightEditor : Editor
 
         DrawDefaultInspector ();
 
-        SetPropHeight setPropHeight = (SetPropHeight)target;
+        SettleOnFloor setPropHeight = (SettleOnFloor)target;
 
         if (GUILayout.Button ("Set Height"))
         {

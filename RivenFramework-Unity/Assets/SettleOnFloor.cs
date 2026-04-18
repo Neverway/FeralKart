@@ -9,7 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SetPropHeight : MonoBehaviour
+public class SettleOnFloor : MonoBehaviour
 {
     //=-----------------=
     // Public Variables
