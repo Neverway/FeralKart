@@ -303,6 +303,13 @@ public class GI_RaceManager : MonoBehaviour
     {
         return racerStandings.IndexOf((FeKaPawn_Base)pawn) + 1;
     }
+    
+    public void EliminateRacer(FeKaPawn_Base racer)
+    {
+        if (eliminatedRacers.Contains(racer)) return;
+        eliminatedRacers.Add(racer);
+        SendFinishAndShowResults(racer, true);
+    }
 
     /// <summary>
     /// Called by the GameRules interface (when a results packet is sent?)

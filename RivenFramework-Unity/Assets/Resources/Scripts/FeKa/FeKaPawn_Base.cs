@@ -713,7 +713,7 @@ public class FeKaPawn_Base : FeKaPawn
             print($"player had {FeKaCurrentStats.stocks} stocks, THEY'RE OUT!");
             FeKaCurrentStats.characterSpriteRenderer.material.color = Color.black;
             if (controlMode != ControlMode.LocalPlayer ) return;
-            FindObjectOfType<GI_RaceManager>().SendFinishAndShowResults(this, true);
+            GameInstance.Get<GI_RaceManager>().EliminateRacer(this);
             if (!widgetManager)
             {
                 widgetManager = GameInstance.Get<GI_WidgetManager>();
