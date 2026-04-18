@@ -316,7 +316,7 @@ MonoBehaviour:
   exemptPawns: []
   timeUntilFriendlyFireEnabled: 3
   collisionBehaviour: 1
-  collisionRadius: 0.25
+  collisionRadius: 0.1
   delayBeforeCollisionEnabled: 0
   collisionMask:
     serializedVersion: 2
