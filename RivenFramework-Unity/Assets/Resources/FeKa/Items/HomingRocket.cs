@@ -173,7 +173,7 @@ public class HomingRocket : MonoBehaviour
         if (GetComponent<NetTransform>().hasAuthority)
         {
             netDeathState.Value = $"{position.x},{position.y},{position.z}";
-            StartCoroutine(DestroyAfterSync());
+            StartCoroutine(DestroyAfterSync(position));
         }
         else
         {
@@ -181,12 +181,11 @@ public class HomingRocket : MonoBehaviour
         }
     }
     
-    private IEnumerator DestroyAfterSync()
+    private IEnumerator DestroyAfterSync(Vector3 position)
     {
-        // Give the clients two frames of buffering
         yield return null;
         yield return null;
-        Destroy(gameObject);
+        PlayDeathAt(position);
     }
     
     private void OnNetDeathReceived(string value)
