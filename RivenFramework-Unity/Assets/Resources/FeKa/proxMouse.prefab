@@ -520,5 +520,5 @@ MonoBehaviour:
   delayBeforeCollisionEnabled: 0.2
   collisionMask:
     serializedVersion: 2
-    m_Bits: 2049
+    m_Bits: 1
   physicsBody: {fileID: 0}

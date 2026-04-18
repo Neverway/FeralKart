@@ -61,10 +61,14 @@ public class HomingRocket : MonoBehaviour
 
     #region=======================================( Functions )=======================================================//
     /*-----[ Mono Functions ]-----------------------------------------------------------------------------------------*/
-    private void Start()
+    private void Awake()
     {
         netVariableOwner = GetComponent<NetVariableOwner>();
         netDeathState = netVariableOwner.Register<string>("rocket_death", "", OnNetDeathReceived);
+    }
+
+    private void Start()
+    {
         
         StartCoroutine(FriendlyFireCooldown());
         StartCoroutine(DelayBeforeCollisionEnabled());
@@ -74,10 +78,11 @@ public class HomingRocket : MonoBehaviour
     private void Update()
     {
         if (!GetComponent<NetTransform>().hasAuthority) return;
+        if (isDying) return;
         _age += Time.deltaTime;
         if (_age >= lifetime)
         {
-            Destroy(gameObject);
+            TriggerDeath(transform.position);
             return;
         }
 
@@ -86,16 +91,14 @@ public class HomingRocket : MonoBehaviour
             var toTarget = ((_target.transform.position+targetAimOffset) - transform.position).normalized;
             var targetRot = Quaternion.LookRotation(toTarget);
 
-            transform.rotation = Quaternion.RotateTowards(
-                transform.rotation,
-                targetRot,
-                turnRate * Time.deltaTime);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, turnRate * Time.deltaTime);
         }
     }
 
     private void FixedUpdate()
     {
         if (!GetComponent<NetTransform>().hasAuthority) return;
+        if (isDying) return;
         var movement = transform.forward * speed * Time.deltaTime;
         RaycastHit hit;
         if (Physics.SphereCast(transform.position, collisionRadius, transform.forward, out hit, movement.magnitude, collisionMask))
@@ -173,9 +176,12 @@ public class HomingRocket : MonoBehaviour
         if (GetComponent<NetTransform>().hasAuthority)
         {
             netDeathState.Value = $"{position.x},{position.y},{position.z}";
-            StartCoroutine(DestroyAfterSync(position));
             Instantiate(explosionEffect, position, transform.rotation, null);
-            gameObject.SetActive(false);
+            foreach (var r in GetComponentsInChildren<Renderer>()) r.enabled = false;
+            foreach (var c in GetComponentsInChildren<Collider>()) c.enabled = false;
+            foreach (var s in GetComponentsInChildren<SpriteRenderer>()) s.enabled = false;
+            foreach (var l in GetComponentsInChildren<LineRenderer>()) l.enabled = false;
+            StartCoroutine(DestroyAfterSync(position));
         }
         else
         {
@@ -187,7 +193,9 @@ public class HomingRocket : MonoBehaviour
     {
         yield return null;
         yield return null;
-        PlayDeathAt(position);
+        suppressOnDestroyDespawn = true;
+        NetSpawner.Despawn(GetComponent<NetTransform>().networkObjectUId);
+        Destroy(gameObject);
     }
     
     private void OnNetDeathReceived(string value)
