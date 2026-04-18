@@ -174,10 +174,12 @@ public class HomingRocket : MonoBehaviour
         {
             netDeathState.Value = $"{position.x},{position.y},{position.z}";
             StartCoroutine(DestroyAfterSync(position));
+            Instantiate(explosionEffect, position, transform.rotation, null);
+            gameObject.SetActive(false);
         }
         else
         {
-            PlayDeathAt(transform.position);
+            PlayDeathAt(position);
         }
     }
     
