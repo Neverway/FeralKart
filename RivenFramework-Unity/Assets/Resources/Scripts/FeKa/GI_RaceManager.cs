@@ -26,8 +26,8 @@ public class GI_RaceManager : MonoBehaviour
     private bool raceInProgress;
     private bool raceEnded = false;
     private Coroutine countdownCoroutine;
-    private HashSet<FeKaPawn_Base> placedRacers = new HashSet<FeKaPawn_Base>();
-    private HashSet<FeKaPawn_Base> eliminatedRacers = new HashSet<FeKaPawn_Base>();
+    public HashSet<FeKaPawn_Base> placedRacers = new HashSet<FeKaPawn_Base>();
+    public HashSet<FeKaPawn_Base> eliminatedRacers = new HashSet<FeKaPawn_Base>();
 
 
     /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/
@@ -250,7 +250,7 @@ public class GI_RaceManager : MonoBehaviour
             if (racer.physicsbody) 
                 racer.physicsbody.isKinematic = true;
         
-        // ??? this was a pointless double call
+        
         FeKaPawn_Base localRacer = racers.Find(racer => racer.controlMode == ControlMode.LocalPlayer);
         if (localRacer != null && !placedRacers.Contains(localRacer) && !eliminatedRacers.Contains(localRacer))
         {

@@ -126,6 +126,18 @@ public class FeKa_GameRules : MonoBehaviour
             var raceManager = GameInstance.Get<GI_RaceManager>();
             if (raceManager != null)
             {
+                
+                
+                FeKaPawn_Base localRacer = raceManager.racers.Find(racer => racer.controlMode == ControlMode.LocalPlayer);
+                if (localRacer != null && !raceManager.placedRacers.Contains(localRacer) && !raceManager.eliminatedRacers.Contains(localRacer))
+                {
+                    localRacer.FeKaCurrentStats.finishPlacement = raceManager.GetRacerPlacement(localRacer);
+                    localRacer.FeKaCurrentStats.finishTime = raceManager.timeRemaining-raceManager.raceDuration;
+                    raceManager.SendFinishAndShowResults(localRacer, true);
+                }
+                
+                
+                
                 string json = packet.Substring(resultPrefix.Length);
                 var resultsPacket = JsonUtility.FromJson<RaceResultsPacket>(json);
                 raceManager.ShowResultsFromServer(resultsPacket);
