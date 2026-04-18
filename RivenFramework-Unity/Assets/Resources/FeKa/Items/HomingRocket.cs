@@ -191,7 +191,7 @@ public class HomingRocket : MonoBehaviour
     
     private IEnumerator DestroyAfterSync(Vector3 position)
     {
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(1f);
         suppressOnDestroyDespawn = true;
         NetSpawner.Despawn(GetComponent<NetTransform>().networkObjectUId);
         Destroy(gameObject);
