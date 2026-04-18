@@ -514,7 +514,7 @@ MonoBehaviour:
   targetAimOffset: {x: 0, y: 0.15, z: 0}
   exemptPawns: []
   throwForce: {x: 40, y: 25}
-  timeUntilFriendlyFireEnabled: 1.5
+  timeUntilFriendlyFireEnabled: 2
   collisionBehaviour: 2
   collisionRadius: 0.1
   delayBeforeCollisionEnabled: 0.2
