@@ -246,8 +246,8 @@ MonoBehaviour:
   networkObjectUId: 
   hasAuthority: 0
   sendRate: 40
-  syncPosition: 1
-  syncRotation: 1
+  syncPosition: 0
+  syncRotation: 0
   syncScale: 0
   interpolationSpeed: 30
   interpolationRotationSpeed: 720

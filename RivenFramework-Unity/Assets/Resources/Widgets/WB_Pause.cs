@@ -46,6 +46,7 @@ public class WB_Pause : WidgetBlueprint
 
     private void OnDestroy()
     {
+        widgetManager = GameInstance.Get<GI_WidgetManager>();
         Destroy(widgetManager.GetExistingWidget(settingsWidget.name));
     }
 
