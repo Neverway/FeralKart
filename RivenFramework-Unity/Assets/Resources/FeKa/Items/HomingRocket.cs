@@ -80,7 +80,6 @@ public class HomingRocket : MonoBehaviour
 
     private void Update()
     {
-        if (!GetComponent<NetTransform>().hasAuthority) return;
         if (isDying) return;
         _age += Time.deltaTime;
         if (_age >= lifetime)
@@ -100,7 +99,6 @@ public class HomingRocket : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!GetComponent<NetTransform>().hasAuthority) return;
         if (isDying) return;
         var movement = transform.forward * speed * Time.deltaTime;
         RaycastHit hit;
