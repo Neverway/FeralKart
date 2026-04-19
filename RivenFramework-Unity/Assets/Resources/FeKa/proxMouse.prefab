@@ -404,6 +404,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 8884722691426510779}
+    - targetCorrespondingSourceObject: {fileID: 2276721478425129573, guid: 0691e5206c095094690805245502b274,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -5322492669636702652}
   m_SourcePrefab: {fileID: 100100000, guid: 0691e5206c095094690805245502b274, type: 3}
 --- !u!4 &418486364785134735 stripped
 Transform:
@@ -514,11 +518,23 @@ MonoBehaviour:
   targetAimOffset: {x: 0, y: 0.15, z: 0}
   exemptPawns: []
   throwForce: {x: 40, y: 25}
-  timeUntilFriendlyFireEnabled: 1.5
+  timeUntilFriendlyFireEnabled: 2
   collisionBehaviour: 2
   collisionRadius: 0.1
   delayBeforeCollisionEnabled: 0.2
   collisionMask:
     serializedVersion: 2
-    m_Bits: 2049
+    m_Bits: 1
   physicsBody: {fileID: 0}
+--- !u!114 &-5322492669636702652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4999598885390775150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 796d7d22e97991a53be9a6e9db0c32ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

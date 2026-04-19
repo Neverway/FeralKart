@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 5796481869442249576}
   - component: {fileID: 4645946048291232722}
   - component: {fileID: 1712356060700909792}
+  - component: {fileID: -3408981412266881608}
   m_Layer: 0
-  m_Name: Plane
+  m_Name: Speedpad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -84,6 +85,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &-3408981412266881608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7959892693127322777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a84db83a6cdc9d489b2365b7c8a5f0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  height: 0.25
 --- !u!1001 &2597744740204020949
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -201,6 +215,11 @@ PrefabInstance:
         type: 3}
       propertyPath: forceMode
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3822030454198327321, guid: 11c300d1e356964dbb7fe0ab14bee5df,
+        type: 3}
+      propertyPath: propForceIntensity
+      value: 25000
       objectReference: {fileID: 0}
     - target: {fileID: 3822030454198327321, guid: 11c300d1e356964dbb7fe0ab14bee5df,
         type: 3}

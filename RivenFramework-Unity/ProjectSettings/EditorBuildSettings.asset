@@ -42,8 +42,8 @@ EditorBuildSettings:
     path: Assets/Resources/Maps/RaceTracks/fo_drill.unity
     guid: 1dd1b6cc40e136d1a86203877c3e64b0
   - enabled: 1
-    path: Assets/Resources/Maps/RaceTracks/connorses_hills.unity
-    guid: d526449b50af6f2468b0f03a71a90651
+    path: Assets/Resources/Maps/RaceTracks/de_dust2kart.unity
+    guid: df53077518158284d8d1ffe85c7d20d9
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: f15e32241878d7bdda685b0a87c02c59,
       type: 2}

@@ -261,6 +261,7 @@ GameObject:
   - component: {fileID: 5772744373558033423}
   - component: {fileID: 5354260543670442827}
   - component: {fileID: 8722727200707923212}
+  - component: {fileID: 7800334449850073655}
   m_Layer: 19
   m_Name: Rocket
   m_TagString: Untagged
@@ -314,9 +315,9 @@ MonoBehaviour:
   targetAimOffset: {x: 0, y: 0.4, z: 0}
   turnRate: 90
   exemptPawns: []
-  timeUntilFriendlyFireEnabled: 2
+  timeUntilFriendlyFireEnabled: 3
   collisionBehaviour: 1
-  collisionRadius: 0.25
+  collisionRadius: 0.1
   delayBeforeCollisionEnabled: 0
   collisionMask:
     serializedVersion: 2
@@ -359,14 +360,26 @@ MonoBehaviour:
   networkObjectUId: 
   hasAuthority: 0
   sendRate: 40
-  syncPosition: 1
-  syncRotation: 1
+  syncPosition: 0
+  syncRotation: 0
   syncScale: 0
   interpolationSpeed: 30
   interpolationRotationSpeed: 720
   snapThreshold: 8
   extrapolationFactor: 0.5
   copyObjectIdentityFrom: {fileID: 0}
+--- !u!114 &7800334449850073655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6598383830466623576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 796d7d22e97991a53be9a6e9db0c32ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8501197779557213971
 GameObject:
   m_ObjectHideFlags: 0

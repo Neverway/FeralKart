@@ -4978,7 +4978,7 @@ GameObject:
   - component: {fileID: 4057143971267408911}
   - component: {fileID: 3118352336696138053}
   - component: {fileID: 7509958041715341190}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: Collider
   m_TagString: Pawn
   m_Icon: {fileID: 0}
@@ -5015,7 +5015,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 762790251793596564}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -10269,7 +10269,7 @@ GameObject:
   - component: {fileID: 4721080141915458145}
   - component: {fileID: 2832832232363504646}
   - component: {fileID: 7099570814396360377}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: cm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20972,7 +20972,7 @@ Transform:
   m_GameObject: {fileID: 8907602824908294683}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.216, z: 0.507}
+  m_LocalPosition: {x: 0, y: 0.273, z: 0.507}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20988,7 +20988,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7715907118169823433}
   - component: {fileID: 8191868854585722244}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Virtual Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21003,7 +21003,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9018392291717064548}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -8.862214e-16, z: 6.682842e-17, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
@@ -21062,6 +21062,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ProgressBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 1675898991915296465, guid: 900266b7698829b43b1e750d41fb5fd4,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 2457594599207921171, guid: 900266b7698829b43b1e750d41fb5fd4,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 3502165927026522889, guid: 900266b7698829b43b1e750d41fb5fd4,
         type: 3}
@@ -21217,6 +21227,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7531701452695008504, guid: 900266b7698829b43b1e750d41fb5fd4,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -21481,7 +21496,7 @@ MonoBehaviour:
   physObjectAttachmentPoint: {fileID: 0}
   FeKaDefaultStats:
     health: 100
-    invulnerabilityTime: 1
+    invulnerabilityTime: 0.1
     team: 
     alliedTeams: []
     opposedTeams: []
@@ -21631,6 +21646,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: '[Text]'
+      objectReference: {fileID: 0}
+    - target: {fileID: 1732088717169147424, guid: e939f13b17fb3bcb582ebe98d53fc04a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 4116690135669473716, guid: e939f13b17fb3bcb582ebe98d53fc04a,
         type: 3}
@@ -21822,22 +21842,22 @@ PrefabInstance:
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9996852
+      value: 0.99968517
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.025091238
+      value: 0.02509124
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -4.4380964e-16
+      value: -0.0000000021501205
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 2.2285493e-17
+      value: 5.3966182e-11
       objectReference: {fileID: 0}
     - target: {fileID: 911367883527054998, guid: 273f560cf23f789b987aeac1af365c4d,
         type: 3}

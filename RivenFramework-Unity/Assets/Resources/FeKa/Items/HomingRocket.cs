@@ -10,6 +10,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using RivenFramework;
 using UnityEngine;
 
 public class HomingRocket : MonoBehaviour
@@ -48,8 +49,30 @@ public class HomingRocket : MonoBehaviour
 
 
     /*-----[ Internal Variables ]-------------------------------------------------------------------------------------*/
+    private NetVariableOwner netVariableOwner;
+    private NetVariable<string> netInstigatorId;
+    private NetVariable<string> netDeathState;
+    private bool isDying = false;
+    private bool suppressOnDestroyDespawn = false;
+
+    /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/
+
+
+    #endregion
+
+
+    #region=======================================( Functions )=======================================================//
+    /*-----[ Mono Functions ]-----------------------------------------------------------------------------------------*/
+    private void Awake()
+    {
+        netVariableOwner = GetComponent<NetVariableOwner>();
+        netDeathState = netVariableOwner.Register<string>("rocket_death", "", OnNetDeathReceived);
+        netInstigatorId = netVariableOwner.Register<string>("rocket_instigatorId", "", null);
+    }
+
     private void Start()
     {
+        
         StartCoroutine(FriendlyFireCooldown());
         StartCoroutine(DelayBeforeCollisionEnabled());
         bounces = maxBounces;
@@ -58,10 +81,11 @@ public class HomingRocket : MonoBehaviour
     private void Update()
     {
         if (!GetComponent<NetTransform>().hasAuthority) return;
+        if (isDying) return;
         _age += Time.deltaTime;
         if (_age >= lifetime)
         {
-            Destroy(gameObject);
+            TriggerDeath(transform.position);
             return;
         }
 
@@ -70,20 +94,17 @@ public class HomingRocket : MonoBehaviour
             var toTarget = ((_target.transform.position+targetAimOffset) - transform.position).normalized;
             var targetRot = Quaternion.LookRotation(toTarget);
 
-            transform.rotation = Quaternion.RotateTowards(
-                transform.rotation,
-                targetRot,
-                turnRate * Time.deltaTime);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, turnRate * Time.deltaTime);
         }
     }
 
     private void FixedUpdate()
     {
         if (!GetComponent<NetTransform>().hasAuthority) return;
+        if (isDying) return;
         var movement = transform.forward * speed * Time.deltaTime;
         RaycastHit hit;
-        if (Physics.SphereCast(transform.position, collisionRadius, transform.forward, out hit, movement.magnitude,
-                collisionMask))
+        if (Physics.SphereCast(transform.position, collisionRadius, transform.forward, out hit, movement.magnitude, collisionMask))
         {
             if (collisionCheckEnabled)
             {
@@ -92,7 +113,8 @@ public class HomingRocket : MonoBehaviour
                     case ObjectCollisionBehaviour.none:
                         break;
                     case ObjectCollisionBehaviour.destroy:
-                        Destroy(gameObject);
+                        Debug.Log("Destroyed because of destroy");
+                        TriggerDeath(hit.point);
                         break;
                     case ObjectCollisionBehaviour.stick:
                         gameObject.transform.parent = hit.transform;
@@ -102,7 +124,7 @@ public class HomingRocket : MonoBehaviour
                         {
                             if (bounces <= 0)
                             {
-                                Destroy(gameObject);
+                                TriggerDeath(hit.point);
                                 return;
                             }
                             bounces--;
@@ -127,43 +149,125 @@ public class HomingRocket : MonoBehaviour
         
         if (pawn != null && !exemptPawns.Contains(pawn))
         {
+            if (damageInfo.instigator == null && netInstigatorId != null && !string.IsNullOrEmpty(netInstigatorId.Value))
+            {
+                var raceManager = GameInstance.Get<GI_RaceManager>();
+                if (raceManager != null)
+                {
+                    foreach (var racer in raceManager.racers)
+                    {
+                        var owner = racer.GetComponent<NetVariableOwner>();
+                        if (owner != null && owner.NetworkObjectId == netInstigatorId.Value)
+                        {
+                            damageInfo.instigator = racer;
+                            break;
+                        }
+                    }
+                }
+            }
+            
             pawn.ModifyHealth(damageInfo);
             pawn.physicsbody.AddForce(Vector3.up * explosionForce, ForceMode.Impulse);
-            Destroy(gameObject);
+            TriggerDeath(transform.position);
         }
     }
 
-    private void OnDestroy()
-    {
-        Instantiate(explosionEffect, transform.position, transform.rotation, null);
-        var netTransform = GetComponent<NetTransform>();
-        if (netTransform != null)
-        {
-            NetSpawner.Despawn(GetComponent<NetTransform>().networkObjectUId);
-        }
-    }
 
-    /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/
+    /*-----[ Internal Functions ]-------------------------------------------------------------------------------------*/
+    
     private IEnumerator FriendlyFireCooldown()
     {
         yield return new WaitForSeconds(timeUntilFriendlyFireEnabled);
         exemptPawns.Clear();
     }
+    
     private IEnumerator DelayBeforeCollisionEnabled()
     {
         yield return new WaitForSeconds(delayBeforeCollisionEnabled);
         collisionCheckEnabled = true;
     }
 
+    private void TriggerDeath(Vector3 position)
+    {
+        if (isDying) return;
+        isDying = true;
 
-    #endregion
+        if (GetComponent<NetTransform>().hasAuthority)
+        {
+            netDeathState.Value = $"{position.x},{position.y},{position.z}";
+            Instantiate(explosionEffect, position, transform.rotation, null);
+            foreach (var r in GetComponentsInChildren<Renderer>()) r.enabled = false;
+            foreach (var c in GetComponentsInChildren<Collider>()) c.enabled = false;
+            foreach (var s in GetComponentsInChildren<SpriteRenderer>()) s.enabled = false;
+            foreach (var l in GetComponentsInChildren<LineRenderer>()) l.enabled = false;
+            StartCoroutine(DestroyAfterSync(position));
+        }
+        else
+        {
+            PlayDeathAt(position);
+        }
+    }
+    
+    private IEnumerator DestroyAfterSync(Vector3 position)
+    {
+        yield return new WaitForSeconds(1f);
+        suppressOnDestroyDespawn = true;
+        NetSpawner.Despawn(GetComponent<NetTransform>().networkObjectUId);
+        Destroy(gameObject);
+    }
+    
+    private void OnNetDeathReceived(string value)
+    {
+        if (string.IsNullOrEmpty(value)) return;
+        if (isDying) return;
+        isDying = true;
 
+        var parts = value.Split(',');
+        if (parts.Length == 3 &&
+            float.TryParse(parts[0], out float x) &&
+            float.TryParse(parts[1], out float y) &&
+            float.TryParse(parts[2], out float z))
+        {
+            PlayDeathAt(new Vector3(x, y, z));
+        }
+        else
+        {
+            PlayDeathAt(transform.position);
+        }
+    }
 
-    #region=======================================( Functions )=======================================================//
-    /*-----[ Mono Functions ]-----------------------------------------------------------------------------------------*/
+    private void PlayDeathAt(Vector3 position)
+    {
+        Instantiate(explosionEffect, position, transform.rotation, null);
 
+        if (GetComponent<NetTransform>().hasAuthority)
+        {
+            NetSpawner.Despawn(GetComponent<NetTransform>().networkObjectUId);
+        }
 
-    /*-----[ Internal Functions ]-------------------------------------------------------------------------------------*/
+        suppressOnDestroyDespawn = true;
+        Destroy(gameObject);
+    }
+    
+    private void OnDestroy()
+    {
+        if (!suppressOnDestroyDespawn)
+        {
+            Instantiate(explosionEffect, transform.position, transform.rotation, null);
+            var netTransform = GetComponent<NetTransform>();
+            if (netTransform != null && netTransform.hasAuthority)
+            {
+                NetSpawner.Despawn(netTransform.networkObjectUId);
+            }
+        }
+    }
+    
+    public void SetInstigator(FeKaPawn instigator)
+    {
+        damageInfo.instigator = instigator;
+        if (netInstigatorId != null)
+            netInstigatorId.Value = instigator?.GetComponent<NetVariableOwner>()?.NetworkObjectId ?? "";
+    }
 
 
     /*-----[ External Functions ]-------------------------------------------------------------------------------------*/

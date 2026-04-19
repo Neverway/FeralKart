@@ -38,6 +38,7 @@ public class CheckpointTracker : MonoBehaviour
     {
         for (int i = 0; i < raceCheckpoints.Count; i++)
         {
+            print($"{i}");
             raceCheckpoints[i].checkpointIndex = i;
             raceCheckpoints[i].gameObject.SetActive(true);
         }

@@ -26,8 +26,8 @@ public class GI_RaceManager : MonoBehaviour
     private bool raceInProgress;
     private bool raceEnded = false;
     private Coroutine countdownCoroutine;
-    private HashSet<FeKaPawn_Base> placedRacers = new HashSet<FeKaPawn_Base>();
-    private HashSet<FeKaPawn_Base> eliminatedRacers = new HashSet<FeKaPawn_Base>();
+    public HashSet<FeKaPawn_Base> placedRacers = new HashSet<FeKaPawn_Base>();
+    public HashSet<FeKaPawn_Base> eliminatedRacers = new HashSet<FeKaPawn_Base>();
 
 
     /*-----[ Reference Variables ]------------------------------------------------------------------------------------*/
@@ -181,17 +181,22 @@ public class GI_RaceManager : MonoBehaviour
                 placedRacers.Add(racer);
                 racer.FeKaCurrentStats.racerState = FeKaPawnStats.RacerState.finished;
                 racer.FeKaCurrentStats.finishPlacement = GetRacerPlacement(racer);
-                racer.FeKaCurrentStats.finishTime = timeRemaining;
+                racer.FeKaCurrentStats.finishTime = timeRemaining-raceDuration;
                 if (racer.controlMode == ControlMode.LocalPlayer)
                     SendFinishAndShowResults(racer, false);
             }
 
-            if (racer.isDead && racer.FeKaCurrentStats.stocks < 1)
+            /*if (racer.isDead)
             {
+                print($"[gi] player had {racer.FeKaCurrentStats.stocks} stocks");
+            }
+            if (racer.isDead && racer.FeKaCurrentStats.stocks <= 0)
+            {
+                print($"[gi] player had {racer.FeKaCurrentStats.stocks} stocks and was marked as eliminated");
                 eliminatedRacers.Add(racer);
                 if (racer.controlMode == ControlMode.LocalPlayer)
                     SendFinishAndShowResults(racer, true);
-            }
+            }*/
         }
 
         if (placedRacers.Count == racers.Count)
@@ -245,13 +250,17 @@ public class GI_RaceManager : MonoBehaviour
             if (racer.physicsbody) 
                 racer.physicsbody.isKinematic = true;
         
-        // ??? this was a pointless double call
-        /*FeKaPawn_Base localRacer = racers.Find(racer => racer.controlMode == ControlMode.LocalPlayer);
-        if (localRacer != null && !placedRacers.Contains(localRacer))
-            SendFinishAndShowResults(localRacer, true);*/
+        
+        FeKaPawn_Base localRacer = racers.Find(racer => racer.controlMode == ControlMode.LocalPlayer);
+        if (localRacer != null && !placedRacers.Contains(localRacer) && !eliminatedRacers.Contains(localRacer))
+        {
+            localRacer.FeKaCurrentStats.finishPlacement = GetRacerPlacement(localRacer);
+            localRacer.FeKaCurrentStats.finishTime = timeRemaining-raceDuration;
+            SendFinishAndShowResults(localRacer, true);
+        }
     }
-    
-    private void SendFinishAndShowResults(FeKaPawn_Base racer, bool failed)
+
+    public void SendFinishAndShowResults(FeKaPawn_Base racer, bool failed)
     {
         Debug.Log($"Racer {racer.controlMode} {racer.displayName} sent finish packet");
         var widgetManager = GameInstance.Get<GI_WidgetManager>();
@@ -293,6 +302,13 @@ public class GI_RaceManager : MonoBehaviour
     public int GetRacerPlacement(FeKaPawn pawn)
     {
         return racerStandings.IndexOf((FeKaPawn_Base)pawn) + 1;
+    }
+    
+    public void EliminateRacer(FeKaPawn_Base racer)
+    {
+        if (eliminatedRacers.Contains(racer)) return;
+        eliminatedRacers.Add(racer);
+        SendFinishAndShowResults(racer, true);
     }
 
     /// <summary>

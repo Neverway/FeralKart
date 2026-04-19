@@ -188,7 +188,7 @@ public class FeKaItem_Throwable : ItemBehaviour
             {
                 homing.exemptPawns.Add(pawn);
                 homing.SetTarget(capturedTarget);
-                homing.damageInfo.instigator = pawn;
+                homing.SetInstigator(pawn);
                 homing.damageInfo.type = DamageType.Explosive;
                 homing.damageInfo.source = damageSource;
             }

@@ -151,7 +151,7 @@ public class FeKaPawn_Base : FeKaPawn
             {
                 wheelCollider.enabled = false;
             }
-            Destroy(physicsbody);
+            physicsbody.isKinematic = true;
         }
         if (controlMode != ControlMode.LocalPlayer)
         {
@@ -668,9 +668,15 @@ public class FeKaPawn_Base : FeKaPawn
     {
         print($"{damageInfo.instigator} used {damageInfo.source.name} to deal {damageInfo.amount} {damageInfo.type} damage to {gameObject.name} killing them");
         
+        if (damageInfo.instigator is FeKaPawn_Base killer && killer != this)
+        {
+            killer.FeKaCurrentStats.kills++;
+        }
+        
         // Only send the death packet from the owner
         if (controlMode == ControlMode.LocalPlayer)
         {
+            action2.Move(this, 0);
             var nm = GameInstance.Get<GI_NetworkManager>();
             if (nm != null)
             {
@@ -692,17 +698,22 @@ public class FeKaPawn_Base : FeKaPawn
                 nm.SendPacket(nm.protocolMagic + ":KILLFEED:" + JsonUtility.ToJson(killPacket));
             }
         }
+        
 
         Instantiate(deathFX, transform.position, transform.rotation, null);
-        if (FeKaCurrentStats.stocks > 1)
+        if (FeKaCurrentStats.stocks > 0)
         {
+            print($"player had {FeKaCurrentStats.stocks} stocks, not out yet");
+            if (controlMode != ControlMode.LocalPlayer ) return;
             FeKaCurrentStats.stocks -= 1;
             StartCoroutine(AwaitRespawn());
         }
         else
         {
+            print($"player had {FeKaCurrentStats.stocks} stocks, THEY'RE OUT!");
             FeKaCurrentStats.characterSpriteRenderer.material.color = Color.black;
             if (controlMode != ControlMode.LocalPlayer ) return;
+            GameInstance.Get<GI_RaceManager>().EliminateRacer(this);
             if (!widgetManager)
             {
                 widgetManager = GameInstance.Get<GI_WidgetManager>();
@@ -722,6 +733,7 @@ public class FeKaPawn_Base : FeKaPawn
         FeKaCurrentStats.characterSpriteRenderer.material.color = Color.red;
         FeKaCurrentStats.characterSpriteRenderer.material.DOColor(new Color(1, 1, 1, 1), 1);
     }
+    
     private void OnHeal(DamageInfo damageInfo)
     {
         print($"{damageInfo.instigator} used {damageInfo.source} to heal {damageInfo.amount} {damageInfo.type} damage on {gameObject.name}");
@@ -1029,6 +1041,7 @@ public class FeKaPawn_Base : FeKaPawn
         netCurrentCheckpoint.Value = FeKaCurrentStats.currentCheckpoint;
         netRacerState.Value = (int)FeKaCurrentStats.racerState;
     }
+    
     // Network side
     private void OnNetHealthChanged(float value)
     {
@@ -1058,8 +1071,13 @@ public class FeKaPawn_Base : FeKaPawn
                 }
             }
         }
-        ModifyHealth(info);
         FeKaCurrentStats.health = value;
+        if (healthDifference > 0)
+            InvokeOnPawnHurt(info);
+        else
+            InvokeOnPawnHeal(info);
+        if (FeKaCurrentStats.health <= 0)
+            InvokeOnPawnDeath(info);
     }
  
     private void OnNetCurrentLapChanged(int value)
@@ -1083,9 +1101,10 @@ public class FeKaPawn_Base : FeKaPawn
     private void PushDamageContext(DamageInfo info)
     {
         if (netVarOwner == null || controlMode != ControlMode.LocalPlayer) return;
+        
         netLastInstigatorId.Value = info.instigator?.GetComponent<NetVariableOwner>()?.NetworkObjectId ?? "";
-        netLastSourceName.Value   = info.source.name ?? "";
-        netLastDamageType.Value   = (int)info.type;
-        netHealth.Value           = FeKaCurrentStats.health;
+        netLastSourceName.Value = info.source.name ?? "";
+        netLastDamageType.Value = (int)info.type;
+        netHealth.Value = FeKaCurrentStats.health;
     }
 }
